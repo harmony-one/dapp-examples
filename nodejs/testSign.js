@@ -59,6 +59,8 @@ async function main() {
     const [Transaction, hash] = await signed.sendTransaction()
     logOutPut('Transaction Hash', hash)
 
+    // from here on, we use hmy_getTransactionRecept and hmy_blockNumber Rpc api
+
     const confirmed = await Transaction.confirm(hash)
     logOutPut('Transaction Receipt', confirmed.receipt)
 
