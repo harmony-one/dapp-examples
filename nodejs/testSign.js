@@ -3,7 +3,7 @@ const { RLPSign } = require('@harmony-js/transaction')
 const { ChainType, ChainID, hexToBN } = require('@harmony-js/utils')
 
 // const url = 'https://ropsten.infura.io/v3/4f3be7f5bbe644b7a8d95c151c8f52ec'
-const url = 'https://localhost:9501'
+const url = 'http://localhost:9501'
 
 // const harmony = new Harmony(url, ChainType.Ethereum, ChainID.Ropsten)
 

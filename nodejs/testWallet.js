@@ -1,7 +1,7 @@
 const { Harmony } = require('@harmony-js/core')
 
 // first intializing the harmony with rpc endoint
-const jsonRpcUrl = 'https://localhost:9500'
+const jsonRpcUrl = 'http://localhost:9500'
 const harmony = new Harmony(jsonRpcUrl)
 
 // harmony.wallet has the wallet instance
