@@ -1,5 +1,3 @@
-const color = require('colors')
-
 const { Harmony } = require('@harmony-js/core')
 
 // first intializing the harmony with rpc endoint
@@ -87,6 +85,14 @@ async function createAccount() {
 
   logOutPut('Account is to be saved:', accountInfo)
 
+  // now if you want to get account instance from wallet
+  // use Wallet.getAccount(address:string)
+  // we just use accountInfo object above as query
+
+  const foundAccount = harmony.wallet.getAccount(accountInfo.address)
+
+  logOutPut('Account is found:', foundAccount)
+
   // whenever you want to encrypt an acount
   // use Wallet.decryptAccount(address:string,password:string)
 
@@ -108,13 +114,8 @@ async function createAccount() {
 
   harmony.wallet.removeAccount(harmony.wallet.signer.address)
 
-  logOutPut(
-    'Account is removed, you dont find it in Wallet:',
-    harmony.wallet.accounts
-  )
+  logOutPut('wallet is cleaned up', harmony.wallet.accounts)
 }
-
-createAccount()
 
 async function importAccount() {
   // now this case is to demostrate how you can import account
@@ -142,17 +143,36 @@ async function importAccount() {
   const keyStore =
     '{"version":3,"id":"38313637-3337-4538-b462-376163353635","address":"de0405903558e82cbd8db5576fc9d4d33e45583b","Crypto":{"ciphertext":"d76606d818731e2900e31473e3742ea64a428846f5c2d8e321d3fdfc1b09e7ce","cipherparams":{"iv":"a498d8d9a14a626ef0f59cc3452d5d6c"},"cipher":"aes-128-ctr","kdf":"scrypt","kdfparams":{"salt":"9639bc67b40941f4e273690dc8e35278f82a172ec6ee30543f7d5db482ca8539","n":8192,"r":8,"p":1,"dklen":32},"mac":"57f1b2ec56e41fb610c6240d0a40b0b2f3c42c08dbcfc304c1788463413cc9c4"}}'
 
+  await harmony.wallet.addByKeyStore(keyStore, 'MyVeryStrongPassword')
+
+  logOutPut('keystore imported', harmony.wallet.signer)
+
+  harmony.wallet.removeAccount(harmony.wallet.signer.address)
+
   const phrase =
     'minute mean wheel loan fitness pear marriage sample analyst flame like wrong'
+
+  harmony.wallet.addByMnemonic(phrase)
+
+  logOutPut('phrase imported', harmony.wallet.signer)
+
+  harmony.wallet.removeAccount(harmony.wallet.signer.address)
+
+  logOutPut('wallet is cleaned up', harmony.wallet.accounts)
 }
 
-importAccount()
+async function main() {
+  await createAccount()
+  await importAccount()
+}
+
+main()
 
 function logOutPut(title, content) {
   console.log(
     '---------------------------------------------------------------------'
   )
-  console.log(`==> Log: ${title}`.green)
+  console.log(`==> Log: ${title}`)
   console.log(
     '---------------------------------------------------------------------'
   )
