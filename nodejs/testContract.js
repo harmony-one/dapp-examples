@@ -15,12 +15,15 @@ const { toUtf8String, toUtf8Bytes } = require('@harmony-js/contract')
 // we import `fs` and `solc` to complile the contract. you can do it in another js file
 // but we show it here anyway.
 const fs = require('fs')
+const path = require('path')
 const solc = require('solc')
 
 // consturct the input function, here the solidity file lives in `./contracts/`
 // we just type the file name as inpnut
-function constructInput(file) {
-  const content = fs.readFileSync(`./contracts/${file}`, { encoding: 'utf8' })
+function constructInput(path, file) {
+  const content = fs.readFileSync(`./contracts/${path}/${file}`, {
+    encoding: 'utf8'
+  })
   const input = {
     language: 'Solidity',
     sources: {},
@@ -38,10 +41,23 @@ function constructInput(file) {
 }
 
 // we try to comple this solidty file
-const fileName = 'MyContract.sol'
+const pathName = 'token/ERC20'
+const fileName = 'MyToken.sol'
+
+function findImport(importPath) {
+  const pathToJoin = path.resolve(`${process.cwd()}/contracts`, pathName)
+  const pathToImport = path.resolve(pathToJoin, importPath)
+  const contents = fs.readFileSync(pathToImport, {
+    encoding: 'utf8'
+  })
+
+  return { contents }
+}
 
 // now we get the output
-const output = JSON.parse(solc.compile(constructInput(fileName)))
+const output = JSON.parse(
+  solc.compile(constructInput(pathName, fileName), findImport)
+)
 
 let abi
 let bin
@@ -58,7 +74,7 @@ for (var contractName in output.contracts[fileName]) {
   }
 }
 
-// To test with different settings, here is some config.
+// // To test with different settings, here is some config.
 
 const Settings = {
   Ropsten: {
@@ -97,17 +113,12 @@ const mne =
 
 // now we have the mnes added to wallet
 const acc1 = harmony.wallet.addByMnemonic(mne, 0)
+const acc2 = harmony.wallet.addByMnemonic(mne, 1)
 
 // now we create contract using extracted abi
 const myContract = harmony.contracts.createContract(abi)
 
-// harmony.messenger.send(RPCMethod.BlockNumber, []).then(console.log);
-
-// harmony.messenger.subscribe(RPCMethod.Subscribe, ['newHeads']).then((res) => {
-//   res.onData((data) => {
-//     console.log(data);
-//   });
-// });
+// console.log(myContract.events)
 
 // first we get the account's balance to see if we have enough token on the testnet
 acc1.getBalance().then(res => {
@@ -118,7 +129,15 @@ acc1.getBalance().then(res => {
   console.log(``)
 })
 
-// a deploy contract function
+acc2.getBalance().then(res => {
+  console.log(`-- hint: account balance of ${acc1.address}`)
+  console.log(``)
+  console.log({ account: res })
+  console.log(``)
+  console.log(``)
+})
+
+// // a deploy contract function
 const deployContract = async () => {
   //`Contract.deploy().send()`
   const deployed = await myContract
@@ -199,24 +218,58 @@ deployContract().then(deployed => {
       console.log(`${res.result}`)
       console.log(``)
       console.log(``)
-      deployed.methods
-        .myFunction()
-        .call()
-        .then(result => {
-          console.log(`--hint: we got contract called, this is result`)
+    }
+  })
+  const deployedContract = harmony.contracts.createContract(
+    abi,
+    deployed.address
+  )
+
+  testContract.methods
+    .transfer(acc2.address, new harmony.utils.Unit('100000').asWei().toHex())
+    .send({ gasLimit: new harmony.utils.Unit('10000000').asWei().toWei() })
+    .on('transactionHash', transactionHash => {
+      console.log(`-- hint: we got Transaction Hash`)
+      console.log(``)
+      console.log(`${transactionHash}`)
+      console.log(``)
+      console.log(``)
+
+      harmony.blockchain
+        .getTransactionByHash({
+          txnHash: transactionHash
+        })
+        .then(res => {
+          console.log(`-- hint: we got transaction detail`)
           console.log(``)
-          console.log(result)
+          console.log(res)
           console.log(``)
           console.log(``)
         })
-    }
-  })
+    })
+    // when we get receipt, it will emmit
+    .on('receipt', receipt => {
+      console.log(`-- hint: we got transaction receipt`)
+      console.log(``)
+      console.log(receipt)
+      console.log(``)
+      console.log(``)
+    })
+    // the http and websocket provider will be poll result and try get confirmation from time to time.
+    // when `confirmation` comes in, it will be emitted
+    .on('confirmation', confirmation => {
+      console.log(`-- hint: the transaction is`)
+      console.log(``)
+      console.log(confirmation)
+      console.log(``)
+      console.log(``)
+    })
+    // if something wrong happens, the error will be emitted
+    .on('error', error => {
+      console.log(`-- hint: something wrong happens`)
+      console.log(``)
+      console.log(error)
+      console.log(``)
+      console.log(``)
+    })
 })
-
-// const newPendingTransactions = harmony.blockchain.newPendingTransactions();
-
-// newPendingTransactions.onData((res) => {
-//   console.log('------- new pending coming ---');
-//   console.log(res.params.result);
-//   console.log('----------');
-// });

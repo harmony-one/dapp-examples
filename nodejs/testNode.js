@@ -1,7 +1,7 @@
 const { Harmony } = require('@harmony-js/core')
 // const ganache = require('ganache-cli');
 
-var port = 9015
+var port = 9501
 
 const url = `http://localhost:${port}`
 // const url = `https://testnet-rpc.thundercore.com:8544`;
