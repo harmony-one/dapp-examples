@@ -72,7 +72,7 @@ async function main() {
       logOutPut('Sender balance', senderUpdated.result)
 
       const receiverUpdated = await harmony.blockchain.getBalance({
-        address: receiver.address
+        address: receiver
       })
       logOutPut('Receiver balance', receiverUpdated.result)
     }
