@@ -60,6 +60,7 @@ async function main() {
     logOutPut('Transaction Hash', hash)
 
     // from here on, we use hmy_getTransactionRecept and hmy_blockNumber Rpc api
+    // if backend side is not done yet, please delete them from here
 
     const confirmed = await Transaction.confirm(hash)
     logOutPut('Transaction Receipt', confirmed.receipt)
@@ -68,12 +69,12 @@ async function main() {
       const senderUpdated = await harmony.blockchain.getBalance({
         address: sender.address
       })
-      logOutPut('Sender balance', updated.result)
+      logOutPut('Sender balance', senderUpdated.result)
 
       const receiverUpdated = await harmony.blockchain.getBalance({
         address: receiver.address
       })
-      logOutPut('Receiver balance', updated.result)
+      logOutPut('Receiver balance', receiverUpdated.result)
     }
   } catch (error) {
     throw error
