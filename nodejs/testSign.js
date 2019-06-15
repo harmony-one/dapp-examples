@@ -7,7 +7,7 @@ const url = 'http://localhost:9500'
 
 // const harmony = new Harmony(url, ChainType.Ethereum, ChainID.Ropsten)
 
-const harmony = new Harmony(url, ChainType.Harmony)
+const harmony = new Harmony(url, { chainType: ChainType.Harmony })
 
 const testAccs = [
   '3c8642f7188e05acc4467d9e2aa7fd539e82aa90a5497257cf0ecbb98ed3b88f'
@@ -48,7 +48,7 @@ async function main() {
       gasPrice: new harmony.utils.Unit(txnObjects.gasPrice).asWei().toWei(),
       gasLimit: new harmony.utils.Unit(txnObjects.gasLimit).asWei().toWei(),
       shardID: txnObjects.shardID,
-      to: txnObjects.to,
+      to: harmony.crypto.getAddress(txnObjects.to).checksum,
       value: new harmony.utils.Unit(txnObjects.value).asWei().toWei(),
       data: txnObjects.data
     })

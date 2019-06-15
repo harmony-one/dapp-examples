@@ -27,9 +27,15 @@ console.log('-------------------------------------')
 
 console.log(ChainType)
 
-const harmony = new Harmony(wsUrl, ChainType.Ethereum, ChainID.Geth)
+const harmony = new Harmony(wsUrl, {
+  chainType: ChainType.Ethereum,
+  chainId: ChainID.Geth
+})
 
-const wsHarmony = new Harmony(wsUrl, ChainType.Ethereum, ChainID.Geth)
+const wsHarmony = new Harmony(wsUrl, {
+  chainType: ChainType.Ethereum,
+  chainId: ChainID.Geth
+})
 
 async function createAndEncrypt(words, index, password) {
   for (let i = 0; i < index; i++) {
@@ -91,7 +97,7 @@ async function main() {
   const sendTo = '0xccaed3f53bd0a55db215cc58182969e59d2242fe'
 
   const txn = harmony.transactions.newTx({
-    to: sendTo,
+    to: harmony.crypto.getAddress(sendTo).checksum,
     value: new harmony.utils.Unit('1234567').asWei().toWei(),
     gasLimit: new harmony.utils.Unit('21000').asWei().toWei(),
     gasPrice: new harmony.utils.Unit('100000000000').asWei().toWei()

@@ -99,7 +99,10 @@ const Settings = {
 
 // a function that will map the setting to harmony class constructor inputs
 function useSetting(setting, providerType) {
-  return [setting[providerType], setting.type, setting.id]
+  return [
+    setting[providerType],
+    { chainType: setting.type, chainId: setting.id }
+  ]
 }
 
 // simply change `Ropsten` to `Rinkeby` to test with different testnet
@@ -208,68 +211,68 @@ const deployContract = async () => {
 }
 
 // now we call our deploy contract function
-deployContract().then(deployed => {
-  // after the contract is deployed ,we can get contract information
-  // first we can get the contract Code
-  harmony.blockchain.getCode({ address: deployed.address }).then(res => {
-    if (res.result) {
-      console.log(`--hint: contract :${deployed.address}--`)
-      console.log(``)
-      console.log(`${res.result}`)
-      console.log(``)
-      console.log(``)
-    }
-  })
-  const deployedContract = harmony.contracts.createContract(
-    abi,
-    deployed.address
-  )
+// deployContract().then(deployed => {
+//   // after the contract is deployed ,we can get contract information
+//   // first we can get the contract Code
+//   harmony.blockchain.getCode({ address: deployed.address }).then(res => {
+//     if (res.result) {
+//       console.log(`--hint: contract :${deployed.address}--`)
+//       console.log(``)
+//       console.log(`${res.result}`)
+//       console.log(``)
+//       console.log(``)
+//     }
+//   })
+//   const deployedContract = harmony.contracts.createContract(
+//     abi,
+//     deployed.address
+//   )
 
-  testContract.methods
-    .transfer(acc2.address, new harmony.utils.Unit('100000').asWei().toHex())
-    .send({ gasLimit: new harmony.utils.Unit('10000000').asWei().toWei() })
-    .on('transactionHash', transactionHash => {
-      console.log(`-- hint: we got Transaction Hash`)
-      console.log(``)
-      console.log(`${transactionHash}`)
-      console.log(``)
-      console.log(``)
+//   testContract.methods
+//     .transfer(acc2.address, new harmony.utils.Unit('100000').asWei().toHex())
+//     .send({ gasLimit: new harmony.utils.Unit('10000000').asWei().toWei() })
+//     .on('transactionHash', transactionHash => {
+//       console.log(`-- hint: we got Transaction Hash`)
+//       console.log(``)
+//       console.log(`${transactionHash}`)
+//       console.log(``)
+//       console.log(``)
 
-      harmony.blockchain
-        .getTransactionByHash({
-          txnHash: transactionHash
-        })
-        .then(res => {
-          console.log(`-- hint: we got transaction detail`)
-          console.log(``)
-          console.log(res)
-          console.log(``)
-          console.log(``)
-        })
-    })
-    // when we get receipt, it will emmit
-    .on('receipt', receipt => {
-      console.log(`-- hint: we got transaction receipt`)
-      console.log(``)
-      console.log(receipt)
-      console.log(``)
-      console.log(``)
-    })
-    // the http and websocket provider will be poll result and try get confirmation from time to time.
-    // when `confirmation` comes in, it will be emitted
-    .on('confirmation', confirmation => {
-      console.log(`-- hint: the transaction is`)
-      console.log(``)
-      console.log(confirmation)
-      console.log(``)
-      console.log(``)
-    })
-    // if something wrong happens, the error will be emitted
-    .on('error', error => {
-      console.log(`-- hint: something wrong happens`)
-      console.log(``)
-      console.log(error)
-      console.log(``)
-      console.log(``)
-    })
-})
+//       harmony.blockchain
+//         .getTransactionByHash({
+//           txnHash: transactionHash
+//         })
+//         .then(res => {
+//           console.log(`-- hint: we got transaction detail`)
+//           console.log(``)
+//           console.log(res)
+//           console.log(``)
+//           console.log(``)
+//         })
+//     })
+//     // when we get receipt, it will emmit
+//     .on('receipt', receipt => {
+//       console.log(`-- hint: we got transaction receipt`)
+//       console.log(``)
+//       console.log(receipt)
+//       console.log(``)
+//       console.log(``)
+//     })
+//     // the http and websocket provider will be poll result and try get confirmation from time to time.
+//     // when `confirmation` comes in, it will be emitted
+//     .on('confirmation', confirmation => {
+//       console.log(`-- hint: the transaction is`)
+//       console.log(``)
+//       console.log(confirmation)
+//       console.log(``)
+//       console.log(``)
+//     })
+//     // if something wrong happens, the error will be emitted
+//     .on('error', error => {
+//       console.log(`-- hint: something wrong happens`)
+//       console.log(``)
+//       console.log(error)
+//       console.log(``)
+//       console.log(``)
+//     })
+// })
