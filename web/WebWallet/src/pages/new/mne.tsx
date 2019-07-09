@@ -1,62 +1,45 @@
 import React from 'react';
-import { Form, Input, Switch, Spin } from 'antd';
+import { Form, Input, Switch } from 'antd';
+import router from 'umi/router';
 import { FormComponentProps } from 'antd/lib/form';
 import { connect } from 'dva';
 import { createAction } from '../../utils';
-
 import styles from './index.css';
 
 interface PassFormProps extends FormComponentProps {
   confirmCreate: Function;
+  generateMnemonic: Function;
+  resetMnes: Function;
+  sendMnemonic: Function;
+  generateOnStart: string;
   mnes: string;
-  accounts: string[];
-  loading: any;
+  nextRoute: string;
 }
 
 const LabelComp = (props: any): JSX.Element => {
   return <span style={{ fontSize: '1.2rem', color: '#333333' }}>{props.labelText}</span>;
 };
 
-const FullScreenLoading = (props: { delay: number }) => {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        textAlign: 'center',
-        background: '#ffffff',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 0,
-        margin: 0,
-        opacity: 0.8,
-      }}
-    >
-      <Spin size="large" delay={props.delay} />
-    </div>
-  );
-};
-
 class MneConfirm extends React.Component<PassFormProps, any> {
   state = {
     confirmDirty: false,
     checked: false,
-    loading: this.props.loading,
   };
   handleSubmit = (e: any) => {
     e.preventDefault();
     if (this.state.checked) {
-      this.setState({
-        loading: true,
-      });
-      setTimeout(() => {
-        this.props.confirmCreate();
-      }, 100);
+      if (this.props.generateOnStart === 'false') {
+        this.props.form.validateFields((err: any, values: any) => {
+          if (!err) {
+            this.props.sendMnemonic({ mnes: values.mnes });
+            if (this.props.nextRoute) {
+              router.push(`${this.props.nextRoute}`);
+            }
+          }
+        });
+      }
+
+      router.push(`${this.props.nextRoute}`);
     }
   };
 
@@ -69,21 +52,16 @@ class MneConfirm extends React.Component<PassFormProps, any> {
     this.setState({ checked });
   };
 
-  static getDerivedStateFromProps(props: { loading: any }, state: { loading: any }) {
-    if (props.loading === false && state.loading === true) {
-      return {
-        ...state,
-        loading: true,
-      };
+  componentDidMount() {
+    if (this.props.generateOnStart === 'true') {
+      this.props.generateMnemonic();
+    } else {
+      this.props.resetMnes();
     }
-    return {
-      ...state,
-      loading: false,
-    };
   }
-
   render() {
     const { getFieldDecorator } = this.props.form;
+
     return (
       <div className={styles.container}>
         <Form wrapperCol={{ span: 24 }}>
@@ -92,7 +70,7 @@ class MneConfirm extends React.Component<PassFormProps, any> {
               <Input.TextArea
                 autosize={{ minRows: 4, maxRows: 6 }}
                 style={{ fontSize: '2rem', color: '#333333' }}
-                disabled={true}
+                disabled={this.props.generateOnStart === 'true'}
               />,
             )}
           </Form.Item>
@@ -116,7 +94,6 @@ class MneConfirm extends React.Component<PassFormProps, any> {
             </div>
           </Form.Item>
         </Form>
-        {this.state.loading ? <FullScreenLoading delay={0} /> : null}
       </div>
     );
   }
@@ -135,15 +112,15 @@ const WrappedMneForm = Form.create<PassFormProps>({
 
 function mapStateToProps(state: any) {
   return {
-    loading: state.loading.global,
-    accounts: state.global.harmony.wallet.accounts,
-    mnes: state.new.mnes,
+    mnes: state.create.mnes,
   };
 }
 
 function mapDispatchToProps(dispatch: any) {
   return {
-    confirmCreate: () => dispatch(createAction('new/confirmCreate')()),
+    generateMnemonic: () => dispatch(createAction('create/generateMnemonic')()),
+    resetMnes: () => dispatch(createAction('create/resetMnes')()),
+    sendMnemonic: (payload: any) => dispatch(createAction('create/sendMnemonic')(payload)),
   };
 }
 

@@ -1,0 +1,50 @@
+.container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: '100%';
+  width: '100%';
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 2rem;
+  margin: 0;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333333;
+}
+
+.headerText {
+  font-size: 1.6rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #333333;
+}
+
+.balanceText {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: #333333;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.balanceText .TokenName {
+  color: #666666;
+  font-size: 1.4rem;
+}
+
+.buttonWrap {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}

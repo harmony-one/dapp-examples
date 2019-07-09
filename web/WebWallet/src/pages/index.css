@@ -28,10 +28,22 @@
   text-align: center;
 }
 .button {
+  background: #333333;
+  color: #ffffff;
+  font-size: 1.4rem;
+  text-align: center;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.4rem;
+  margin-bottom: 0.8rem;
+  height: 4rem;
+}
+.buttonDisabled {
   background: #ffffff;
   color: #333333;
   font-size: 1.4rem;
   text-align: center;
   padding: 0.8rem 1.6rem;
   border-radius: 0.4rem;
+  margin-bottom: 0.8rem;
+  height: 4rem;
 }
