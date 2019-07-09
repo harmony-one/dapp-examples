@@ -22,7 +22,6 @@ class TransactionResult extends React.Component<ITransactionResult> {
       });
   }
   render() {
-    console.log({ emitter: this.props.emitter });
     return (
       <div>
         <div>result</div>
