@@ -4,7 +4,6 @@ import { Wallet } from '@harmony-js/account';
 import { Transaction, TxStatus } from '@harmony-js/transaction';
 import { createAction } from '../../../utils';
 import { getAddress } from '@harmony-js/crypto';
-import { updateExpression } from '@babel/types';
 
 export default {
   namespace: 'send',

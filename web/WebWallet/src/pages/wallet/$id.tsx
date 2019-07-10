@@ -1,9 +1,9 @@
 import React from 'react';
-import { connect } from 'dva';
-import { Spin, Button } from 'antd';
-import router from 'umi/router';
+import { Spin, Button, Popover } from 'antd';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import { Unit } from '@harmony-js/utils';
-import { createAction } from '@/utils';
+
+import { createAction, connect, router } from '@/utils';
 import styles from './index.css';
 
 interface IAccount {
@@ -13,7 +13,13 @@ interface IAccount {
   loading: boolean;
   getBalance: Function;
 }
+
+const PopContent = <span>Address Copied</span>;
+
 class Account extends React.Component<IAccount> {
+  state = {
+    popVisible: false,
+  };
   displayAddress(address: string) {
     const dot = `...`;
     const start = address.substring(0, 8);
@@ -29,13 +35,35 @@ class Account extends React.Component<IAccount> {
   toSend(from: string) {
     router.push(`/send?from=${from}`);
   }
+  onCopyClick = () => {
+    this.setState({
+      popVisible: true,
+    });
+  };
+  handleVisibleChange = (visible: boolean) => {
+    this.setState({
+      popVisible: visible,
+    });
+  };
   componentDidMount() {
     this.props.getBalance({ address: this.props.address });
   }
+
   render() {
     return (
       <div className={styles.container}>
-        <div className={styles.headerText}>{this.displayAddress(this.props.address)}</div>
+        <div className={styles.headerText} style={{ cursor: 'pointer' }}>
+          <Popover
+            placement="right"
+            content={PopContent}
+            visible={this.state.popVisible}
+            onVisibleChange={this.handleVisibleChange}
+          >
+            <CopyToClipboard text={this.props.address} onCopy={this.onCopyClick}>
+              <span>{this.displayAddress(this.props.address)}</span>
+            </CopyToClipboard>
+          </Popover>
+        </div>
         <div className={styles.balanceText}>
           {this.props.loading ? <Spin /> : this.displayBalance(this.props.balance)}
           <div className={styles.TokenName}>ETH</div>

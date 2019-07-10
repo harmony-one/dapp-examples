@@ -1,2 +1,4 @@
 node_modules
 yarn.lock
+tutorial/build/
+tutorial/contracts/**/*.json
