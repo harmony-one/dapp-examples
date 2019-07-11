@@ -149,8 +149,8 @@ if (process.argv0 !== undefined) {
 
   const file = argv.file
   const compileTo = argv.compileTo || argv.file.replace('.sol', '.json')
-  const gasLimit = `${argv.gasLimit}` || '210000'
-  const gasPrice = `${argv.gasPrice}` || '100'
+  const gasLimit = argv.gasLimit ? `${argv.gasLimit}` : '210000'
+  const gasPrice = argv.gasPrice ? `${argv.gasPrice}` : '100'
   const nonce = argv.nonce
 
   deploy(file, gasLimit, gasPrice, nonce, compileTo).then(result => {
