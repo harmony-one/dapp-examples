@@ -1,20 +1,24 @@
 # Table of Content <!-- omit in toc -->
 1. [What is it](#What-is-it)
-2. [Get `Harmony` ready](#Get-Harmony-ready)
+2. [Very Quick start](#Very-Quick-start)
+   1. [Build tutorial scripts](#Build-tutorial-scripts)
+   2. [Deploy example contract](#Deploy-example-contract)
+   3. [Call example contract function](#Call-example-contract-function)
+3. [Get `Harmony` ready](#Get-Harmony-ready)
    1. [About the SDK](#About-the-SDK)
    2. [Install `@harmony-js/core`](#Install-harmony-jscore)
    3. [Import { Harmony } from '@harmony-js/core`](#Import--Harmony--from-harmony-jscore)
    4. [Import phrases to Wallet](#Import-phrases-to-Wallet)
    5. [Put it all together](#Put-it-all-together)
-3. [Compiling Job](#Compiling-Job)
+4. [Compiling Job](#Compiling-Job)
    1. [Compile with `solcjs` or `truffle.js` (Skippable)](#Compile-with-solcjs-or-trufflejs-Skippable)
    2. [Import `fs` `path` and `solc` first](#Import-fs-path-and-solc-first)
    3. [Locate FileName and get path(s)](#Locate-FileName-and-get-paths)
    4. [Get `solc` to work](#Get-solc-to-work)
    5. [Export the main compiling function](#Export-the-main-compiling-function)
-4. [Construct Deploy](#Construct-Deploy)
-5. [Contract Call](#Contract-Call)
-6. [Address to address transaction](#Address-to-address-transaction)
+5. [Construct Deploy](#Construct-Deploy)
+6. [Contract Call](#Contract-Call)
+7. [Address to address transaction](#Address-to-address-transaction)
 
 
 # What is it
@@ -33,6 +37,77 @@ After you clone this repo, please install all dependencies first.
 ```bash
 yarn install && cd tutorial
 ```
+# Very Quick start
+
+If you want to test how to deploy a contract, and see if it works, you can do it right now.
+
+**Note: the tutorial use Ethereum's Testnet and for demostration only, do not use any of these code to production and Mainnet directly.**
+
+## Build tutorial scripts
+The scripts are written in `es6/7`, standard node enviorment would not be able to run, first enter the repo root, then run
+
+```bash
+yarn build:tutorial && cd tutorial/build
+```
+
+## Deploy example contract
+
+Use default `node` command to deploy, 
+* `-f` to sepecify the location of `.sol` file(relative path to the `build` folder),
+* `-l` speicify the `gasLimit` in wei, 
+* `-p` specify the `gasPrice` in Gwei
+
+```bash
+node deploy.js -f=../contracts/example/MyContract.sol -l=210000 -p=100
+```
+
+After a few minutes (about 3-4 mins, depends on Ropsten's speed ), you can see a `.json` file is located in the `tutorial/contracts/example/`, named with `MyContract-0xxxxxx-.json`, open it and you can see a json like:
+
+```json
+
+{
+  "contractCode": "0x...",
+  "contractAddress": "0xe996cD26A3b77dD733cBec92dd61169307ca848a",
+  "timeStamp": "2019-07-11T08:32:35.247Z"
+}
+```
+Now **copy** the `contractAddress`'s value. We use it for calling.
+
+Also you can find another `.json` file name `MyContract.json` with no `-0x....`, which complier generate.
+
+We will also use it later.
+
+In this example, the contract is deployed to `0xe996cD26A3b77dD733cBec92dd61169307ca848a`, you can see it in 
+
+[https://ropsten.etherscan.io/address/0xe996cD26A3b77dD733cBec92dd61169307ca848a](https://ropsten.etherscan.io/address/0xe996cD26A3b77dD733cBec92dd61169307ca848a)
+
+
+## Call example contract function
+
+**Go to `bulid` folder** in your console, no need to type in `-f` options, use space to split the parameters, like this:
+
+```
+node call.js  <complier-output.json>  <contractAddress>
+```
+
+In this case, that will be:
+
+```bash
+node call.js ../contracts/example/MyContract.json 0xe996cD26A3b77dD733cBec92dd61169307ca848a
+```
+
+You should be able to see output in your console:
+
+```bash
+{ '0': '23456',
+  '1': 'Hello!%',
+  myNumber: '23456',
+  myString: 'Hello!%' }
+```
+
+Now you have complete the quick start.If you are interesting how it works, and how to use `Harmony`'s sdk, please reference with following content.
+
+
 # Get `Harmony` ready
 ## About the SDK
 
