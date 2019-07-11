@@ -7,9 +7,10 @@
       3. [Get `solc` to work](#Get-solc-to-work)
       4. [Export the main compiling function](#Export-the-main-compiling-function)
    2. [Get `Harmony` ready](#Get-Harmony-ready)
-      1. [Prepare the `Provider` url](#Prepare-the-Provider-url)
-      2. [Get your Mnemonic phrase](#Get-your-Mnemonic-phrase)
-      3. [All Ready](#All-Ready)
+      1. [Install `@harmony-js/core`](#Install-harmony-jscore)
+      2. [Import { Harmony } from '@harmony-js/core`](#Import--Harmony--from-harmony-jscore)
+      3. [Import phrases to Wallet](#Import-phrases-to-Wallet)
+      4. [Put it all together](#Put-it-all-together)
    3. [Construct a new Contract instance and setup transaction object](#Construct-a-new-Contract-instance-and-setup-transaction-object)
    4. [Deploy and remember to save the contract address](#Deploy-and-remember-to-save-the-contract-address)
 3. [Contract call steps](#Contract-call-steps)
@@ -223,12 +224,148 @@ We use `Harmony` as our main instance, if you dont want to make every low level 
 In this tutorial, we have a file that initializing `Harmony` instance, please do locate it here `tutorial/src/harmony.js`.
 
 We will explain it in the following section.
-### Prepare the `Provider` url
-** Writing **
-### Get your Mnemonic phrase
-** Writing **
-### All Ready
-** Writing **
+
+### Install `@harmony-js/core`
+
+If you have already install it from repo root,  if you haven't, just run:
+
+```bash
+yarn add @harmony-js/core@next
+```
+The sdk is contantly update, we add the `@next` tag to npm. You can upgrade the sdk easily with following command:
+
+```bash
+yarn upgrade @harmony-js/core@next
+```
+
+### Import { Harmony } from '@harmony-js/core`
+Now go to `tutorial/src/harmony.js`
+First import `@harmony-js/core` and `@harmony-js/utils`
+
+```javascript
+import { Harmony } from '@harmony-js/core'
+import { ChainType, ChainID } from '@harmony-js/utils'
+```
+The Harmony is a class, if you use `typescript` you can reference all types easily:
+
+```typescript
+// to initializing Harmony instance
+new Harmony(url: string, config: HarmonyConfig)
+
+interface HarmonyConfig {
+  chainUrl: string;
+  chainType: ChainType;
+  chainId: ChainID;
+}
+
+const enum ChainType {
+  Harmony = 'hmy',
+  Ethereum = 'eth',
+}
+
+const enum ChainID {
+  Default = 0,
+  EthMainnet = 1,
+  Morden = 2,
+  Ropsten = 3,
+  Rinkeby = 4,
+  RootstockMainnet = 30,
+  RootstockTestnet = 31,
+  Kovan = 42,
+  EtcMainnet = 61,
+  EtcTestnet = 62,
+  Geth = 1337,
+}
+```
+If you are not using `typescript`, don't worry, it's easy, like this way:
+
+```javascript
+const harmony =
+
+ new Harmony(
+     'https://localhost:9500',
+     // the url indicate the rpc service enabled
+     // either `hmy` testnet or running locally,
+     // or you can use Ethereum's service like Infura provides
+        { 
+         chainId:0, 
+         // default is 0, please reference with ChainID
+         chainType:'hmy' 
+         // default is `hmy`, 
+         // simply change it to `eth` to test with `Ethereum` 
+        }
+    )
+```
+
+Now you can access all `Harmony` instance provides, including all neccesary functionalities like `Wallet`, `Transactions`,`Contract` and `Blockchain`, all funcionalities will be documented in `Harmony-sdk-core` ( we are busy developing and testing, so docs will be done in a few weeks ).
+
+### Import phrases to Wallet
+After you had `Harmony` instance ready, you are able to add your `privateKey` to your `Wallet`. In this example, we use standard `12-words-mnemonics` and `index` according to `BIP39` and `BIP44` , which are widely used in Blockchain and Crypto community.
+
+You can see these phrases and index number are your privateKey(s), whenever they are imported to `Wallet`, your privateKey(s) are recovered. So save them safely, and don't let anybody knows. 
+
+To add phrase to Wallet, simply do this:
+
+```javascript
+// standard phrases
+const phrases = 'food response winner warfare indicate visual hundred toilet jealous okay relief tornado'
+
+// default index = 0, each index will specify different privateKey
+const index = 0
+
+// use `harmony.wallet.addByMnemonic` to get your account ready to your wallet
+const myAccount = harmony.wallet.addByMnemonic(phrases, index)
+
+```
+
+In this tutorial, please **MAKE SURE** your private key have some balance. You can use `tutorial/phrase.txt` as your testing account, which has some token in `Ropsten of Ethereum`. Or you can edit the file using your own.
+
+**Note: If we have faucet in Harmony's testNet, the process will go easier** 
+
+For those who have privateKey(which is hex string with 66 length), you can use privateKey directly, like this
+
+```javascript
+
+// use your private key or load it from local file
+const privateKey = '0x........'
+
+// use `Harmony.wallet.addByPrivateKey(key:string)`
+// to import your key and get the Account instance
+const myAccount = harmony.wallet.addByPrivateKey(privateKey)
+```
+
+
+
+### Put it all together
+Now in `tutorial/src/harmony.js`, we import `phrases.txt` as `utf8` string to be our mnemonic phrases, and we use a `setting.json` to save our setting for `url`,`ChainID`, and `ChainType`.
+
+So we import `fs` as local file loader to load these settings.  The entire script looks like this:
+
+```javascript
+import fs from 'fs'
+import { Harmony } from '@harmony-js/core'
+import { ChainType, ChainID } from '@harmony-js/utils'
+
+// loading setting from local json file
+const setting = JSON.parse(fs.readFileSync('../setting.json'))
+
+// initializing Harmony instance
+export const harmony = new Harmony(setting.url, {
+  chainType: setting.chainType,
+  chainId: setting.chainId
+})
+
+// loading Mne phrases from file
+const phrases = fs.readFileSync('../phrase.txt', { encoding: 'utf8' })
+// we use default index = 0
+const index = 0
+
+// add the phrase and index to Wallet, we get the account, 
+// and we export it for further usage
+export const myAccount = harmony.wallet.addByMnemonic(phrases, index)
+
+```
+
 ## Construct a new Contract instance and setup transaction object
 ** Writing **
 ## Deploy and remember to save the contract address
