@@ -16,9 +16,11 @@
    3. [Locate FileName and get path(s)](#Locate-FileName-and-get-paths)
    4. [Get `solc` to work](#Get-solc-to-work)
    5. [Export the main compiling function](#Export-the-main-compiling-function)
-5. [Construct Deploy](#Construct-Deploy)
-6. [Contract Call](#Contract-Call)
-7. [Address to address transaction](#Address-to-address-transaction)
+5. [Contract Deployment](#Contract-Deployment)
+   1. [Create contract instance and set params](#Create-contract-instance-and-set-params)
+6. [Deploy and listening Transaction events](#Deploy-and-listening-Transaction-events)
+7. [Contract Call](#Contract-Call)
+8. [Address to address transaction](#Address-to-address-transaction)
 
 
 # What is it
@@ -105,7 +107,7 @@ You should be able to see output in your console:
   myString: 'Hello!%' }
 ```
 
-Now you have complete the quick start.If you are interesting how it works, and how to use `Harmony`'s sdk, please reference with following content.
+Now you have complete the quick start.If you are interested how it works, and how to use `Harmony`'s sdk, please reference with following content.
 
 
 # Get `Harmony` ready
@@ -440,10 +442,178 @@ export function compileContract(
 ```
 
 
+# Contract Deployment
+ In Blockchain, `Contract` is running as binary. In the previous section, we talk about compiling process and we had generate the `abi` and `bin` with json using `solc`, and also you can use `truffle` to do the same job.
+
+ Next we send the binary code to the Blockchain, just like a `Transaction`. In the meantime, the SDK provides `Contract` instance to simplify the process.
+
+ In this tutorial, we use `tutorial/src/deploy.js` to demostrate how the process is done.
+
+ ## Get abi and bin from compiler
+
+ If you had read previous section, you will notice that the 
+ `compileContract` function will return a JS Object,like
+
+ ```javascript
+ {
+     bin,
+     abi,
+     jsonLocation
+ }
+
+ ```
+ So you can get them using:
+
+ ```javascript
+
+ import {compileContract} from './compile'
+
+ // Relative path of '.sol' file
+
+ const file = 'contract file'
+
+// Relative path of `compiled-output.json` to save
+// By default in `compileContract` it has the same name with the contract name
+// e.g `MyContract.sol` will be compiled to `MyContract.json`
+
+ const compileTo = '...'
+
+ const { abi, bin } = compileContract(file, compileTo)
+
+ // the abi and bin will be the result you want
+
+ ```
+
+## Create contract instance and set params
+
+**Note: Because we are using SDK, all the inside-job are done by interally, here we only demostrate how Contract is created and parameters are set**
+
+In SDK, we can use `Harmony.contracts.createContract` to create a contract instance, using `abi` as input. Since we had get our `Harmony` instance ready from previous section. we can import it here.
+
+```javascript
+import { harmony, myAccount } from './harmony'
+
+//...
+
+const myContract = harmony.contracts.createContract(abi)
+
+```
+After the `Contract` is created by `Factory Method - Harmony.contracts`, the `abi` is shipped in, and you should be able to deploy and call.
 
 
-# Construct Deploy
- ** Writing **
+Now you have to specify the `Transacation` object. The `Transaction` is a class that defined in SDK, to initializing a `Transaction`, some parameters have to set as input.
+
+
+You can reference the `typescript` definition, which is as follow:
+
+```typescript
+
+interface TxParams {
+  id: string;
+  from: string;
+  to: string;
+  nonce: number | string;
+  gasLimit: BN;
+  gasPrice: BN;
+  shardID: number | string;
+  toShardID: number | string;
+  data: string;
+  value: BN;
+  chainId: number;
+  txnHash: string;
+  unsignedTxnHash: string;
+  signature: Signature;
+  receipt?: TransasctionReceipt;
+}
+```
+
+But we don't need that much input, all the `TxParams` will be set a default value to `Transaction`. We just need some of them, like `gasLimit` and `gasPrice` in this example.
+
+Remember, `gasLimit` and `gasPrice` in SDK, we defined it as `BN` interally, to that, the big number input won't break our function.
+
+Also we use `Unit` as our conversion tool to simplify the process. You can see `gasPrice` here is defined `asGwei()` means you input `100` Gwei(string) and use `toWei()` later, the result will be `100000000000` in wei (BN)
+
+```javascript
+const txnObj = {
+    // gasLimit defines the max value that blockchain will consume
+
+    // here we show that you can use Unit as calculator
+    // because we use BN as our save integer as default input
+    // use Unit converter is much safer
+    gasLimit: new harmony.utils.Unit(gasLimit).asWei().toWei(),
+
+    // gasPrice defines how many weis should be consumed each gas
+    // you can use `new BN(string)` directly,
+    // if you are sure about the amount is calculated in `wei`
+    gasPrice: new harmony.utils.Unit(gasPrice).asGwei().toWei()
+  }
+```
+
+What about `bin`? it is also needed, but in the `Contract.deploy` , now comes the follow step
+
+# Deploy and listening Transaction events
+
+This step will deploy the Contract to blockchain, and in the meantime, you can see `Transaction` events throughout the process.
+
+We had already create a contract , and defined the `Transaction` object. Now we use `Contract.deploy()` to make it work. 
+
+`deploy` function accepts `data` and `arguments`
+
+- The `data` is the `bin` you get previously, remember, it has to be compiled and with `0x` prefix.
+- The `arguments` is defined by contract you want to deploy, normally we don't need to specify here, but for complex Contract, you should input here. In this example, we don't do that.
+
+
+
+```typescript
+
+Contract.deploy( { data:string, arguments:any[] } )
+
+```
+
+Then you remember to use `.send(TxParams)` to input the Transaction parameters.
+
+So it will work like this
+
+```javascript
+Contract.deploy({data:`0x${bin}`,arguments:[]}).send(txObj)
+```
+
+
+Remember, It's a **async** function, and before the `Promise` returns, it works like a `EventEmitter`. Only after the contract is deployed or rejected, the `Prmoise<Contract>` will be returned.
+
+
+It works like this way.
+
+```javascript
+
+    Contract
+    .deploy({
+      data: `0x${bin}`,
+      arguments: []
+    })
+    .send(txnObj)
+    // from this on, we got the Emitter
+    .on('transactionHash', transactionHash => {
+        // do with transactionHash
+    })
+    .on('receipt', receipt => {
+        // do with receipt
+    })
+    .on('confirmation', confirmation => {
+        // do with confirmation
+    })
+    .on('error', error => {
+        // do with error
+    })
+    .then(DeployedContract=>{
+        // Now the Prmoise<Contract> is Returned
+    })
+
+
+```
+
+
+
 
 # Contract Call
 
