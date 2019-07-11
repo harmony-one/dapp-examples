@@ -1,6 +1,6 @@
 # Table of Content <!-- omit in toc -->
 1. [What is it](#What-is-it)
-2. [Very Quick start](#Very-Quick-start)
+2. [Very Quick Start](#Very-Quick-Start)
    1. [Build tutorial scripts](#Build-tutorial-scripts)
    2. [Deploy example contract](#Deploy-example-contract)
    3. [Call example contract function](#Call-example-contract-function)
@@ -37,7 +37,7 @@ After you clone this repo, please install all dependencies first.
 ```bash
 yarn install && cd tutorial
 ```
-# Very Quick start
+# Very Quick Start
 
 If you want to test how to deploy a contract, and see if it works, you can do it right now.
 
@@ -87,7 +87,7 @@ In this example, the contract is deployed to `0xe996cD26A3b77dD733cBec92dd611693
 **Go to `bulid` folder** in your console, no need to type in `-f` options, use space to split the parameters, like this:
 
 ```
-node call.js  <complier-output.json>  <contractAddress>
+node call.js  <compiler-output.json>  <contractAddress>
 ```
 
 In this case, that will be:
