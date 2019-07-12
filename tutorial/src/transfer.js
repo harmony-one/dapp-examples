@@ -93,8 +93,8 @@ export async function transfer(
       return {
         beforeBalance: beforeBalance.balance,
         afterBalance: afterBalance.balance,
-        transferFrom: sentTxn.from,
-        transferTo: sentTxn.to,
+        transferFrom: harmony.crypto.getAddress(sentTxn.from).bech32,
+        transferTo: harmony.crypto.getAddress(sentTxn.to).bech32,
         transactionID: sentTxn.id,
         transactionFee: transactionFee.toString(),
         actualCost: actualCost.toString(),
@@ -139,7 +139,17 @@ if (process.argv0 !== undefined) {
       console.log('---- Transaction Summary ----')
       console.log('')
       console.log(`Transfer  From   : ${result.transferFrom}`)
+      console.log(
+        `       (CheckSum): ${
+          harmony.crypto.getAddress(result.transferFrom).checksum
+        }`
+      )
       console.log(`Transfer  To     : ${result.transferTo}`)
+      console.log(
+        `       (CheckSum): ${
+          harmony.crypto.getAddress(result.transferTo).checksum
+        }`
+      )
       console.log('')
       console.log('---- Balance Before Sent ----')
       console.log('')
