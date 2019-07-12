@@ -127,7 +127,7 @@ Use default `node` command to deploy,
 * `-t` to sepecify receipiant's address, either base16(checksum) or bech32 with `one1` prefix,
 * `-a` to speicify transfer value in wei,
 * `-l` speicify the `gasLimit` in wei, 210000 by default
-* `-p` specify the `gasPrice` in Gwei, 1 by default
+* `-p` specify the `gasPrice` in Gwei, 100 by default
 * `-n` speicify the `nonce` if you want to override the pending transaction or handle it mannually. 
 
 ```bash
