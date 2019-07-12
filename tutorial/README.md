@@ -4,6 +4,7 @@
    1. [Build tutorial scripts](#Build-tutorial-scripts)
    2. [Deploy example contract](#Deploy-example-contract)
    3. [Call example contract function](#Call-example-contract-function)
+   4. [Alice to Bob transfer](#Alice-to-Bob-transfer)
 3. [Get `Harmony` ready](#Get-Harmony-ready)
    1. [About the SDK](#About-the-SDK)
    2. [Install `@harmony-js/core`](#Install-harmony-jscore)
@@ -114,6 +115,58 @@ You should be able to see output in your console:
 ```
 
 Now you have complete the quick start.If you are interested how it works, and how to use `Harmony`'s sdk, please reference with following content.
+
+## Alice to Bob transfer
+
+Transfer token from one to another
+
+**Note: We use demo account of Ropsten**
+
+
+Use default `node` command to deploy, 
+* `-t` to sepecify receipiant's address, either base16(checksum) or bech32 with `one1` prefix,
+* `-a` to speicify transfer value in wei,
+* `-l` speicify the `gasLimit` in wei, 210000 by default
+* `-p` specify the `gasPrice` in Gwei, 1 by default
+* `-n` speicify the `nonce` if you want to override the pending transaction or handle it mannually. 
+
+```bash
+## go to build folder
+cd tutorial/build 
+## make the transfer
+node transfer.js --to=0xf2a08313fc79a01adbc5e700b063ed83ed07b446 -a=1234567 
+```
+After 1-2 minutes, depending on the finalty.
+
+You should be able to see output like this
+
+```bash
+---- Transaction Summary ----
+
+Transfer  From   : one1d7ey2z8xx8h5turmg3u5ucmntxucq9ltd5f0n3
+       (CheckSum): 0x6Fb24508e631Ef45f07B44794e637359b98017EB
+Transfer  To     : one172sgxylu0xsp4k79uuqtqclds0ks0dzxqqfdlm
+       (CheckSum): 0xF2A08313FC79A01AdbC5E700B063ed83Ed07B446
+
+---- Balance Before Sent ----
+
+Balance before   : 519635891059992965 wei
+
+---- Balance Deduction ----
+
+Transfer Amount  : 1234567 wei
+Transaction Fee  : 2100000000000000 wei
+Sub Total        : 2100000001234567 wei
+
+---- Balance After Sent ----
+
+Balance after    : 517535891058758398 wei
+
+For detail, you can refer to: 
+https://ropsten.etherscan.io/tx/0xf2e1475d3d0b1132a257268d6af35af0a2ebe0b6ff36c113538624c2f03a8c86
+```
+
+
 
 
 # Get `Harmony` ready
