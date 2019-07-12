@@ -18,9 +18,11 @@
    5. [Export the main compiling function](#Export-the-main-compiling-function)
 5. [Contract Deployment](#Contract-Deployment)
    1. [Create contract instance and set params](#Create-contract-instance-and-set-params)
-6. [Deploy and listening Transaction events](#Deploy-and-listening-Transaction-events)
-7. [Contract Call](#Contract-Call)
-8. [Address to address transaction](#Address-to-address-transaction)
+   2. [Deploy and listening Transaction events](#Deploy-and-listening-Transaction-events)
+6. [Contract Call](#Contract-Call)
+   1. [Pick a method](#Pick-a-method)
+   2. [Make the call](#Make-the-call)
+7. [Address to address transaction](#Address-to-address-transaction)
 
 
 # What is it
@@ -551,7 +553,7 @@ const txnObj = {
 
 What about `bin`? it is also needed, but in the `Contract.deploy` , now comes the follow step
 
-# Deploy and listening Transaction events
+## Deploy and listening Transaction events
 
 This step will deploy the Contract to blockchain, and in the meantime, you can see `Transaction` events throughout the process.
 
@@ -578,13 +580,22 @@ So it will work like this
 Contract.deploy({data:`0x${bin}`,arguments:[]}).send(txObj)
 ```
 
+Here are what happen in detail:
+
+- `bin` and `arguments` will be combined by automatically and internally
+- `TxParams` is used to consturct a `Transaction`
+- After that, the `Account` that added to `Harmony.Wallet` as `Signer` is used to sign the `Transaction` into bytecode, which works internally.
+- When the `Transaction` is signed, it will be send to blockchain via `RPC Method` through the `url` we set for `Harmony` instance. Which is also done interally.
+
 
 Remember, It's a **async** function, and before the `Promise` returns, it works like a `EventEmitter`. Only after the contract is deployed or rejected, the `Prmoise<Contract>` will be returned.
 
 
 It works like this way.
 
-```javascript
+```typescript
+
+
 
     Contract
     .deploy({
@@ -592,7 +603,8 @@ It works like this way.
       arguments: []
     })
     .send(txnObj)
-    // from this on, we got the Emitter
+    // from this on, we got the `Emitter`, it works like `EventEmitter`
+    // use `.on(e:TransactionEvents,callback)` to execute 
     .on('transactionHash', transactionHash => {
         // do with transactionHash
     })
@@ -605,21 +617,172 @@ It works like this way.
     .on('error', error => {
         // do with error
     })
-    .then(DeployedContract=>{
+    // after then, the async result will be Returned
+    .then( DeployedContract => {
         // Now the Prmoise<Contract> is Returned
     })
+
+    // The TransactionEvents defines what events will be returned
+    // by Emitter
+
+    enum TransactionEvents {
+        transactionHash = 'transactionHash',
+        error = 'error',
+        confirmation = 'confirmation',
+        receipt = 'receipt',
+    }
 
 
 ```
 
+In `tutorial/src/deploy.js`, we also have other functions made, for example `checkMyAccount`, in case our `Account` doesn't have enough token to deploy contracts or make transactions. It simply do `Account.getBalance` job and return boolean, you can write your own.
 
+
+After the `Contract` is deployed, we may get the `Contract` code(bytes) on blockchain, we can use query method to do that. Use `Contract.address` as input, and use `Harmony.blockchain.getCode` to get the code.
+
+```javascript
+
+    // ...async function
+
+    // `deployed` is deployed Contract
+    // `Contract.address` will be its contract address
+    const contractAddress = deployed.address
+    // and get the contract byte code that deployed to blockchain
+    const contractCode = await harmony.blockchain.getCode({
+      address: deployed.address
+    })
+
+    // and we may wanna return it them as result
+
+    return  {
+        contractCode,
+        contractAddress,
+    }
+
+
+```
+
+Finally, we can save all the deployed information needed for the next step. Simply save it as `.json` file, and use its address as file name. In this case, it's `MyContract-0xxxxxxx-.json`
+
+```typescript
+
+    const { contractCode, contractAddress } = result
+
+    fs.writeFileSync(
+      path.resolve(file.replace('.sol', `-${contractAddress}.json`)),
+      JSON.stringify({
+        contractCode,
+        contractAddress,
+        timeStamp: new Date().toJSON()
+      })
+    )
+
+```
+Sure you can save them to database or return them for other functions to use, but for demostration only, we do it this way.
+
+Now If you had deploy contract successfully, you will be able to see a new `.json` file appear in the `contracts/example` folder.
+
+We will need these information to call the contract method later.
 
 
 # Contract Call
 
-** Writing **
+Contract deployed to blockchain is a binary lives in the network. You can see it as `App` that lives in your computer or smartphone. If someone call the function or make some transaction to the address, it may alter the contract's state or make it running.
+
+There are 2 types of interaction to the smart contract
+
+- State-Altering
+- Non-State-Altering
+
+`State-Altering` means if you call the method of the contract code/function, it will execute and change the state, such as balance state, or something related to blockchain data. It will consume some gas, affect caller's balance and others.
+
+`Non-State-Altering` means if you call the method of the contract code/function, it would not change the state of the blockchain data. You can see it as static return ,like `hello world`. These function would not affect the blockchain but simply return the result. It will not consume gas, would not affect caller's balance or anyone else.
+
+Both types of functions are defined by SmartContract itself(by developer). So you had better read the contract code, before you make the method calls.
+
+In this tutorial, we simply use a `Non-State-Altering` method call to the simple Contract we deployed.
+
+## Pick a method
+
+Just for recap, here is the code of `MyContract`
+
+```solidity
+pragma solidity ^0.5.1;
+
+
+contract MyContract {
+    function myFunction() public returns(uint256 myNumber, string memory myString) {
+        return (23456, "Hello!%");
+    }
+}
+
+```
+
+This contract has a single method call `myFunction`, if we make a method call, it will return static result which is `23456` and `Hello!%`. It would not affect the balance or anyone else's balance or blockchain data.
+
+Do you remember how we initial the `Contract` instance? We use `harmony.contracts.createContract(abi)` to create a contract instance. The `abi` here is basically the function name and parameters types and events extracted by `solc` compiler.
+
+It's been injected inside the `Contract` instance. All methods extracted by compiler are placed at `Contract.methods`, and events are placed at `Contract.events`.
+
+In javascript, we can simply call a method use `Contract.methods.MethodName` to do the job. For this `MyContract` example, we will do it like:
+
+```javascript
+ // see myFunction is defined by `MyContract.sol`
+ // which have no parameters to input
+ Contract.methods.myFunction()
+```
+
+## Make the call
+
+Previously, we had:
+
+- abi and bin(saved to json file)
+- deployed contract address(saved to json file)
+- picked a method and know its signature(No parameters of `myFunction`)
+
+Now we are able to make the contract call.
+
+Before that, we'd better use another `Contract` instance, to prevent that call result affect our original one. This we pass the `abi` and the `contractAddress`, tell the instance that we had a depoyed contract with the `abi` and address.
+
+
+```javascript
+  const deployedContract = harmony.contracts.createContract(
+    abi,
+    contractAddress
+  )
+```
+
+Then we can make the call, use `.call()` after the `myFunction()`, to tell the sdk to call the method to the blockchain. This process is `async`, so we use `async/await` or `Prmoise.then` to get the result. 
+
+```javascript
+ const reuslt=await deployedContract.methods.myFunction().call()
+```
+
+The whole method call looks like this:
+
+```javascript
+async function callContract(abi, contractAddress) {
+  const deployedContract = harmony.contracts.createContract(
+    abi,
+    contractAddress
+  )
+  const callResult = await deployedContract.methods.myFunction().call()
+  return callResult
+}
+
+```
+
+For the final part, if we had `callResult`, we just log it out to console or return it to other functions. Here we just simply do the `console.log`
+
+Now if you had call the `MyContract.methods.myFunction`, it will display the result like this:
+
+```bash
+{ '0': '23456',
+  '1': 'Hello!%',
+  myNumber: '23456',
+  myString: 'Hello!%' }
+```
 
 # Address to address transaction
 ** Writing **
 
-<TBD>
