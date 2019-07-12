@@ -138,7 +138,7 @@ node transfer.js --to=0xf2a08313fc79a01adbc5e700b063ed83ed07b446 -a=1234567
 ```
 After 1-2 minutes, depending on the finalty.
 
-You should be able to see output like this
+You should be able to see output looks like this
 
 ```bash
 ---- Transaction Summary ----
