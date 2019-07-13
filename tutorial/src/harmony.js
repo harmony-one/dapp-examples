@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { Harmony } from '@harmony-js/core'
-import { ChainType, ChainID } from '@harmony-js/utils'
+import { ChainType, ChainID, isPrivateKey } from '@harmony-js/utils'
 
 // loading setting
 const setting = JSON.parse(fs.readFileSync('../setting.json'))
@@ -16,6 +16,12 @@ const phrases = fs.readFileSync('../phrase.txt', { encoding: 'utf8' })
 // we use default index = 0
 const index = 0
 
+let accountImported
+if (isPrivateKey(phrases)) {
+  accountImported = harmony.wallet.addByPrivateKey(phrases)
+} else {
+  accountImported = harmony.wallet.addByMnemonic(phrases, index)
+}
 // add the phrase and index to Wallet, we get the account,
 // and we export it for further usage
-export const myAccount = harmony.wallet.addByMnemonic(phrases, index)
+export const myAccount = accountImported

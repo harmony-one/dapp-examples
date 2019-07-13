@@ -856,11 +856,238 @@ We can construct a `Transaction` using SDK, and use `Account` to sign then send 
 This tutorial demostrate a simple transaction process in `tutorial/src/transfer.js`
 
 ## Construct a `Transaction`
-** writing **
+Every `Transaction` needs some parameters to initialize, in the SDK, `Transaction` is also a class.
+
+It should be initialize with `TxParams`,`Messenger`,`TxStatus`. It's signature looks like this:
+
+```typescript
+
+Transaction(params:TxParams, messenger: Messenger, txStatus:TxStatus)
+```
+
+However, when it comes to real developement, we don't want to do that everytime. Since SDK has factory class to do the job, called `TransactionFactory`, which can be access when `Harmony` instance is initialized.
+
+We simply use `Harmony.transactions` to create `Transaction`, which you only need to input some of the `TxParams`.
+
+You can reference `TxParams` below:
+
+```typescript
+
+interface TxParams {
+  id: string;
+  from: string;
+  to: string;
+  nonce: number | string;
+  gasLimit: BN;
+  gasPrice: BN;
+  shardID: number | string;
+  toShardID: number | string;
+  data: string;
+  value: BN;
+  chainId: number;
+  txnHash: string;
+  unsignedTxnHash: string;
+  signature: Signature;
+  receipt?: TransasctionReceipt;
+}
+```
+Normally for `address-to-address` transaction , we only need `to`,`gasLimit`,`gasPrice`,`value` to finish the job.
+
+So the code looks like this:
+
+```javascript
+
+harmony.transactions.newTx({
+  to:...,
+  gasLimit:...,
+  gasPrice:...,
+  value:...,
+})
+
+```
+**Please Remember**, `gasLimit`,`gasPrice`,and `value`,is defined as `BN`, because "The Number.MAX_SAFE_INTEGER constant represents the maximum safe integer in JavaScript (253 - 1)". To that, we need to input `BN` to those parameters.
+
+And for `Ethereum` and `Harmony` blockchain, they also have the idea of `unit` , such as `wei`,`gwei`,`ether`,`gether`,.etc. The `gasLimit`,`gasPrice` and `value` have to converted to `wei`.
+
+We don't want to calculate by hand. So in SDK, we also have a tool called `Unit`. We can use it to convert the value easily.
+
+See the usage below:
+
+```javascript
+
+// suppose we have 100 Ether to input
+const value = '100'
+
+const valueBN = new harmony.utils.Unit(value).asEther().toWei()
+// now valueBN is typeof `BN`, and it's value is converted to `wei`
+
+```
+
+Now here is how it goes:
+
+```javascript
+
+// suppose we have 100 Ether to input
+const txn= harmony.transactions.newTx({
+  to:'address to input',
+  gasLimit: new harmony.utils.Unit('210').asKwei().toWei(),
+  gasPrice: new harmony.utils.Unit('100').asGwei().toWei(),
+  value: new harmony.utils.Unit('1').asEther().toWei(),
+})
+
+```
+
+Now about the `Address`, both `Ethereum` and `Harmony` blockchain define `Address` to be format of `base16` internally, and it's checksumed. It looks like this:
+
+```javascript
+  0x9504DACe66266ed0C341D048566C01537ac318f5
+```
+
+However, it's not easy for user to understand these format and hard to read and tell the difference between different blockchain.
+
+So in `Harmony`, we use `bech32` format and `one1` prefix to define the `Address`. In SDK, we also have a tool to convert those format back and forward.
+
+```javascript
+const base16Checksum='0x9504DACe66266ed0C341D048566C01537ac318f5'
+
+const bech32Address= harmony.crypto.getAddress(base16Checksum).bech32
+
+// bech32Address is 'one1j5zd4nnxyehdps6p6py9vmqp2davxx84qwvkj8'
+
+const bech32ToChecksum=harmony.crypto.getAddress(bech32Address).checksum
+
+console.log( base16Checksum === bech32ToChecksum )
+
+// true
+
+```
+
+In SDK, when you construct a Transaction, only `checksum` or `bech32` format is allowed, to prevent user input address incorrectly.
+
+Enough said, we just create a `Transaction` right away.
+
+```javascript
+
+const txn= harmony.transactions.newTx({
+  to:'one1j5zd4nnxyehdps6p6py9vmqp2davxx84qwvkj8',
+  gasLimit: new harmony.utils.Unit('210').asKwei().toWei(),
+  gasPrice: new harmony.utils.Unit('100').asGwei().toWei(),
+  value: new harmony.utils.Unit('1').asEther().toWei(),
+})
+
+```
+
 ## Sign with `Account`
-** writing **
+
+Every transaction is needed a `Account` to Signed.
+
+Remember how we add phrase to `Wallet`, that `Account` imported will be the `Signer` to do the signing job.
+
+Because many user use different `Account` to transfer token, but rarely use `Account` to deploy contract. So in SDK, we require `Transaction` is signed everytime. The process is like this way:
+
+```javascript
+const signedTxn = await Account.signTransaction(Transaction, ...options)
+```
+
+**Please noted**, the signing process is an `async` function, because in reality, to prevent `double spend attack`, we need to request `AccountState` from blockchain, and get `nonce` of it. After the correct `nonce` is fetched and signed with the bytecode, and the `Transaction` will not be rejected by blockchain. However if the `Transaction` is in `Pending` state, you can override the transaction passing the `Pending` nonce to it.
+
+We sign the transaction we constructed previously, and we use the signed one later.
+
+```javascript
+import {myAccount} from '../harmony'
+
+//....
+
+const signed= await myAccount.signTransaction(txn)
+
+```
+You have sign the `Transaction`, that you can see if it is signed using `Transaction.isSigned()`, and you can see `Transaction.signature` if it is displayed as a long hex string with `0x` to it.
+
+```javascript
+
+  const isSigned = signed.isSigned()
+
+  // true
+
+  console.log(isSigned.signature)
+
+  // `0x${long hex string}`
+
+```
+Now you get your `Transaction` signed, ready for sending.
+
 ## Send it to blockchain
-** writing **
+
+There a few ways to send a transaction to blockchain. If you are familiar with `Ethereum`, you can use `eth_sendTransaction` or `eth_sendRawTransaction` to do the job. Also in `Web3.js`, you can use `web3.eth.send()` to do that.
+
+In the SDK, we can do it by `Harmony.blockchain.sendTransaction()` similar to `web3.eth.send()`, or by `Transaction.sendTransaction()` to simplify the process.
+
+Also, if you like to listen to `events`, you can use `harmony.blockchain.createObservedTransaction()` to do it. Because the transaction may or may not be accepted by blockchain, we may want to listen to `events` throughout the process to identify if something goes wrong , without waiting the finalty of blockchain.
+
+In this tutorial, we use `createObserverdTransaction` to do the job.
+
+If you had read [Deploy and listening Transaction events](#Deploy-and-listening-Transaction-events), you can find it same with here.
+
+One function will finished the sending job, but you may wanna know the `event` listener works. And you can do other executions in the `callback`.
+
+```javascript
+
+const sentTxn = await harmony.blockchain
+      .createObservedTransaction(signed)
+      .on('transactionHash', transactionHash => {
+        console.log(`-- hint: we got Transaction Hash`)
+        console.log(``)
+        console.log(`${transactionHash}`)
+        console.log(``)
+        console.log(``)
+
+        harmony.blockchain
+          .getTransactionByHash({
+            txnHash: transactionHash
+          })
+          .then(res => {
+            console.log(`-- hint: we got transaction detail`)
+            console.log(``)
+            console.log(res)
+            console.log(``)
+            console.log(``)
+          })
+      })
+      // when we get receipt, it will emmit
+      .on('receipt', receipt => {
+        console.log(`-- hint: we got transaction receipt`)
+        console.log(``)
+        console.log(receipt)
+        console.log(``)
+        console.log(``)
+      })
+      // the http and websocket provider will be poll result and try get confirmation from time to time.
+      // when `confirmation` comes in, it will be emitted
+      .on('confirmation', confirmation => {
+        console.log(`-- hint: the transaction is`)
+        console.log(``)
+        console.log(confirmation)
+        console.log(``)
+        console.log(``)
+      })
+      // if something wrong happens, the error will be emitted
+      .on('error', error => {
+        console.log(`-- hint: something wrong happens`)
+        console.log(``)
+        console.log(error)
+        console.log(``)
+        console.log(``)
+      })
+
+```
+
 ## Confirm the result
-** writing **
+
+After sending, you will get a `transactionHash` instantly, which is calculated by the `nonce` and `publicKey` of your account. It's like a `id` that you can request to blockchain to see if the `Transaction` is accepted or rejected.
+
+So that `id` doesn't mean that the transaction is successful. Only you get the `transaction receipt` is the confirmed result. Like the way you buy a coke from 7-eleven, the guy from counter will give you a receipt after he receive your money.
+
+
+
+
 
