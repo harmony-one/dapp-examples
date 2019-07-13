@@ -27,50 +27,37 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
     // you can use `new BN(string)` directly,
     // if you are sure about the amount is calculated in `wei`
     gasPrice: new harmony.utils.Unit(gasPrice).asGwei().toWei()
+    // nonce: nonce !== undefined ? nonce : beforeBalance.nonce
   }
 
-  if (nonce) {
-    // we mannually set nonce only when if we want to override transaction when it is still pending.
-    txnObj.nonce = nonce
-  }
+  const deployed = await contract
+    .deploy({
+      // the data key puts in the bin file with `0x` prefix, because `solc` compiler would add `0x` to it
+      data: `0x${bin}`,
+      // we don't have any initial arguments to put in of this contract, so we leave blank
+      arguments: []
+    })
 
-  const methodWithData = await contract.deploy({
-    // the data key puts in the bin file with `0x` prefix, because `solc` compiler would add `0x` to it
-    data: `0x${bin}`,
-    // we don't have any initial arguments to put in of this contract, so we leave blank
-    arguments: []
-  })
-
-  methodWithData.transaction.data
-
-  txnObj.data = methodWithData.transaction.data
-  txnObj.to = '0x'
-
-  const txn = harmony.transactions.newTx(txnObj)
-
-  const signed = await myAccount.signTransaction(txn, true)
-
-  const contractAddress = TransactionFactory.getContractAddress(signed)
-  const sentTxn = await harmony.blockchain
-    .createObservedTransaction(signed)
+    .send(txnObj)
+    // we use event emitter to listen the result when event happen
+    // here comes in the `transactionHash`
     .on('transactionHash', transactionHash => {
       console.log(`-- hint: we got Transaction Hash`)
       console.log(``)
       console.log(`${transactionHash}`)
       console.log(``)
       console.log(``)
-
       harmony.blockchain
-        .getTransactionByHash({
-          txnHash: transactionHash
-        })
-        .then(res => {
-          console.log(`-- hint: we got transaction detail`)
-          console.log(``)
-          console.log(res)
-          console.log(``)
-          console.log(``)
-        })
+            .getTransactionByHash({
+              txnHash: transactionHash
+            })
+            .then(res => {
+              console.log(`-- hint: we got transaction detail`)
+              console.log(``)
+              console.log(res.result)
+              console.log(``)
+              console.log(``)
+            }),
     })
     // when we get receipt, it will emmit
     .on('receipt', receipt => {
@@ -99,7 +86,7 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
     })
 
   const sameTransaction2 = await harmony.blockchain.getTransactionByHash({
-    txnHash: sentTxn.id
+    txnHash: deployed.transaction.id
   })
 
   console.log(`-- hint: get Transaction By hash again`)
@@ -109,7 +96,9 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
   console.log(``)
   const txResult = sameTransaction2.result
   const valueBN = harmony.utils.hexToBN(txResult.value)
-  const gasBN = harmony.utils.hexToBN(sentTxn.receipt.cumulativeGasUsed)
+  const gasBN = harmony.utils.hexToBN(
+    deployed.transaction.receipt.cumulativeGasUsed
+  )
   const gasPriceBN = harmony.utils.hexToBN(txResult.gasPrice)
   const transactionFee = new harmony.utils.Unit(gasBN.mul(gasPriceBN))
     .asWei()
@@ -120,12 +109,12 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
   const afterBalance = await myAccount.getBalance()
 
   return {
-    contractAddress,
+    contractAddress: deployed.address,
     beforeBalance: beforeBalance.balance,
     afterBalance: afterBalance.balance,
-    transferFrom: harmony.crypto.getAddress(sentTxn.from).bech32,
+    transferFrom: harmony.crypto.getAddress(myAccount.address).bech32,
     transferTo: '0x',
-    transactionID: sentTxn.id,
+    transactionID: deployed.transaction.id,
     transactionFee: transactionFee.toString(),
     actualCost: actualCost.toString(),
     gas: harmony.utils.hexToNumber(txResult.gas),
@@ -133,62 +122,6 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
     value: valueBN.toString(),
     comment: 'actualCost= gas * gasPrice + value'
   }
-
-  // const deployed = await contract
-  //   .deploy({
-  //     // the data key puts in the bin file with `0x` prefix, because `solc` compiler would add `0x` to it
-  //     data: `0x${bin}`,
-  //     // we don't have any initial arguments to put in of this contract, so we leave blank
-  //     arguments: []
-  //   })
-
-  //   .send(txnObj)
-  //   // we use event emitter to listen the result when event happen
-  //   // here comes in the `transactionHash`
-  //   .on('transactionHash', transactionHash => {
-  //     console.log(`-- hint: we got Transaction Hash`)
-  //     console.log(``)
-  //     console.log(`${transactionHash}`)
-  //     console.log(``)
-  //     console.log(``)
-
-  //     harmony.blockchain
-  //       .getTransactionByHash({
-  //         txnHash: transactionHash
-  //       })
-  //       .then(res => {
-  //         console.log(`-- hint: we got transaction detail`)
-  //         console.log(``)
-  //         console.log(res)
-  //         console.log(``)
-  //         console.log(``)
-  //       })
-  //   })
-  //   // when we get receipt, it will emmit
-  //   .on('receipt', receipt => {
-  //     console.log(`-- hint: we got transaction receipt`)
-  //     console.log(``)
-  //     console.log(receipt)
-  //     console.log(``)
-  //     console.log(``)
-  //   })
-  //   // the http and websocket provider will be poll result and try get confirmation from time to time.
-  //   // when `confirmation` comes in, it will be emitted
-  //   .on('confirmation', confirmation => {
-  //     console.log(`-- hint: the transaction is`)
-  //     console.log(``)
-  //     console.log(confirmation)
-  //     console.log(``)
-  //     console.log(``)
-  //   })
-  //   // if something wrong happens, the error will be emitted
-  //   .on('error', error => {
-  //     console.log(`-- hint: something wrong happens`)
-  //     console.log(``)
-  //     console.log(error)
-  //     console.log(``)
-  //     console.log(``)
-  //   })
 }
 
 export async function deploy(file, gasLimit, gasPrice, nonce, compileTo) {
