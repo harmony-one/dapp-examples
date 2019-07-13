@@ -71,38 +71,41 @@ export async function transfer(
         console.log(``)
       })
 
-    if (sentTxn.isConfirmed) {
-      const sameTransaction2 = await harmony.blockchain.getTransactionByHash({
-        txnHash: sentTxn.id
-      })
+    const sameTransaction2 = await harmony.blockchain.getTransactionByHash({
+      txnHash: sentTxn.id
+    })
 
-      const txResult = sameTransaction2.result
-      const valueBN = harmony.utils.hexToBN(txResult.value)
-      const gasBN = harmony.utils.hexToBN(sentTxn.receipt.cumulativeGasUsed)
-      const gasPriceBN = harmony.utils.hexToBN(txResult.gasPrice)
-      const transactionFee = new harmony.utils.Unit(gasBN.mul(gasPriceBN))
-        .asWei()
-        .toWei()
-      const actualCost = new harmony.utils.Unit(
-        gasBN.mul(gasPriceBN).add(valueBN)
-      )
-        .asWei()
-        .toWei()
-      const afterBalance = await myAccount.getBalance()
+    console.log(`-- hint: get Transaction By hash again`)
+    console.log(``)
+    console.log(sameTransaction2.result)
+    console.log(``)
+    console.log(``)
+    const txResult = sameTransaction2.result
+    const valueBN = harmony.utils.hexToBN(txResult.value)
+    const gasBN = harmony.utils.hexToBN(sentTxn.receipt.cumulativeGasUsed)
+    const gasPriceBN = harmony.utils.hexToBN(txResult.gasPrice)
+    const transactionFee = new harmony.utils.Unit(gasBN.mul(gasPriceBN))
+      .asWei()
+      .toWei()
+    const actualCost = new harmony.utils.Unit(
+      gasBN.mul(gasPriceBN).add(valueBN)
+    )
+      .asWei()
+      .toWei()
+    const afterBalance = await myAccount.getBalance()
 
-      return {
-        beforeBalance: beforeBalance.balance,
-        afterBalance: afterBalance.balance,
-        transferFrom: harmony.crypto.getAddress(sentTxn.from).bech32,
-        transferTo: harmony.crypto.getAddress(sentTxn.to).bech32,
-        transactionID: sentTxn.id,
-        transactionFee: transactionFee.toString(),
-        actualCost: actualCost.toString(),
-        gas: harmony.utils.hexToNumber(txResult.gas),
-        gasPrice: gasPriceBN.toString(),
-        value: valueBN.toString(),
-        comment: 'actualCost= gas * gasPrice + value'
-      }
+    return {
+      beforeBalance: beforeBalance.balance,
+      afterBalance: afterBalance.balance,
+      transferFrom: harmony.crypto.getAddress(sentTxn.from).bech32,
+      transferTo: harmony.crypto.getAddress(sentTxn.to).bech32,
+      transactionID: sentTxn.id,
+      transactionFee: transactionFee.toString(),
+      actualCost: actualCost.toString(),
+      gas: harmony.utils.hexToNumber(txResult.gas),
+      gasPrice: gasPriceBN.toString(),
+      value: valueBN.toString(),
+      comment: 'actualCost= gas * gasPrice + value'
     }
   } catch (error) {
     throw error

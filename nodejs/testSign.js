@@ -26,9 +26,9 @@ const txnObjects = {
   gasPrice: '0',
   gasLimit: '21000',
   shardID: 0,
-  toShardID: 0,
+  // toShardID: 0,
   to: receiver,
-  value: '1000000000000000000',
+  value: '10000000000000123',
   data: '0x'
 }
 
@@ -58,29 +58,41 @@ async function main() {
       gasPrice: new harmony.utils.Unit(txnObjects.gasPrice).asWei().toWei(),
       gasLimit: new harmony.utils.Unit(txnObjects.gasLimit).asWei().toWei(),
       shardID: txnObjects.shardID,
-      toShardID: txnObjects.toShardID,
+      // toShardID: txnObjects.toShardID,
       to: harmony.crypto.getAddress(txnObjects.to).checksum,
       value: new harmony.utils.Unit(txnObjects.value).asWei().toWei(),
       data: txnObjects.data
     })
-    const signed = await sender.signTransaction(tx)
+    const signed = await sender.signTransaction(tx, true)
     logOutPut('Signed Transation', signed.txParams)
     const [Transaction, hash] = await signed.sendTransaction()
     logOutPut('Transaction Hash', hash)
 
+    const beforeReciptCheck = await harmony.blockchain.getTransactionByHash({
+      txnHash: hash
+    })
+
+    logOutPut('Transaction Before Receipt Check', beforeReciptCheck.result)
     // from here on, we use hmy_getTransactionRecept and hmy_blockNumber Rpc api
     // if backend side is not done yet, please delete them from here
-    // const confirmed = await Transaction.confirm(hash)
-    // logOutPut('Transaction Receipt', confirmed.receipt)
+    const confirmed = await Transaction.confirm(hash)
+    logOutPut('Transaction Receipt', confirmed.receipt)
+
+    const afterReciptCheck = await harmony.blockchain.getTransactionByHash({
+      txnHash: hash
+    })
+
+    logOutPut('Transaction After Receipt Check', afterReciptCheck.result)
     // if (confirmed.isConfirmed()) {
-    //   const senderUpdated = await harmony.blockchain.getBalance({
-    //     address: sender.address
-    //   })
-    //   logOutPut('Sender balance', senderUpdated.result)
-    //   const receiverUpdated = await harmony.blockchain.getBalance({
-    //     address: receiver
-    //   })
-    //   logOutPut('Receiver balance', receiverUpdated.result)
+    const senderUpdated = await harmony.blockchain.getBalance({
+      address: sender.address
+    })
+    logOutPut('Sender balance', senderUpdated.result)
+    const receiverUpdated = await harmony.blockchain.getBalance({
+      address: receiver
+    })
+    logOutPut('Receiver balance', receiverUpdated.result)
+    process.exit()
     // }
   } catch (error) {
     throw error

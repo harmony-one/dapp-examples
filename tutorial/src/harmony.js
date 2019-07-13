@@ -18,7 +18,8 @@ const index = 0
 
 let accountImported
 if (isPrivateKey(phrases)) {
-  accountImported = harmony.wallet.addByPrivateKey(phrases)
+  let key = phrases.trim()
+  accountImported = harmony.wallet.addByPrivateKey(key)
 } else {
   accountImported = harmony.wallet.addByMnemonic(phrases, index)
 }

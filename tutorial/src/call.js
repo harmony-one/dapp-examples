@@ -1,12 +1,16 @@
 import fs from 'fs'
 import { harmony } from './harmony'
+import { BN } from '@harmony-js/crypto'
 
 export async function callContract(abi, contractAddress) {
   const deployedContract = harmony.contracts.createContract(
     abi,
     contractAddress
   )
-  const callResult = await deployedContract.methods.myFunction().call()
+
+  const callResult = await deployedContract.methods
+    .myFunction()
+    .call({ gasLimit: new BN('210000'), gasPrice: new BN('10000000000') })
   return callResult
 }
 
