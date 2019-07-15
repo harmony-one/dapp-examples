@@ -71,6 +71,7 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
   })
 
   logOutput(`Got Transaction By hash again`, sameTransaction2.result)
+
   const txResult = sameTransaction2.result
   const valueBN = harmony.utils.hexToBN(txResult.value)
   const gasBN = harmony.utils.hexToBN(
