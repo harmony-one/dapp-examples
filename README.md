@@ -6,6 +6,37 @@
 yarn install
 ```
 
+# Tutorial
+
+1. [What is it](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#What-is-it)
+2. [Very Quick Start](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Very-Quick-Start)
+   1. [Build tutorial scripts](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Build-tutorial-scripts)
+   2. [Deploy example contract](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Deploy-example-contract)
+   3. [Call example contract function](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Call-example-contract-function)
+   4. [Alice to Bob transfer](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Alice-to-Bob-transfer)
+3. [Get `Harmony` ready](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Get-Harmony-ready)
+   1. [About the SDK](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#About-the-SDK)
+   2. [Install `@harmony-js/core`](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Install-harmony-jscore)
+   3. [Import { Harmony } from '@harmony-js/core`](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Import--Harmony--from-harmony-jscore)
+   4. [Import phrases to Wallet](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Import-phrases-to-Wallet)
+   5. [Put it all together](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Put-it-all-together)
+4. [Compiling Job](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Compiling-Job)
+   1. [Compile with `solcjs` or `truffle.js` (Skippable)](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Compile-with-solcjs-or-trufflejs-Skippable)
+   2. [Import `fs` `path` and `solc` first](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Import-fs-path-and-solc-first)
+   3. [Locate FileName and get path(s)](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Locate-FileName-and-get-paths)
+   4. [Get `solc` to work](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Get-solc-to-work)
+   5. [Export the main compiling function](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Export-the-main-compiling-function)
+5. [Contract Deployment](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Contract-Deployment)
+   1. [Create contract instance and set params](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Create-contract-instance-and-set-params)
+   2. [Deploy and listening Transaction events](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Deploy-and-listening-Transaction-events)
+6. [Contract Call](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Contract-Call)
+   1. [Pick a method](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Pick-a-method)
+   2. [Make the call](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Make-the-call)
+7. [Address to address transaction](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Address-to-address-transaction)
+   1. [Construct a `Transaction`](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Construct-a-Transaction)
+   2. [Sign with `Account`](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Sign-with-Account)
+   3. [Send it to blockchain](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Send-it-to-blockchain)
+   4. [Confirm the result](https://github.com/FireStack-Lab/harmony-sdk-examples/tree/master/tutorial#Confirm-the-result)
 
 # Test local wallet
 
@@ -16,31 +47,7 @@ yarn install
 
 # Test with Harmony node
 
-First you have to run harmony's test node.
-
-1. git clone
-   
-    ``` bash
-    git clone git@github.com:harmony-one/harmony.git
-    ```
-
-2. follow the `Build all executables` instruction, [here](https://github.com/harmony-one/harmony/tree/master)
-3. open your editor, inside `core/resharding.go` , edit `GenesisShardSize = 50` to `GenesisShardSize = 5`
-4. use this script to run
-   
-   ```bash
-   ./test/deploy.sh ./test/configs/ten-oneshard.txt
-   ```
-
-Wait for the test-node running for 30 seconds,
-
-Then **open another console** , go back to our `nodejs` folder, 
-
-Run:
-
-``` bash
-node testNode.js
-```
+Currently unavailible
 
 
 # Test with `ganache-cli`
