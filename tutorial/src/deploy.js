@@ -4,6 +4,7 @@ import yargs from 'yargs'
 import { TransactionFactory } from '@harmony-js/transaction'
 import { harmony, myAccount } from './harmony'
 import { compileContract } from './compile'
+import { logOutput } from './util'
 
 export async function checkMyAccount(account) {
   const result = await account.getBalance()
@@ -42,58 +43,34 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
     // we use event emitter to listen the result when event happen
     // here comes in the `transactionHash`
     .on('transactionHash', transactionHash => {
-      console.log(`-- hint: we got Transaction Hash`)
-      console.log(``)
-      console.log(`${transactionHash}`)
-      console.log(``)
-      console.log(``)
+      logOutput('We got Transaction Hash', transactionHash)
       harmony.blockchain
-            .getTransactionByHash({
-              txnHash: transactionHash
-            })
-            .then(res => {
-              console.log(`-- hint: we got transaction detail`)
-              console.log(``)
-              console.log(res.result)
-              console.log(``)
-              console.log(``)
-            }),
+        .getTransactionByHash({
+          txnHash: transactionHash
+        })
+        .then(res => {
+          logOutput('We got transaction detail', res.result)
+        })
     })
     // when we get receipt, it will emmit
     .on('receipt', receipt => {
-      console.log(`-- hint: we got transaction receipt`)
-      console.log(``)
-      console.log(receipt)
-      console.log(``)
-      console.log(``)
+      logOutput('We got transaction receipt', receipt)
     })
     // the http and websocket provider will be poll result and try get confirmation from time to time.
     // when `confirmation` comes in, it will be emitted
     .on('confirmation', confirmation => {
-      console.log(`-- hint: the transaction is`)
-      console.log(``)
-      console.log(confirmation)
-      console.log(``)
-      console.log(``)
+      logOutput(`The transaction is`, confirmation)
     })
     // if something wrong happens, the error will be emitted
     .on('error', error => {
-      console.log(`-- hint: something wrong happens`)
-      console.log(``)
-      console.log(error)
-      console.log(``)
-      console.log(``)
+      logOutput(`Something wrong happens`, error)
     })
 
   const sameTransaction2 = await harmony.blockchain.getTransactionByHash({
     txnHash: deployed.transaction.id
   })
 
-  console.log(`-- hint: get Transaction By hash again`)
-  console.log(``)
-  console.log(sameTransaction2.result)
-  console.log(``)
-  console.log(``)
+  logOutput(`Got Transaction By hash again`, sameTransaction2.result)
   const txResult = sameTransaction2.result
   const valueBN = harmony.utils.hexToBN(txResult.value)
   const gasBN = harmony.utils.hexToBN(
