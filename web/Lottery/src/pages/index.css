@@ -1,0 +1,28 @@
+.normal {
+  font-family: Georgia, sans-serif;
+  margin-top: 4em;
+  text-align: center;
+  background: darkslateblue;
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  color: #e4e710;
+  font-size: 1.6em;
+}
+
+.link {
+  display: block;
+  margin-top: 2.6em;
+  color: #ffffff;
+  font-size: 1.2em;
+  margin-bottom: 2.6em;
+}
+.buttonWrapper {
+  max-width: 20em;
+  min-width: 18em;
+}

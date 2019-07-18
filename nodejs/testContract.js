@@ -90,7 +90,7 @@ const Settings = {
     http: 'https://rinkeby.infura.io/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
     ws: 'wss://rinkeby.infura.io/ws/v3/4f3be7f5bbe644b7a8d95c151c8f52ec',
     type: ChainType.Ethereum,
-    id: ChainID.Ropsten
+    id: ChainID.Rinkeby
   },
   Ganache: {
     http: 'http://localhost:18545',
@@ -120,7 +120,6 @@ const mne =
 // now we have the mnes added to wallet
 const myAccount = harmony.wallet.addByMnemonic(mne, 0)
 
-
 // now we create contract using extracted abi
 const myContract = harmony.contracts.createContract(abi)
 
@@ -134,8 +133,6 @@ myAccount.getBalance().then(res => {
   console.log(``)
   console.log(``)
 })
-
-
 
 // // a deploy contract function
 const deployContract = async () => {

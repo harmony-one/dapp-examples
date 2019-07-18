@@ -1,5 +1,5 @@
 {
-  "url": "http://localhost:9500",
-  "chainType": "hmy",
-  "chainId": 0
+  "url": "wss://ropsten.infura.io/ws/v3/4f3be7f5bbe644b7a8d95c151c8f52ec",
+  "chainType": "eth",
+  "chainId": 3
 }

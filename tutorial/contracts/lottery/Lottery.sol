@@ -5,6 +5,8 @@ contract Lottery {
     string internal constant INSUFFICIENT_FUND_MESSAGE = "Insufficient Fund";
     string internal constant RESTRICTED_MESSAGE = "Unauthorized Access";
 
+    // uint256 internal constant MIN_DEPOSIT= .1 ether
+
     address public manager;  // The adress of the owner of this contract
     address payable[] public players;  // The players of current session
 

@@ -28,6 +28,7 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
     // you can use `new BN(string)` directly,
     // if you are sure about the amount is calculated in `wei`
     gasPrice: new harmony.utils.Unit(gasPrice).asGwei().toWei()
+    // value: new harmony.utils.Unit(0.5).asEther().toWei()
     // nonce: nonce !== undefined ? nonce : beforeBalance.nonce
   }
 

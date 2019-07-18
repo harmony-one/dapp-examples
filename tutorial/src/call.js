@@ -9,8 +9,12 @@ export async function callContract(abi, contractAddress) {
   )
 
   const callResult = await deployedContract.methods
-    .myFunction()
-    .call({ gasLimit: new BN('210000'), gasPrice: new BN('10000000000') })
+    .inputFunction(666666, 'neeboo')
+    .call({
+      gasLimit: new BN('210000'),
+      gasPrice: new BN('10000000000')
+      // value: new harmony.utils.Unit('0.2').asEther().toWei()
+    })
   return callResult
 }
 
