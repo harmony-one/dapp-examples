@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, Modal, Input } from 'antd';
-import { connect, createAction } from '../utils/index';
+import { connect, createAction } from '../../utils/index';
 import styles from './index.css';
 
-class Index extends React.Component {
+class Owner extends React.Component {
   state = {
     ModalText: 'Content of the modal',
     visible: false,
@@ -28,7 +28,6 @@ class Index extends React.Component {
       this.setState({
         visible: false,
         confirmLoading: false,
-        inputValue: '',
       });
       this.props.getContractState();
     }, 2000);
@@ -45,6 +44,10 @@ class Index extends React.Component {
     this.setState({ inputValue: e.target.value });
   };
 
+  componentDidMount() {
+    this.props.getPlayers();
+  }
+
   displayAddress(address) {
     const dot = `...`;
     const start = address.substring(0, 8);
@@ -54,6 +57,8 @@ class Index extends React.Component {
 
   render() {
     const contractAddress = this.props.contractAddress;
+    const players = this.props.players;
+
     // const contractBalance = this.props.contractBalance;
 
     const { visible, confirmLoading } = this.state;
@@ -93,6 +98,7 @@ class Index extends React.Component {
             <div style={{ fontSize: '1.2em', color: '#ffffff' }}>{this.props.players.length}</div>
           </li>
         </ul>
+        <div className={styles.title}>You are the owner</div>
         <div className={styles.buttonWrapper}>
           <Button
             size="large"
@@ -101,7 +107,19 @@ class Index extends React.Component {
             style={{ height: '2.8em', fontSize: '1.6em' }}
             onClick={this.showModal}
           >
-            Login
+            Deposit
+          </Button>
+        </div>
+        <div className={styles.buttonWrapper}>
+          <Button
+            size="large"
+            type="danger"
+            block
+            style={{ height: '2.8em', fontSize: '1.6em', marginTop: '1.2em' }}
+            onClick={this.showModal}
+            disabled={players.length === 0}
+          >
+            Pick Winner
           </Button>
         </div>
         <Modal
@@ -127,7 +145,6 @@ function mapState(state) {
     players: state.contract.players,
     account: state.account.account,
     manager: state.account.manager,
-    isOwner: state.account.isOwner,
     error: state.account.error,
   };
 }
@@ -143,4 +160,4 @@ function mapDispatch(dispatch) {
 export default connect(
   mapState,
   mapDispatch,
-)(Index);
+)(Owner);

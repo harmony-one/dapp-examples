@@ -1,5 +1,7 @@
+import { isAddress } from '@harmony-js/utils';
+import { getAddress } from '@harmony-js/crypto';
 import { harmony } from '../service/harmony';
-import { createAction } from '../utils/index';
+import { createAction, router } from '../utils/index';
 
 export default {
   namespace: 'account',
@@ -7,6 +9,7 @@ export default {
     wallet: harmony.wallet,
     account: undefined,
     error: undefined,
+    isOwner: false,
   },
   effects: {
     *getAccount({ payload }, { call, put, select }) {
@@ -15,6 +18,25 @@ export default {
         yield put(createAction('updateState')({ account, wallet: harmony.wallet }));
       } catch (error) {
         yield put(createAction('updateState')({ error }));
+      }
+    },
+    *checkIsOwner({ _ }, { call, put, select }) {
+      const account = yield select(state => state.account.account);
+      const manager = yield select(state => state.contract.manager);
+      if (isAddress(manager) && account !== undefined) {
+        const isOwner = getAddress(manager).checksum === account.checksumAddress;
+        yield put(
+          createAction('updateState')({
+            isOwner,
+          }),
+        );
+        if (isOwner) {
+          router.push('/owner');
+        } else if (!isOwner) {
+          router.push('/player');
+        }
+      } else {
+        router.push('/');
       }
     },
   },
