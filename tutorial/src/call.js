@@ -18,7 +18,6 @@ export async function alterContract(abi, contractAddress, method, ...args) {
     abi,
     contractAddress
   )
-
   const callResult = await deployedContract.methods[method]
     .apply(null, args)
     .send({ gasLimit: new BN('210000'), gasPrice: new BN('10000000000') })

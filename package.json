@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build:tutorial": "cd tutorial && rm -rf build && ../node_modules/.bin/babel src -d build "
+    "build:tutorial": "rm -rf ./tutorial/build && ./node_modules/.bin/babel ./tutorial/src -d ./tutorial/build ",
+    "watch:tutorial": "./node_modules/.bin/babel ./tutorial/src --watch -d ./tutorial/build"
   },
   "dependencies": {
     "@babel/cli": "^7.5.0",
