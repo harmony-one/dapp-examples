@@ -27,4 +27,7 @@ if (process.argv0 !== undefined && process.argv.slice(2)[0] !== undefined) {
   callContract(abi, contractAddress, "add", 123, 321).then(result => {
     console.log("add", result)
   })
+  callContract(abi, contractAddress, "fireEvent", 222).then(result => {
+    console.log("fireEvent", result)
+  })
 }
