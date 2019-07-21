@@ -1,4 +1,5 @@
 import React from 'react';
+import { Unit } from '@harmony-js/utils';
 import { Button, Modal, Input } from 'antd';
 import { connect, createAction } from '../utils/index';
 import styles from './index.css';
@@ -54,6 +55,8 @@ class Index extends React.Component {
 
   render() {
     const contractAddress = this.props.contractAddress;
+    const displayBalance = new Unit(this.props.contractBalance).asWei().toEther();
+
     // const contractBalance = this.props.contractBalance;
 
     const { visible, confirmLoading } = this.state;
@@ -91,6 +94,18 @@ class Index extends React.Component {
           >
             <div style={{ fontSize: '1.2em', color: '#ffffff' }}>Players In game :</div>
             <div style={{ fontSize: '1.2em', color: '#ffffff' }}>{this.props.players.length}</div>
+          </li>
+          <li
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
+            <div style={{ fontSize: '1.2em', color: '#ffffff' }}>Current Game Balance :</div>
+            <div style={{ fontSize: '1.2em', color: '#ffffff' }}>{`${displayBalance} ONE`}</div>
           </li>
         </ul>
         <div className={styles.buttonWrapper}>

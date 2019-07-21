@@ -4,10 +4,10 @@ import { connect, createAction } from '../../utils/index';
 import styles from './index.css';
 import { Unit } from '@harmony-js/utils';
 
-class Owner extends React.Component {
+class Player extends React.Component {
   state = {
+    ModalText: 'Content of the modal',
     visible: false,
-    confirmVisible: false,
     confirmLoading: false,
     inputValue: '',
   };
@@ -17,16 +17,12 @@ class Owner extends React.Component {
       visible: true,
     });
   };
-  showConfirmaModal = () => {
-    this.setState({
-      confirmVisible: true,
-    });
-  };
 
   handleOk = () => {
     this.props.deposit(this.state.inputValue);
     // this.props.getAccount({ privateKey: this.state.inputValue });
     this.setState({
+      ModalText: 'The modal will be closed after two seconds',
       confirmLoading: true,
     });
 
@@ -39,21 +35,6 @@ class Owner extends React.Component {
     }, 2000);
   };
 
-  handleConfirmOk = () => {
-    this.props.pickWinner();
-    this.setState({
-      confirmConfirmLoading: true,
-    });
-
-    setTimeout(() => {
-      this.setState({
-        confirmVisible: false,
-        confirmConfirmLoading: false,
-      });
-      this.props.getContractState();
-    }, 2000);
-  };
-
   handleCancel = () => {
     console.log('Clicked cancel button');
     this.setState({
@@ -61,14 +42,6 @@ class Owner extends React.Component {
       inputValue: '',
     });
   };
-
-  handleConfirmCancel = () => {
-    console.log('Clicked cancel button');
-    this.setState({
-      confirmVisible: false,
-    });
-  };
-
   handleInput = value => {
     this.setState({ inputValue: value });
   };
@@ -87,13 +60,12 @@ class Owner extends React.Component {
 
   render() {
     const contractAddress = this.props.contractAddress;
-    const players = this.props.players;
     const displayContractBalance = new Unit(this.props.contractBalance).asWei().toEther();
     const displayBalance = new Unit(this.props.accountBalance).asWei().toEther();
 
     // const contractBalance = this.props.contractBalance;
 
-    const { visible, confirmLoading, confirmConfirmLoading, confirmVisible } = this.state;
+    const { visible, confirmLoading } = this.state;
 
     if (this.props.emitter) {
       this.props.emitter
@@ -160,7 +132,7 @@ class Owner extends React.Component {
             >{`${displayContractBalance} ONE`}</div>
           </li>
         </ul>
-        <div className={styles.title}>You are the owner</div>
+        <div className={styles.title}>You are the player</div>
         <div
           style={{
             fontSize: '1.2em',
@@ -181,18 +153,6 @@ class Owner extends React.Component {
             Deposit
           </Button>
         </div>
-        <div className={styles.buttonWrapper}>
-          <Button
-            size="large"
-            type="danger"
-            block
-            style={{ height: '2.8em', fontSize: '1.6em', marginTop: '1.2em' }}
-            onClick={this.showConfirmaModal}
-            disabled={players.length === 0}
-          >
-            Pick Winner
-          </Button>
-        </div>
         <Modal
           title="Input Deposit Value (min:0.1 ONE)"
           visible={visible}
@@ -203,22 +163,11 @@ class Owner extends React.Component {
         >
           <InputNumber defaultValue="0.1" onChange={this.handleInput} style={{ width: '100%' }} />
         </Modal>
-
-        <Modal
-          title="Confirm To Pick Winner"
-          visible={confirmVisible}
-          onOk={this.handleConfirmOk}
-          confirmLoading={confirmConfirmLoading}
-          onCancel={this.handleConfirmCancel}
-          centered
-        >
-          <p>Would you like to pick winner and end this round?</p>
-        </Modal>
       </div>
     );
   }
 }
-//0xd111e251634b0af6316f863bba605efe8c11ac211a67d5783aabc66c850f04c5
+//0x7a1ef7c273aa1ea4ed2a018ba3e491cc345fdca0df6cdce85924f66673ba140a
 
 function mapState(state) {
   return {
@@ -240,11 +189,10 @@ function mapDispatch(dispatch) {
     getPlayers: () => dispatch(createAction('contract/getPlayers')()),
     getAccountBalance: () => dispatch(createAction('account/getAccountBalance')()),
     deposit: payload => dispatch(createAction('contract/deposit')(payload)),
-    pickWinner: () => dispatch(createAction('contract/pickWinner')()),
   };
 }
 
 export default connect(
   mapState,
   mapDispatch,
-)(Owner);
+)(Player);

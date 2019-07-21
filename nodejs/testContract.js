@@ -120,6 +120,9 @@ const mne =
 // now we have the mnes added to wallet
 const myAccount = harmony.wallet.addByMnemonic(mne, 0)
 
+// 0xd111e251634b0af6316f863bba605efe8c11ac211a67d5783aabc66c850f04c5
+// 0x7a1ef7c273aa1ea4ed2a018ba3e491cc345fdca0df6cdce85924f66673ba140a
+
 // now we create contract using extracted abi
 const myContract = harmony.contracts.createContract(abi)
 

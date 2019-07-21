@@ -3,6 +3,7 @@ import contractFile from '../service/contractFile';
 import { createAction } from '../utils/index';
 import { Contract } from '@harmony-js/contract';
 import { ContractStatus } from '@harmony-js/contract/dist/utils/status';
+import { Unit } from '@harmony-js/utils';
 
 export default {
   namespace: 'contract',
@@ -13,6 +14,7 @@ export default {
     abi: contractFile.abi,
     manager: '',
     players: [],
+    emitter: undefined,
   },
   effects: {
     *getContractState({ _ }, { call, put, select }) {
@@ -36,8 +38,7 @@ export default {
     *getContractOwner({ _ }, { call, put, select }) {
       const contract = yield select(state => state.contract.contract);
 
-      const manager = yield contract.methods.manager().call();
-
+      const manager = yield contract.methods.manager().call({});
       yield put(
         createAction('updateState')({
           manager,
@@ -49,14 +50,30 @@ export default {
       // const anonymousFrom = '0'.repeat(40);
 
       const contract = yield select(state => state.contract.contract);
+      const players = yield contract.methods.getPlayers().call({});
 
-      const players = yield contract.methods.getPlayers().call({ from: '0x' });
-      console.log({ players });
       yield put(
         createAction('updateState')({
           players,
         }),
       );
+    },
+    *deposit({ payload }, { call, put, select }) {
+      const contract = yield select(state => state.contract.contract);
+      const emitter = contract.methods.enter().send({
+        gasLimit: new Unit('210000').asWei().toWei(),
+        gasPrice: new Unit('100').asGwei().toWei(),
+        value: new Unit(payload).asEther().toWei(),
+      });
+      yield put(createAction('updateState')({ emitter }));
+    },
+    *pickWinner({ _ }, { call, put, select }) {
+      const contract = yield select(state => state.contract.contract);
+      const emitter = contract.methods.pickWinner().send({
+        gasLimit: new Unit('210000').asWei().toWei(),
+        gasPrice: new Unit('100').asGwei().toWei(),
+      });
+      yield put(createAction('updateState')({ emitter }));
     },
   },
   reducers: {

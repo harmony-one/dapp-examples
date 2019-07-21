@@ -10,12 +10,22 @@ export default {
     account: undefined,
     error: undefined,
     isOwner: false,
+    accountBalance: '',
   },
   effects: {
     *getAccount({ payload }, { call, put, select }) {
       try {
         const account = harmony.wallet.addByPrivateKey(payload.privateKey);
         yield put(createAction('updateState')({ account, wallet: harmony.wallet }));
+      } catch (error) {
+        yield put(createAction('updateState')({ error }));
+      }
+    },
+    *getAccountBalance({ _ }, { call, put, select }) {
+      try {
+        const account = yield select(state => state.account.account);
+        const balance = yield account.getBalance();
+        yield put(createAction('updateState')({ accountBalance: balance.balance }));
       } catch (error) {
         yield put(createAction('updateState')({ error }));
       }
