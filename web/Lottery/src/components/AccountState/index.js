@@ -22,7 +22,15 @@ function displayAddress(address) {
   return `${start}${dot}${tail}`;
 }
 
-const AccountState = ({ accountBalance, accountType, accountAddress }) => {
+const Refresh = ({ onPress }) => {
+  return (
+    <div style={{ color: '#dddddd', fontSize: '1.2em', textDecoration: 'none' }} onClick={onPress}>
+      Refresh
+    </div>
+  );
+};
+
+const AccountState = ({ accountBalance, accountType, accountAddress, onPress }) => {
   const displayBalance = new Unit(accountBalance).asWei().toEther();
 
   return (
@@ -45,6 +53,7 @@ const AccountState = ({ accountBalance, accountType, accountAddress }) => {
         width: '100%',
         padding: '1.6em',
       }}
+      extra={<Refresh onPress={onPress} />}
     >
       <ul style={{ margin: 0, padding: 0 }}>
         <li style={styles.listItem}>

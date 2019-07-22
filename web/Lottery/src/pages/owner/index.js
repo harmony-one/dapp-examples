@@ -144,11 +144,18 @@ class Owner extends React.Component {
           contractAddress={contractAddress}
           contractBalance={contractBalance}
           players={players}
+          onPress={() => {
+            this.props.getContractState();
+            this.props.getPlayers();
+          }}
         />
         <AccountState
           accountBalance={accountBalance}
           accountType="manager"
           accountAddress={account.checksumAddress}
+          onPress={() => {
+            this.props.getAccountBalance();
+          }}
         />
 
         <div className={styles.buttonWrapper}>

@@ -9,7 +9,15 @@ function displayAddress(address) {
   return `${start}${dot}${tail}`;
 }
 
-const ContractState = ({ contractAddress, players, contractBalance }) => {
+const Refresh = ({ onPress }) => {
+  return (
+    <div style={{ color: '#dddddd', fontSize: '1.2em', textDecoration: 'none' }} onClick={onPress}>
+      Refresh
+    </div>
+  );
+};
+
+const ContractState = ({ contractAddress, players, contractBalance, onPress }) => {
   const displayContractBalance = new Unit(contractBalance).asWei().toEther();
   return (
     <Card
@@ -31,6 +39,7 @@ const ContractState = ({ contractAddress, players, contractBalance }) => {
         width: '100%',
         padding: '1.6em',
       }}
+      extra={<Refresh onPress={onPress} />}
     >
       <ul style={{ margin: 0, padding: 0, width: '100%' }}>
         <li
