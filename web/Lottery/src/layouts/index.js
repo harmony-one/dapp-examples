@@ -1,5 +1,6 @@
 import { Button } from 'antd';
-import { router } from '../utils';
+
+import { router, createAction, connect } from '../utils';
 import styles from './index.css';
 
 function BasicLayout(props) {
@@ -21,6 +22,7 @@ function BasicLayout(props) {
           size="large"
           shape="circle"
           onClick={() => {
+            props.logout();
             router.push('/');
           }}
         ></Button>
@@ -30,4 +32,16 @@ function BasicLayout(props) {
   );
 }
 
-export default BasicLayout;
+function mapState(state) {
+  return {};
+}
+function mapDispatch(dispatch) {
+  return {
+    logout: () => dispatch(createAction('account/logout')()),
+  };
+}
+
+export default connect(
+  mapState,
+  mapDispatch,
+)(BasicLayout);

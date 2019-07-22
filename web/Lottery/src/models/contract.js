@@ -58,6 +58,7 @@ export default {
       );
     },
     *deposit({ payload }, { call, put, select }) {
+      yield put(createAction('updateState')({ emitter: undefined }));
       const contract = yield select(state => state.contract.contract);
       const emitter = contract.methods.enter().send({
         gasLimit: new Unit('210000').asWei().toWei(),
@@ -67,6 +68,7 @@ export default {
       yield put(createAction('updateState')({ emitter }));
     },
     *pickWinner({ _ }, { call, put, select }) {
+      yield put(createAction('updateState')({ emitter: undefined }));
       const contract = yield select(state => state.contract.contract);
       const emitter = contract.methods.pickWinner().send({
         gasLimit: new Unit('210000').asWei().toWei(),

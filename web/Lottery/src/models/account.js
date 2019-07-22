@@ -49,6 +49,17 @@ export default {
         router.push('/');
       }
     },
+    *logout({ _ }, { call, put, select }) {
+      yield put(
+        createAction('updateState')({
+          wallet: harmony.wallet,
+          account: undefined,
+          error: undefined,
+          isOwner: false,
+          accountBalance: '',
+        }),
+      );
+    },
   },
   reducers: {
     updateState(state, { payload }) {

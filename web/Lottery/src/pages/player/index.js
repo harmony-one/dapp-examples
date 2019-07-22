@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal, InputNumber } from 'antd';
-import { isHash } from '@harmony-js/utils';
+import { isHash, Unit } from '@harmony-js/utils';
 import { ContractState, AccountState, TxnState } from '../../components';
 import { connect, createAction } from '../../utils/index';
 import styles from './index.css';
@@ -15,7 +15,7 @@ class Player extends React.Component {
     receipt: undefined,
     confirmation: undefined,
     error: undefined,
-    inputValue: '',
+    inputValue: '0.11',
   };
 
   showModal = () => {
@@ -30,6 +30,7 @@ class Player extends React.Component {
     this.setState({
       ModalText: 'The modal will be closed after two seconds',
       confirmLoading: true,
+      txnVisible: false,
     });
 
     setTimeout(() => {
@@ -68,6 +69,19 @@ class Player extends React.Component {
     return `${start}${dot}${tail}`;
   }
 
+  isEnoughMoney(balance) {
+    const minDeposit = '0.1';
+    const gasPrice = new Unit('100').asGwei().toWei();
+    const gasLimit = new Unit('210000').asWei().toWei();
+    const maxCost = new Unit(gasPrice.mul(gasLimit)).asWei().toWei();
+    const minDepositBN = new Unit(minDeposit)
+      .asEther()
+      .toWei()
+      .add(maxCost);
+    const balanceBN = new Unit(balance).asWei().toWei();
+    return minDepositBN.lt(balanceBN);
+  }
+
   render() {
     const {
       contractAddress,
@@ -78,15 +92,20 @@ class Player extends React.Component {
       loading,
     } = this.props;
 
-    // const contractBalance = this.props.contractBalance;
-
     const { visible, confirmLoading } = this.state;
+
+    const isDepositable = this.isEnoughMoney(accountBalance);
 
     if (this.props.emitter) {
       this.props.emitter
         .on('transactionHash', txnHash => {
           if (isHash(txnHash)) {
-            this.handleTxn({ txnVisible: true, txnHash });
+            this.handleTxn({
+              txnVisible: true,
+              txnHash,
+              receipt: undefined,
+              confirmation: undefined,
+            });
           }
         })
         .on('receipt', receipt => {
@@ -122,14 +141,16 @@ class Player extends React.Component {
             this.props.getPlayers();
           }}
         />
-        <AccountState
-          accountBalance={accountBalance}
-          accountType="player"
-          accountAddress={account.checksumAddress}
-          onPress={() => {
-            this.props.getAccountBalance();
-          }}
-        />
+        {account ? (
+          <AccountState
+            accountBalance={accountBalance}
+            accountType="player"
+            accountAddress={account.checksumAddress}
+            onPress={() => {
+              this.props.getAccountBalance();
+            }}
+          />
+        ) : null}
 
         <div className={styles.buttonWrapper}>
           <Button
@@ -139,6 +160,7 @@ class Player extends React.Component {
             style={{ height: '2.8em', fontSize: '1.6em' }}
             onClick={this.showModal}
             loading={loading}
+            disabled={!isDepositable}
           >
             Deposit
           </Button>
@@ -151,13 +173,16 @@ class Player extends React.Component {
           onCancel={this.handleCancel}
           centered
         >
-          <InputNumber defaultValue="0.11" onChange={this.handleInput} style={{ width: '100%' }} />
+          <InputNumber
+            defaultValue={this.state.inputValue}
+            onChange={this.handleInput}
+            style={{ width: '100%' }}
+          />
         </Modal>
       </div>
     );
   }
 }
-//0x7a1ef7c273aa1ea4ed2a018ba3e491cc345fdca0df6cdce85924f66673ba140a
 
 function mapState(state) {
   return {
