@@ -9,6 +9,7 @@ export default {
   namespace: 'contract',
   state: {
     contractAddress: '0xC09293c153fd34BE07201e661132e091FbB53E62',
+    // contractAddress: '0x8ce704F89644911D2F893d97Fb50E5756f78Fe3d',
     contractBalance: '',
     contract: undefined,
     abi: contractFile.abi,
@@ -25,7 +26,6 @@ export default {
       const contract = new Contract(abi, contractAddress, {}, wallet, ContractStatus.INITIALISED);
       // contract.connect(wallet);
       const contractBalance = yield harmony.blockchain.getBalance({ address: contractAddress });
-
       yield put(
         createAction('updateState')({
           contractBalance: harmony.utils.hexToNumber(contractBalance.result),
@@ -39,6 +39,7 @@ export default {
       const contract = yield select(state => state.contract.contract);
 
       const manager = yield contract.methods.manager().call({});
+
       yield put(
         createAction('updateState')({
           manager,
@@ -51,6 +52,7 @@ export default {
 
       const contract = yield select(state => state.contract.contract);
       const players = yield contract.methods.getPlayers().call({});
+
       yield put(
         createAction('updateState')({
           players,

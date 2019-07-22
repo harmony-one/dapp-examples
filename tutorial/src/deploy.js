@@ -205,6 +205,7 @@ if (process.argv0 !== undefined) {
   deploy(file, gasLimit, gasPrice, nonce, compileTo).then(result => {
     const timeStamp = new Date().toJSON()
     const { contractCode, contractAddress } = result
+    console.log(result)
     fs.writeFileSync(
       path.resolve(file.replace('.sol', `-${contractAddress}.json`)),
       JSON.stringify({
