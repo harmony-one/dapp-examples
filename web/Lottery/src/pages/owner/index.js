@@ -1,14 +1,20 @@
 import React from 'react';
 import { Button, Modal, InputNumber } from 'antd';
+import { isHash } from '@harmony-js/utils';
 import { connect, createAction } from '../../utils/index';
+import { ContractState, AccountState, TxnState } from '../../components';
 import styles from './index.css';
-import { Unit } from '@harmony-js/utils';
 
 class Owner extends React.Component {
   state = {
     visible: false,
     confirmVisible: false,
     confirmLoading: false,
+    txnVisible: false,
+    txnHash: undefined,
+    receipt: undefined,
+    confirmation: undefined,
+    error: undefined,
     inputValue: '',
   };
 
@@ -21,6 +27,10 @@ class Owner extends React.Component {
     this.setState({
       confirmVisible: true,
     });
+  };
+
+  handleTxn = txn => {
+    this.setState(txn);
   };
 
   handleOk = () => {
@@ -86,10 +96,14 @@ class Owner extends React.Component {
   }
 
   render() {
-    const contractAddress = this.props.contractAddress;
-    const players = this.props.players;
-    const displayContractBalance = new Unit(this.props.contractBalance).asWei().toEther();
-    const displayBalance = new Unit(this.props.accountBalance).asWei().toEther();
+    const {
+      contractAddress,
+      contractBalance,
+      players,
+      accountBalance,
+      account,
+      loading,
+    } = this.props;
 
     // const contractBalance = this.props.contractBalance;
 
@@ -97,79 +111,46 @@ class Owner extends React.Component {
 
     if (this.props.emitter) {
       this.props.emitter
-        .on('transactionHash', txHash => {
-          console.log(txHash);
+        .on('transactionHash', txnHash => {
+          if (isHash(txnHash)) {
+            this.handleTxn({ txnVisible: true, txnHash });
+          }
         })
         .on('receipt', receipt => {
-          console.log(receipt);
+          this.handleTxn({ receipt });
         })
         .on('error', error => {
-          console.log(error);
+          this.handleTxn({ error });
         })
         .on('confirmation', confirmation => {
-          console.log(confirmation);
+          this.handleTxn({ confirmation });
+          this.props.getContractState();
+          this.props.getPlayers();
+          this.props.getAccountBalance();
         });
     }
 
     return (
       <div className={styles.normal}>
-        <ul style={{ margin: 0, padding: 0, width: '100%' }}>
-          <li
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <div style={{ fontSize: '1.2em', color: '#ffffff' }}>Game Address :</div>
-            <div>
-              <a
-                href={`https://ropsten.etherscan.io/address/${contractAddress}`}
-                className={styles.link}
-              >
-                {this.displayAddress(contractAddress)}
-              </a>
-            </div>
-          </li>
-          <li
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <div style={{ fontSize: '1.2em', color: '#ffffff' }}>Players In game :</div>
-            <div style={{ fontSize: '1.2em', color: '#ffffff' }}>{this.props.players.length}</div>
-          </li>
-          <li
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <div style={{ fontSize: '1.2em', color: '#ffffff' }}>Current Game Balance :</div>
-            <div
-              style={{ fontSize: '1.2em', color: '#ffffff' }}
-            >{`${displayContractBalance} ONE`}</div>
-          </li>
-        </ul>
-        <div className={styles.title}>You are the owner</div>
-        <div
-          style={{
-            fontSize: '1.2em',
-            color: '#e4e710',
-            marginBottom: '1em',
-          }}
-        >
-          {`${displayBalance.substring(0, displayBalance.length - 12)} ONE`}
-        </div>
+        <TxnState
+          accountType={'txn'}
+          visible={this.state.txnVisible}
+          txnHash={this.state.txnHash}
+          confirmation={this.state.confirmation}
+          receipt={this.state.receipt}
+          onPress={() => this.handleTxn({ txnVisible: false })}
+        />
+        <ContractState
+          contractAddress={contractAddress}
+          contractBalance={contractBalance}
+          players={players}
+        />
+        <AccountState
+          accountBalance={accountBalance}
+          accountType="manager"
+          accountAddress={account.checksumAddress}
+        />
+
         <div className={styles.buttonWrapper}>
           <Button
             size="large"
@@ -177,6 +158,7 @@ class Owner extends React.Component {
             block
             style={{ height: '2.8em', fontSize: '1.6em' }}
             onClick={this.showModal}
+            loading={loading}
           >
             Deposit
           </Button>
@@ -186,22 +168,22 @@ class Owner extends React.Component {
             size="large"
             type="danger"
             block
-            style={{ height: '2.8em', fontSize: '1.6em', marginTop: '1.2em' }}
+            style={{ height: '2.8em', fontSize: '1.6em' }}
             onClick={this.showConfirmaModal}
-            disabled={players.length === 0}
+            disabled={players.length === 0 || loading}
           >
             Pick Winner
           </Button>
         </div>
         <Modal
-          title="Input Deposit Value (min:0.1 ONE)"
+          title="Input Deposit Value (min:0.11 ONE)"
           visible={visible}
           onOk={this.handleOk}
           confirmLoading={confirmLoading}
           onCancel={this.handleCancel}
           centered
         >
-          <InputNumber defaultValue="0.1" onChange={this.handleInput} style={{ width: '100%' }} />
+          <InputNumber defaultValue="0.11" onChange={this.handleInput} style={{ width: '100%' }} />
         </Modal>
 
         <Modal
@@ -222,6 +204,7 @@ class Owner extends React.Component {
 
 function mapState(state) {
   return {
+    loading: state.loading.global,
     contractAddress: state.contract.contractAddress,
     contractBalance: state.contract.contractBalance,
     players: state.contract.players,

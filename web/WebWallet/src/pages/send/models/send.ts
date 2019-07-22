@@ -39,7 +39,7 @@ export default {
           to: getAddress(to).checksum,
           gasLimit: new Unit(gasLimit).asWei().toWei(),
           gasPrice: new Unit(gasPrice).asWei().toWei(),
-          value: new Unit(amount).asWei().toWei(),
+          value: new Unit(`${amount}`).asWei().toWei(),
         },
         messenger,
         TxStatus.INTIALIZED,

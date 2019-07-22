@@ -2,7 +2,7 @@
   font-family: Georgia, sans-serif;
   text-align: center;
   background: darkslateblue;
-  padding: 2em;
+  padding: 0 2em;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -23,6 +23,8 @@
   margin-bottom: 2.6em;
 }
 .buttonWrapper {
-  max-width: 20em;
+  max-width: 28em;
   min-width: 18em;
+  width: 100%;
+  margin: 1em;
 }

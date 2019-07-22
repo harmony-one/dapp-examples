@@ -119,9 +119,27 @@ const mne =
 
 // now we have the mnes added to wallet
 const myAccount = harmony.wallet.addByMnemonic(mne, 0)
+const myAccount1 = harmony.wallet.addByMnemonic(mne, 1)
+const myAccount2 = harmony.wallet.addByMnemonic(mne, 2)
+const myAccount3 = harmony.wallet.addByMnemonic(mne, 3)
+const myAccount4 = harmony.wallet.addByMnemonic(mne, 4)
+const myAccount5 = harmony.wallet.addByMnemonic(mne, 5)
+
+console.log({
+  acc0: { prv: myAccount.privateKey, add: myAccount.checksumAddress },
+  acc1: { prv: myAccount1.privateKey, add: myAccount1.checksumAddress },
+  acc2: { prv: myAccount2.privateKey, add: myAccount2.checksumAddress },
+  acc3: { prv: myAccount3.privateKey, add: myAccount3.checksumAddress },
+  acc4: { prv: myAccount4.privateKey, add: myAccount4.checksumAddress },
+  acc5: { prv: myAccount5.privateKey, add: myAccount5.checksumAddress }
+})
 
 // 0xd111e251634b0af6316f863bba605efe8c11ac211a67d5783aabc66c850f04c5
 // 0x7a1ef7c273aa1ea4ed2a018ba3e491cc345fdca0df6cdce85924f66673ba140a
+// 0x2f7b2d779f2e8fd23ae20f1c067c326b8ed3f3abef25ec11361b4bd9435c7ba0
+// 0xee66dbc7a059da6f820a98019fe4a41326408c28567c2c74c40390156f91cd8a
+// 0xe3771a833026c3f0548b6aec760e92d509d82138f2332e280966c0a7b2abf2ea
+// 0xf65a128135fbfe9f4d1bbd905368cfa593ba1a026e81c64b6b212b234ace6ab0
 
 // now we create contract using extracted abi
 const myContract = harmony.contracts.createContract(abi)
@@ -208,68 +226,68 @@ const deployContract = async () => {
 }
 
 // now we call our deploy contract function
-deployContract().then(deployed => {
-  // after the contract is deployed ,we can get contract information
-  // first we can get the contract Code
-  harmony.blockchain.getCode({ address: deployed.address }).then(res => {
-    if (res.result) {
-      console.log(`--hint: contract :${deployed.address}--`)
-      console.log(``)
-      console.log(`${res.result}`)
-      console.log(``)
-      console.log(``)
-    }
-  })
-  const deployedContract = harmony.contracts.createContract(
-    abi,
-    deployed.address
-  )
+// deployContract().then(deployed => {
+//   // after the contract is deployed ,we can get contract information
+//   // first we can get the contract Code
+//   harmony.blockchain.getCode({ address: deployed.address }).then(res => {
+//     if (res.result) {
+//       console.log(`--hint: contract :${deployed.address}--`)
+//       console.log(``)
+//       console.log(`${res.result}`)
+//       console.log(``)
+//       console.log(``)
+//     }
+//   })
+//   const deployedContract = harmony.contracts.createContract(
+//     abi,
+//     deployed.address
+//   )
 
-  // testContract.methods
-  //   .transfer(acc2.address, new harmony.utils.Unit('100000').asWei().toHex())
-  //   .send({ gasLimit: new harmony.utils.Unit('10000000').asWei().toWei() })
-  //   .on('transactionHash', transactionHash => {
-  //     console.log(`-- hint: we got Transaction Hash`)
-  //     console.log(``)
-  //     console.log(`${transactionHash}`)
-  //     console.log(``)
-  //     console.log(``)
+//   // testContract.methods
+//   //   .transfer(acc2.address, new harmony.utils.Unit('100000').asWei().toHex())
+//   //   .send({ gasLimit: new harmony.utils.Unit('10000000').asWei().toWei() })
+//   //   .on('transactionHash', transactionHash => {
+//   //     console.log(`-- hint: we got Transaction Hash`)
+//   //     console.log(``)
+//   //     console.log(`${transactionHash}`)
+//   //     console.log(``)
+//   //     console.log(``)
 
-  //     harmony.blockchain
-  //       .getTransactionByHash({
-  //         txnHash: transactionHash
-  //       })
-  //       .then(res => {
-  //         console.log(`-- hint: we got transaction detail`)
-  //         console.log(``)
-  //         console.log(res)
-  //         console.log(``)
-  //         console.log(``)
-  //       })
-  //   })
-  //   // when we get receipt, it will emmit
-  //   .on('receipt', receipt => {
-  //     console.log(`-- hint: we got transaction receipt`)
-  //     console.log(``)
-  //     console.log(receipt)
-  //     console.log(``)
-  //     console.log(``)
-  //   })
-  //   // the http and websocket provider will be poll result and try get confirmation from time to time.
-  //   // when `confirmation` comes in, it will be emitted
-  //   .on('confirmation', confirmation => {
-  //     console.log(`-- hint: the transaction is`)
-  //     console.log(``)
-  //     console.log(confirmation)
-  //     console.log(``)
-  //     console.log(``)
-  //   })
-  //   // if something wrong happens, the error will be emitted
-  //   .on('error', error => {
-  //     console.log(`-- hint: something wrong happens`)
-  //     console.log(``)
-  //     console.log(error)
-  //     console.log(``)
-  //     console.log(``)
-  //   })
-})
+//   //     harmony.blockchain
+//   //       .getTransactionByHash({
+//   //         txnHash: transactionHash
+//   //       })
+//   //       .then(res => {
+//   //         console.log(`-- hint: we got transaction detail`)
+//   //         console.log(``)
+//   //         console.log(res)
+//   //         console.log(``)
+//   //         console.log(``)
+//   //       })
+//   //   })
+//   //   // when we get receipt, it will emmit
+//   //   .on('receipt', receipt => {
+//   //     console.log(`-- hint: we got transaction receipt`)
+//   //     console.log(``)
+//   //     console.log(receipt)
+//   //     console.log(``)
+//   //     console.log(``)
+//   //   })
+//   //   // the http and websocket provider will be poll result and try get confirmation from time to time.
+//   //   // when `confirmation` comes in, it will be emitted
+//   //   .on('confirmation', confirmation => {
+//   //     console.log(`-- hint: the transaction is`)
+//   //     console.log(``)
+//   //     console.log(confirmation)
+//   //     console.log(``)
+//   //     console.log(``)
+//   //   })
+//   //   // if something wrong happens, the error will be emitted
+//   //   .on('error', error => {
+//   //     console.log(`-- hint: something wrong happens`)
+//   //     console.log(``)
+//   //     console.log(error)
+//   //     console.log(``)
+//   //     console.log(``)
+//   //   })
+// })

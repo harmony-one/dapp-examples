@@ -51,7 +51,6 @@ export default {
 
       const contract = yield select(state => state.contract.contract);
       const players = yield contract.methods.getPlayers().call({});
-
       yield put(
         createAction('updateState')({
           players,
