@@ -9,7 +9,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@harmony-js/core": "^0.0.50",
+    "@harmony-js/core": "^0.0.52",
     "@types/react-copy-to-clipboard": "^4.2.6",
     "antd": "^3.19.2",
     "dva": "^2.6.0-beta.4",

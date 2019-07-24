@@ -68,7 +68,7 @@ class Index extends React.Component {
           players={players}
           onPress={() => {
             this.props.getContractState();
-            this.props.getPlayers();
+            // this.props.getPlayers();
           }}
         />
         <div className={styles.buttonWrapper}>

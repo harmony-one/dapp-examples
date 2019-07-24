@@ -10,8 +10,8 @@ const defaultProviders = [
     id: ChainID.Default,
     type: ChainType.Harmony,
     name: 'Harmony TestNet',
-    http: 'http://s0.t.hmny.io:9500',
-    ws: 'ws://s0.t.hmny.io:9800',
+    http: 'http://localhost:9500',
+    ws: 'ws://localhost:9800',
   },
   {
     id: ChainID.Ropsten,
@@ -28,9 +28,9 @@ export default {
     providerList: [...defaultProviders],
     selected: 'Ropsten',
     messenger: new Messenger(
-      new WSProvider(defaultProviders[1].ws),
-      defaultProviders[1].type,
-      defaultProviders[1].id,
+      new HttpProvider(defaultProviders[0].http),
+      defaultProviders[0].type,
+      defaultProviders[0].id,
     ),
   },
   reducers: {
@@ -49,7 +49,7 @@ export default {
       const selectedProvider = providerList.find(value => {
         return value.name === selected;
       });
-      const provider = new WSProvider(selectedProvider.ws);
+      const provider = new HttpProvider(selectedProvider.http);
 
       const messenger = new Messenger(
         provider,

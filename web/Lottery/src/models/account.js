@@ -50,6 +50,10 @@ export default {
       }
     },
     *logout({ _ }, { call, put, select }) {
+      harmony.wallet.accounts.forEach(acc => {
+        harmony.wallet.removeAccount(acc);
+      });
+
       yield put(
         createAction('updateState')({
           wallet: harmony.wallet,

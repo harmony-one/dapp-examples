@@ -26,6 +26,7 @@ export default {
       const contract = new Contract(abi, contractAddress, {}, wallet, ContractStatus.INITIALISED);
       // contract.connect(wallet);
       const contractBalance = yield harmony.blockchain.getBalance({ address: contractAddress });
+
       yield put(
         createAction('updateState')({
           contractBalance: harmony.utils.hexToNumber(contractBalance.result),
@@ -37,7 +38,11 @@ export default {
     },
     *getContractOwner({ _ }, { call, put, select }) {
       const contract = yield select(state => state.contract.contract);
-      const manager = yield contract.methods.manager().call({});
+      const manager = yield contract.methods.manager().call({
+        from: '0x0000000000000000000000000000000000000000',
+        gasLimit: new Unit('210000').asWei().toWei(),
+        gasPrice: new Unit('100').asGwei().toWei(),
+      });
       yield put(
         createAction('updateState')({
           manager,
@@ -49,11 +54,14 @@ export default {
       // const anonymousFrom = '0'.repeat(40);
 
       const contract = yield select(state => state.contract.contract);
-      const players = yield contract.methods.getPlayers().call({});
+      const players = yield contract.methods.getPlayers().call({
+        gasLimit: new Unit('210000').asWei().toWei(),
+        gasPrice: new Unit('100').asGwei().toWei(),
+      });
 
       yield put(
         createAction('updateState')({
-          players,
+          players: players !== null ? players : [],
         }),
       );
     },
@@ -87,9 +95,9 @@ export default {
   },
   subscriptions: {
     setup({ history, dispatch }) {
-      dispatch(createAction('getContractState')());
+      // dispatch(createAction('getContractState')());
       //   dispatch(createAction('getPlayers')());
-      dispatch(createAction('account/checkIsOwner')());
+      // dispatch(createAction('account/checkIsOwner')());
     },
   },
 };

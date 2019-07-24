@@ -20,8 +20,7 @@ export default {
   ],
   proxy: {
     '/api': {
-      target: 'http://192.168.3.160:9500/',
-      pathRewrite: { '^/api': '' },
+      target: 'http://localhost:9500',
       changeOrigin: true,
     },
   },

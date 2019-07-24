@@ -13,13 +13,14 @@ export async function callContract(abi, contractAddress, method, ...args) {
   })
   console.log({ from: harmony.wallet.signer.checksumAddress })
 
-  const callResult = await deployedContract.methods[method]
-    .apply(null, args)
-    .call({
-      gasLimit: new BN('210000'),
-      gasPrice: new BN('10000000000'),
-      from: harmony.wallet.signer.checksumAddress
-    })
+  const methodClass = deployedContract.methods[method]
+
+  const callResult = await methodClass.apply(null, args).call({
+    gasLimit: new BN('210000'),
+    gasPrice: new BN('10000000000'),
+    from: '0x0000000000000000000000000000000000000000'
+    // hmy_call {gas,gasPrice,*from,*to,*data}
+  })
   return callResult
 }
 export async function alterContract(abi, contractAddress, method, ...args) {
@@ -27,13 +28,16 @@ export async function alterContract(abi, contractAddress, method, ...args) {
     abi,
     contractAddress
   )
-  const callResult = await deployedContract.methods[method]
-    .apply(null, args)
-    .send({
-      gasLimit: new BN('210000'),
-      gasPrice: new BN('10000000000'),
-      from: harmony.wallet.signer.checksumAddress
-    })
+  const methodClass = deployedContract.methods[method]
+
+  methodClass.wallet.signer = undefined
+
+  console.log(methodClass)
+  const callResult = await methodClass.apply(null, args).send({
+    gasLimit: new BN('210000'),
+    gasPrice: new BN('10000000000')
+    // from: harmony.wallet.signer.checksumAddress
+  })
   return callResult
 }
 
