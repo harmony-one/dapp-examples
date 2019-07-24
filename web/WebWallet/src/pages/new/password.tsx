@@ -10,7 +10,7 @@ import styles from './index.css';
 
 interface PassFormProps extends FormComponentProps {
   password: string;
-  rePassword: string;
+  rePassword?: string;
   sendPassword: Function;
   nextRoute: string;
   loading: boolean;

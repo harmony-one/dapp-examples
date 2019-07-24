@@ -8,9 +8,18 @@ export async function callContract(abi, contractAddress, method, ...args) {
     contractAddress
   )
 
+  console.log({
+    data: deployedContract.methods[method].apply(null, args).encodeABI()
+  })
+  console.log({ from: harmony.wallet.signer.checksumAddress })
+
   const callResult = await deployedContract.methods[method]
     .apply(null, args)
-    .call({ gasLimit: new BN('210000'), gasPrice: new BN('10000000000') })
+    .call({
+      gasLimit: new BN('210000'),
+      gasPrice: new BN('10000000000'),
+      from: harmony.wallet.signer.checksumAddress
+    })
   return callResult
 }
 export async function alterContract(abi, contractAddress, method, ...args) {
@@ -20,7 +29,11 @@ export async function alterContract(abi, contractAddress, method, ...args) {
   )
   const callResult = await deployedContract.methods[method]
     .apply(null, args)
-    .send({ gasLimit: new BN('210000'), gasPrice: new BN('10000000000') })
+    .send({
+      gasLimit: new BN('210000'),
+      gasPrice: new BN('10000000000'),
+      from: harmony.wallet.signer.checksumAddress
+    })
   return callResult
 }
 
@@ -33,49 +46,52 @@ if (process.argv0 !== undefined && process.argv.slice(2)[0] !== undefined) {
     : JSON.parse(fs.readFileSync(process.argv.slice(2)[1], 'utf8'))
         .contractAddress
 
-  const myContract = harmony.contracts.createContract(abi, contractAddress)
+  // const myContract = harmony.contracts.createContract(abi, contractAddress)
 
-  myContract.events
-    .DemoEvent({ fromBlock: 'latest' })
-    .on('data', data => {
-      console.log(data)
-    })
-    .on('changed', changed => {
-      console.log(changed)
-    })
-    .on('error', error => {
-      console.log(error)
-    })
+  // myContract.events
+  //   .DemoEvent({ fromBlock: 'latest' })
+  //   .on('data', data => {
+  //     console.log(data)
+  //   })
+  //   .on('changed', changed => {
+  //     console.log(changed)
+  //   })
+  //   .on('error', error => {
+  //     console.log(error)
+  //   })
 
-  callContract(abi, contractAddress, 'print').then(result => {
-    console.log('print', result)
-  })
-  callContract(abi, contractAddress, 'add', 123, 321).then(result => {
-    console.log('add', result)
+  // callContract(abi, contractAddress, 'print').then(result => {
+  //   console.log('print', result)
+  // })
+  // callContract(abi, contractAddress, 'add', 123, 321).then(result => {
+  //   console.log('add', result)
+  // })
+  callContract(abi, contractAddress, 'manager').then(result => {
+    console.log('manager', result)
   })
 
-  callContract(abi, contractAddress, 'fireEvent', 333).then(() => {
-    console.log('')
-    console.log('----------')
-    console.log('')
-    console.log('called')
-    console.log('')
-    console.log('----------')
-    alterContract(abi, contractAddress, 'fireEvent', 444).then(() => {
-      console.log('')
-      console.log('----------')
-      console.log('')
-      console.log('triggered')
-      console.log('')
-      console.log('----------')
-      callContract(abi, contractAddress, 'fireEvent', 555).then(() => {
-        console.log('')
-        console.log('----------')
-        console.log('')
-        console.log('done')
-        console.log('')
-        console.log('----------')
-      })
-    })
-  })
+  // callContract(abi, contractAddress, 'fireEvent', 333).then(() => {
+  //   console.log('')
+  //   console.log('----------')
+  //   console.log('')
+  //   console.log('called')
+  //   console.log('')
+  //   console.log('----------')
+  //   alterContract(abi, contractAddress, 'fireEvent', 444).then(() => {
+  //     console.log('')
+  //     console.log('----------')
+  //     console.log('')
+  //     console.log('triggered')
+  //     console.log('')
+  //     console.log('----------')
+  //     callContract(abi, contractAddress, 'fireEvent', 555).then(() => {
+  //       console.log('')
+  //       console.log('----------')
+  //       console.log('')
+  //       console.log('done')
+  //       console.log('')
+  //       console.log('----------')
+  //     })
+  //   })
+  // })
 }

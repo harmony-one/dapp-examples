@@ -8,8 +8,8 @@ import { Unit } from '@harmony-js/utils';
 export default {
   namespace: 'contract',
   state: {
-    contractAddress: '0xC09293c153fd34BE07201e661132e091FbB53E62',
-    // contractAddress: '0x8ce704F89644911D2F893d97Fb50E5756f78Fe3d',
+    // contractAddress: '0xC09293c153fd34BE07201e661132e091FbB53E62',
+    contractAddress: '0x8545890931331d3EA59b4e63dE64924BE181C4Aa',
     contractBalance: '',
     contract: undefined,
     abi: contractFile.abi,
@@ -37,9 +37,7 @@ export default {
     },
     *getContractOwner({ _ }, { call, put, select }) {
       const contract = yield select(state => state.contract.contract);
-
       const manager = yield contract.methods.manager().call({});
-
       yield put(
         createAction('updateState')({
           manager,

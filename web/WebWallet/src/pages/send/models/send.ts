@@ -17,6 +17,7 @@ export default {
     TxStatus: undefined,
     receipt: undefined,
     emitter: undefined,
+    confirmation: undefined,
   },
   effects: {
     *toNext({ payload }: any, { call, put, select }: any) {
@@ -58,14 +59,17 @@ export default {
       yield put(createAction('updateState')({ emitter }));
 
       const result = yield emitter;
+      console.log(result);
       yield put(createAction('updateState')({ TxStatus: result.TxStatus }));
     },
     *onTransactionHash({ payload }: any, { call, put, select }: any) {
-      console.log(payload);
       yield put(createAction('updateState')({ hash: payload.transactionHash }));
     },
     *onReceipt({ payload }: any, { call, put, select }: any) {
       yield put(createAction('updateState')({ receipt: payload.receipt }));
+    },
+    *onConfirmation({ payload }: any, { call, put, select }: any) {
+      yield put(createAction('updateState')({ confirmation: payload.confirmation }));
     },
     *resetAll({ _ }: any, { put }: any) {
       yield put(
@@ -75,6 +79,11 @@ export default {
           gasLimit: '0x',
           gasPrice: '0x',
           value: '0x',
+          hash: undefined,
+          TxStatus: undefined,
+          receipt: undefined,
+          emitter: undefined,
+          confirmation: undefined,
         }),
       );
     },

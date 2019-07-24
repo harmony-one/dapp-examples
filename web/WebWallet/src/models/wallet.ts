@@ -3,7 +3,6 @@ import router from 'umi/router';
 import { createAction } from '../utils';
 import { write, read } from '../services/localstorage';
 import { encryptPhrase, decryptPhrase } from '@harmony-js/crypto';
-import { create } from 'domain';
 
 const wallet = new Wallet();
 const defaultWalletKey = '@@HWallet';

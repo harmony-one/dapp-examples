@@ -17,6 +17,7 @@ interface ITransaction extends FormComponentProps {
   nonce: number;
   gasPrice: string;
   toNext: Function;
+  resetAll: Function;
 }
 const LabelComp = (props: any): JSX.Element => {
   return <span style={{ fontSize: '1.2rem', color: '#333333' }}>{props.labelText}</span>;
@@ -24,7 +25,7 @@ const LabelComp = (props: any): JSX.Element => {
 
 class Transaction extends React.Component<ITransaction, any> {
   state = {
-    gasPrice: '1000000000',
+    gasPrice: '100000000',
     gasLimit: '210000',
     transactionLevel: 'normal',
   };
@@ -43,19 +44,19 @@ class Transaction extends React.Component<ITransaction, any> {
   };
 
   changeFee(value: string) {
-    let gasPrice = '1000000000';
+    let gasPrice = '100000000';
 
     switch (value) {
       case 'slow': {
-        gasPrice = '400000000';
+        gasPrice = '40000000';
         break;
       }
       case 'normal': {
-        gasPrice = '1000000000';
+        gasPrice = '100000000';
         break;
       }
       case 'fast': {
-        gasPrice = '2000000000';
+        gasPrice = '200000000';
         break;
       }
     }
@@ -68,11 +69,14 @@ class Transaction extends React.Component<ITransaction, any> {
   handleSubmit = (e: any) => {
     e.preventDefault();
     this.props.form.validateFields((err: any, values: any) => {
-      this.props.toNext({
-        ...values,
-        ...this.state,
-      });
-      router.push('send/next');
+      if (!err) {
+        this.props.resetAll();
+        this.props.toNext({
+          ...values,
+          ...this.state,
+        });
+        router.push('send/next');
+      }
     });
   };
 
@@ -88,9 +92,22 @@ class Transaction extends React.Component<ITransaction, any> {
     return (
       <div className={styles.container}>
         <div className={styles.pageTop}>
-          <h1>Transaction</h1>
-          <Button shape="circle" icon="close" onClick={() => router.goBack()} />
+          <Button
+            shape="circle"
+            icon="wallet"
+            size="large"
+            // tslint:disable-next-line: jsx-no-lambda
+            onClick={() => router.push('/wallet')}
+          />
+          <Button
+            shape="circle"
+            icon="close"
+            size="large"
+            // tslint:disable-next-line: jsx-no-lambda
+            onClick={() => router.goBack()}
+          />
         </div>
+        <h1 style={{ marginTop: '1em' }}>Transaction</h1>
         <Form wrapperCol={{ span: 24 }}>
           <Form.Item label={<LabelComp labelText="From" />}>
             {getFieldDecorator('from', {
@@ -150,6 +167,7 @@ class Transaction extends React.Component<ITransaction, any> {
               onChange={e => {
                 this.changeFee(e.target.value);
               }}
+              style={{ marginTop: '1em' }}
             >
               <Radio.Button value="slow">Slow</Radio.Button>
               <Radio.Button value="normal">Normal</Radio.Button>
@@ -203,6 +221,7 @@ function mapDispatch(dispatch: any) {
     getGasPrice: () => dispatch(createAction('account/getGasPrice')()),
     // makeTxn: (payload: any) => dispatch(createAction('send/makeTxn')(payload)),
     toNext: (payload: any) => dispatch(createAction('send/toNext')(payload)),
+    resetAll: () => dispatch(createAction('send/resetAll')()),
   };
 }
 

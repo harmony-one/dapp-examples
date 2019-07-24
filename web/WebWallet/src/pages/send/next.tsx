@@ -33,7 +33,6 @@ class TransactionNext extends React.Component<ITransactionNext> {
   };
 
   render() {
-    console.log(this.props.loading);
     return (
       <div className={styles.container}>
         <div className={styles.pageTop}>
@@ -64,15 +63,33 @@ class TransactionNext extends React.Component<ITransactionNext> {
           <h2>Gas Price</h2>
           <div style={{ marginTop: '1.2rem', marginBottom: '1.2rem' }}>{this.props.gasPrice}</div>
         </div>
-        <Button
-          size="large"
-          type="primary"
-          block={true}
-          style={{ height: '3.8rem', fontSize: '1.6rem' }}
-          onClick={this.handleSubmit}
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
         >
-          Send
-        </Button>
+          <Button
+            size="large"
+            type="danger"
+            block={true}
+            style={{ height: '3.8rem', fontSize: '1.6rem', marginRight: '1em' }}
+            onClick={() => router.go(-1)}
+          >
+            Back
+          </Button>
+          <Button
+            size="large"
+            type="primary"
+            block={true}
+            style={{ height: '3.8rem', fontSize: '1.6rem', marginLeft: '1em' }}
+            onClick={this.handleSubmit}
+          >
+            Send
+          </Button>
+        </div>
       </div>
     );
   }

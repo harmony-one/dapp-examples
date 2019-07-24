@@ -28,7 +28,7 @@ export default {
     providerList: [...defaultProviders],
     selected: 'Ropsten',
     messenger: new Messenger(
-      new HttpProvider(defaultProviders[1].http),
+      new WSProvider(defaultProviders[1].ws),
       defaultProviders[1].type,
       defaultProviders[1].id,
     ),
@@ -49,9 +49,13 @@ export default {
       const selectedProvider = providerList.find(value => {
         return value.name === selected;
       });
-      const http = new HttpProvider(selectedProvider.http);
+      const provider = new WSProvider(selectedProvider.ws);
 
-      const messenger = new Messenger(http, selectedProvider.ChainType, selectedProvider.ChainID);
+      const messenger = new Messenger(
+        provider,
+        selectedProvider.ChainType,
+        selectedProvider.ChainID,
+      );
 
       yield put(createAction('updateState')({ messenger }));
     },

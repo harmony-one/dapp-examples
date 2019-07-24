@@ -7,7 +7,7 @@ import { createAction } from '../../utils';
 import styles from './index.css';
 
 interface PassFormProps extends FormComponentProps {
-  confirmCreate: Function;
+  confirmCreate?: Function;
   generateMnemonic: Function;
   resetMnes: Function;
   sendMnemonic: Function;
