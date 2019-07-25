@@ -1,6 +1,8 @@
 import fs from 'fs'
+import yargs from 'yargs'
 import { harmony } from './harmony'
 import { BN } from '@harmony-js/crypto'
+import { logOutput } from './util'
 
 export async function callContract(abi, contractAddress, method, ...args) {
   const deployedContract = harmony.contracts.createContract(
@@ -8,94 +10,80 @@ export async function callContract(abi, contractAddress, method, ...args) {
     contractAddress
   )
 
-  console.log({
-    data: deployedContract.methods[method].apply(null, args).encodeABI()
-  })
-  console.log({ from: harmony.wallet.signer.checksumAddress })
+  const methodClass = deployedContract.methods[method].apply(null, args)
 
-  const methodClass = deployedContract.methods[method]
-
-  const callResult = await methodClass.apply(null, args).call({
+  const callResult = await methodClass.call({
     gasLimit: new BN('210000'),
-    gasPrice: new BN('10000000000'),
-    from: '0x0000000000000000000000000000000000000000'
-    // hmy_call {gas,gasPrice,*from,*to,*data}
+    gasPrice: new BN('10000000000')
   })
-  return callResult
+
+  return {
+    callResult,
+    callResponseHex: methodClass.callResponse.result,
+    callPayload: methodClass.callPayload
+  }
 }
-export async function alterContract(abi, contractAddress, method, ...args) {
+export async function alterContractEvent(
+  abi,
+  contractAddress,
+  method,
+  ...args
+) {
   const deployedContract = harmony.contracts.createContract(
     abi,
     contractAddress
   )
-  const methodClass = deployedContract.methods[method]
 
-  methodClass.wallet.signer = undefined
+  // if blockchain support event system it should work
+  deployedContract.events
+    .DemoEvent({ fromBlock: 'latest' })
+    .on('data', data => {
+      logOutput('event data', data)
+    })
+    .on('changed', changed => {
+      logOutput('event changed', changed)
+    })
+    .on('error', error => {
+      logOutput('event error', error)
+    })
 
-  console.log(methodClass)
-  const callResult = await methodClass.apply(null, args).send({
+  const methodClass = deployedContract.methods[method].apply(null, args)
+
+  const sendResult = await methodClass.send({
     gasLimit: new BN('210000'),
     gasPrice: new BN('10000000000')
-    // from: harmony.wallet.signer.checksumAddress
   })
-  return callResult
+
+  return sendResult
 }
 
 // command line only
 if (process.argv0 !== undefined && process.argv.slice(2)[0] !== undefined) {
-  const abiFile = JSON.parse(fs.readFileSync(process.argv.slice(2)[0], 'utf8'))
+  const argv = yargs
+    .demandOption('file')
+    .demandOption('address')
+    .alias('f', 'file')
+    .alias('a', 'address')
+    .alias('i', 'info')
+    .describe('f', '{contract}.json')
+    .describe('a', 'contract address string')
+    .describe('i', '{contract}-{address}.json').argv
+  const abiFile = JSON.parse(fs.readFileSync(argv.file, 'utf8'))
   const { abi } = abiFile
-  const contractAddress = harmony.utils.isValidAddress(process.argv.slice(2)[1])
-    ? process.argv.slice(2)[1]
-    : JSON.parse(fs.readFileSync(process.argv.slice(2)[1], 'utf8'))
-        .contractAddress
+  const contractAddress = harmony.utils.isValidAddress(argv.address)
+    ? argv.address
+    : JSON.parse(fs.readFileSync(argv.info, 'utf8')).contractAddress
 
-  // const myContract = harmony.contracts.createContract(abi, contractAddress)
-
-  // myContract.events
-  //   .DemoEvent({ fromBlock: 'latest' })
-  //   .on('data', data => {
-  //     console.log(data)
-  //   })
-  //   .on('changed', changed => {
-  //     console.log(changed)
-  //   })
-  //   .on('error', error => {
-  //     console.log(error)
-  //   })
-
-  // callContract(abi, contractAddress, 'print').then(result => {
-  //   console.log('print', result)
-  // })
-  // callContract(abi, contractAddress, 'add', 123, 321).then(result => {
-  //   console.log('add', result)
-  // })
-  callContract(abi, contractAddress, 'manager').then(result => {
-    console.log('manager', result)
+  callContract(abi, contractAddress, 'print').then(result => {
+    logOutput('method called: print', result)
   })
-
-  // callContract(abi, contractAddress, 'fireEvent', 333).then(() => {
-  //   console.log('')
-  //   console.log('----------')
-  //   console.log('')
-  //   console.log('called')
-  //   console.log('')
-  //   console.log('----------')
-  //   alterContract(abi, contractAddress, 'fireEvent', 444).then(() => {
-  //     console.log('')
-  //     console.log('----------')
-  //     console.log('')
-  //     console.log('triggered')
-  //     console.log('')
-  //     console.log('----------')
-  //     callContract(abi, contractAddress, 'fireEvent', 555).then(() => {
-  //       console.log('')
-  //       console.log('----------')
-  //       console.log('')
-  //       console.log('done')
-  //       console.log('')
-  //       console.log('----------')
-  //     })
-  //   })
-  // })
+  callContract(abi, contractAddress, 'add', 123, 321).then(result => {
+    logOutput('method called: add', result)
+  })
+  callContract(abi, contractAddress, 'manager').then(result => {
+    logOutput('method called: manager', result)
+  })
+  alterContractEvent(abi, contractAddress, 'fireEvent', 444).then(result => {
+    logOutput('altered contract with fireEvent', result)
+  })
 }

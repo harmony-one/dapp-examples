@@ -28,9 +28,9 @@ export default {
     providerList: [...defaultProviders],
     selected: 'Ropsten',
     messenger: new Messenger(
-      new HttpProvider(defaultProviders[0].http),
-      defaultProviders[0].type,
-      defaultProviders[0].id,
+      new WSProvider(defaultProviders[1].ws),
+      defaultProviders[1].type,
+      defaultProviders[1].id,
     ),
   },
   reducers: {
@@ -49,7 +49,7 @@ export default {
       const selectedProvider = providerList.find(value => {
         return value.name === selected;
       });
-      const provider = new HttpProvider(selectedProvider.http);
+      const provider = new WSProvider(selectedProvider.ws);
 
       const messenger = new Messenger(
         provider,
