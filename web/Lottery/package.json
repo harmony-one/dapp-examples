@@ -5,6 +5,7 @@
     "build": "umi build",
     "test": "umi test",
     "lint": "eslint --ext .js src mock tests",
+    "deploy": "yarn build && rm -rf ../statics/Lottery && mkdir ../statics/Lottery && mv dist/*.* ../statics/Lottery",
     "precommit": "lint-staged"
   },
   "dependencies": {

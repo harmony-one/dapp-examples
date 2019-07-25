@@ -18,10 +18,6 @@ export default {
       },
     ],
   ],
-  proxy: {
-    '/api': {
-      target: 'http://localhost:9500',
-      changeOrigin: true,
-    },
-  },
+  history: 'hash',
+  publicPath: '/Lottery/',
 };

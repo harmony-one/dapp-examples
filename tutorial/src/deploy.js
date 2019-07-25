@@ -15,7 +15,14 @@ export async function checkMyAccount(account) {
   return true
 }
 
-export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
+export async function deployContract(
+  contract,
+  bin,
+  gasLimit,
+  gasPrice,
+  nonce,
+  amount
+) {
   const beforeBalance = await myAccount.getBalance()
 
   const txnObj = {
@@ -30,6 +37,9 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
     gasPrice: new harmony.utils.Unit(gasPrice).asGwei().toWei()
     // value: new harmony.utils.Unit(0.5).asEther().toWei()
     // nonce: nonce !== undefined ? nonce : beforeBalance.nonce
+  }
+  if (amount) {
+    txnObj.value = new harmony.utils.Unit(amount).asEther().toWei()
   }
 
   const deployed = await contract
@@ -103,7 +113,14 @@ export async function deployContract(contract, bin, gasLimit, gasPrice, nonce) {
   }
 }
 
-export async function deploy(file, gasLimit, gasPrice, nonce, compileTo) {
+export async function deploy(
+  file,
+  gasLimit,
+  gasPrice,
+  nonce,
+  amount,
+  compileTo
+) {
   // compile the sol file first, and get the abi and bin
   const { abi, bin } = compileContract(file, compileTo)
 
@@ -123,7 +140,8 @@ export async function deploy(file, gasLimit, gasPrice, nonce, compileTo) {
       bin,
       gasLimit,
       gasPrice,
-      nonce
+      nonce,
+      amount
     )
 
     // we get the contract's address
@@ -156,7 +174,11 @@ export async function deploy(file, gasLimit, gasPrice, nonce, compileTo) {
     console.log('')
     console.log('---- Balance Deduction ----')
     console.log('')
-    console.log(`Transfer Amount  : ${0} wei`)
+    console.log(
+      `Transfer Amount  : ${new harmony.utils.Unit(amount)
+        .asEther()
+        .toWei()} wei`
+    )
     console.log(`Transaction Fee  : ${deployed.transactionFee} wei`)
     console.log(`Sub Total        : ${deployed.actualCost} wei`)
     console.log('')
@@ -190,19 +212,22 @@ if (process.argv0 !== undefined) {
     .alias('l', 'gasLimit')
     .alias('p', 'gasPrice')
     .alias('n', 'nonce')
+    .alias('a', 'amount')
     .describe('f', 'file to compile')
     .describe('t', 'save compiled file to')
     .describe('l', 'gas limit in wei')
     .describe('n', 'specific nonce')
+    .describe('a', 'amount in ether')
     .describe('p', 'gas price in Gwei').argv
 
   const file = argv.file
   const compileTo = argv.compileTo || argv.file.replace('.sol', '.json')
   const gasLimit = argv.gasLimit ? `${argv.gasLimit}` : '210000'
   const gasPrice = argv.gasPrice ? `${argv.gasPrice}` : '100'
+  const amount = argv.amount ? `${argv.amount}` : undefined
   const nonce = argv.nonce
 
-  deploy(file, gasLimit, gasPrice, nonce, compileTo).then(result => {
+  deploy(file, gasLimit, gasPrice, nonce, amount, compileTo).then(result => {
     const timeStamp = new Date().toJSON()
     const { contractCode, contractAddress } = result
     console.log(result)

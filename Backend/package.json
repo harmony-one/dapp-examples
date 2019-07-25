@@ -1,0 +1,29 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend for example",
+  "main": "index.js",
+  "scripts": {
+    "build:server": "rm -rf build && ./node_modules/.bin/babel src -d build ",
+    "watch:server": "./node_modules/.bin/babel src --watch -d build"
+  },
+  "author": "neeboo@firestack.one",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.0",
+    "@babel/plugin-transform-runtime": "^7.5.0",
+    "@babel/preset-env": "^7.5.3",
+    "@babel/runtime": "^7.5.4",
+    "body-parser": "^1.19.0",
+    "commander": "^2.20.0",
+    "cors": "^2.8.5",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "mime": "^2.4.4",
+    "moment": "^2.24.0",
+    "morgan": "^1.9.1",
+    "request": "^2.88.0",
+    "uuid": "^3.3.2"
+  }
+}

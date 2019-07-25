@@ -35,17 +35,17 @@ export async function alterContractEvent(
   )
 
   // if blockchain support event system it should work
-  deployedContract.events
-    .DemoEvent({ fromBlock: 'latest' })
-    .on('data', data => {
-      logOutput('event data', data)
-    })
-    .on('changed', changed => {
-      logOutput('event changed', changed)
-    })
-    .on('error', error => {
-      logOutput('event error', error)
-    })
+  // deployedContract.events
+  //   .DemoEvent({ fromBlock: 'latest' })
+  //   .on('data', data => {
+  //     logOutput('event data', data)
+  //   })
+  //   .on('changed', changed => {
+  //     logOutput('event changed', changed)
+  //   })
+  //   .on('error', error => {
+  //     logOutput('event error', error)
+  //   })
 
   const methodClass = deployedContract.methods[method].apply(null, args)
 

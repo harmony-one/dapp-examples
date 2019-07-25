@@ -22,15 +22,17 @@ const defaultProviders = [
   },
 ];
 
+const index = 0;
+
 export default {
   namespace: 'network',
   state: {
     providerList: [...defaultProviders],
     selected: 'Ropsten',
     messenger: new Messenger(
-      new WSProvider(defaultProviders[1].ws),
-      defaultProviders[1].type,
-      defaultProviders[1].id,
+      new WSProvider(defaultProviders[index].ws),
+      defaultProviders[index].type,
+      defaultProviders[index].id,
     ),
   },
   reducers: {

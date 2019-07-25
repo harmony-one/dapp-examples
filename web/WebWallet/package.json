@@ -4,6 +4,7 @@
     "start": "umi dev",
     "build": "umi build",
     "test": "umi test",
+    "deploy": "yarn build && rm -rf ../statics/WebWallet && mkdir ../statics/WebWallet && mv dist/*.* ../statics/WebWallet",
     "lint:es": "eslint --ext .js src mock tests",
     "lint:ts": "tslint \"src/**/*.ts\" \"src/**/*.tsx\"",
     "precommit": "lint-staged"

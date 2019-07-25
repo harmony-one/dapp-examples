@@ -5,7 +5,12 @@
   "license": "MIT",
   "scripts": {
     "build:tutorial": "rm -rf ./tutorial/build && ./node_modules/.bin/babel ./tutorial/src -d ./tutorial/build ",
-    "watch:tutorial": "./node_modules/.bin/babel ./tutorial/src --watch -d ./tutorial/build"
+    "watch:tutorial": "./node_modules/.bin/babel ./tutorial/src --watch -d ./tutorial/build",
+    "build:wallet": "cd web/WebWallet && yarn install && yarn deploy",
+    "build:lottery": "cd web/Lottery && yarn install && yarn deploy",
+    "build:webapps": "yarn build:wallet && yarn build:lottery",
+    "run:server": "cd Backend && yarn install && yarn build:server && node build/index.js",
+    "start": "yarn build:webapps && yarn run:server"
   },
   "dependencies": {
     "@babel/cli": "^7.5.0",
