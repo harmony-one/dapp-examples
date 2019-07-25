@@ -1,33 +1,33 @@
 # Table of Content <!-- omit in toc -->
-1. [What is it](#What-is-it)
-2. [Very Quick Start](#Very-Quick-Start)
-   1. [Build tutorial scripts](#Build-tutorial-scripts)
-   2. [Deploy example contract](#Deploy-example-contract)
-   3. [Call example contract function](#Call-example-contract-function)
-   4. [Alice to Bob transfer](#Alice-to-Bob-transfer)
-3. [Get `Harmony` ready](#Get-Harmony-ready)
-   1. [About the SDK](#About-the-SDK)
-   2. [Install `@harmony-js/core`](#Install-harmony-jscore)
-   3. [Import { Harmony } from '@harmony-js/core`](#Import--Harmony--from-harmony-jscore)
-   4. [Import phrases to Wallet](#Import-phrases-to-Wallet)
-   5. [Put it all together](#Put-it-all-together)
-4. [Compiling Job](#Compiling-Job)
-   1. [Compile with `solcjs` or `truffle.js` (Skippable)](#Compile-with-solcjs-or-trufflejs-Skippable)
-   2. [Import `fs` `path` and `solc` first](#Import-fs-path-and-solc-first)
-   3. [Locate FileName and get path(s)](#Locate-FileName-and-get-paths)
-   4. [Get `solc` to work](#Get-solc-to-work)
-   5. [Export the main compiling function](#Export-the-main-compiling-function)
-5. [Contract Deployment](#Contract-Deployment)
-   1. [Create contract instance and set params](#Create-contract-instance-and-set-params)
-   2. [Deploy and listening Transaction events](#Deploy-and-listening-Transaction-events)
-6. [Contract Call](#Contract-Call)
-   1. [Pick a method](#Pick-a-method)
-   2. [Make the call](#Make-the-call)
-7. [Address to address transaction](#Address-to-address-transaction)
-   1. [Construct a `Transaction`](#Construct-a-Transaction)
-   2. [Sign with `Account`](#Sign-with-Account)
-   3. [Send it to blockchain](#Send-it-to-blockchain)
-   4. [Confirm the result](#Confirm-the-result)
+1. [What is it](#what-is-it)
+2. [Very Quick Start](#very-quick-start)
+   1. [Build tutorial scripts](#build-tutorial-scripts)
+   2. [Deploy example contract](#deploy-example-contract)
+   3. [Call example contract function](#call-example-contract-function)
+   4. [Alice to Bob transfer](#alice-to-bob-transfer)
+3. [Get `Harmony` ready](#get-harmony-ready)
+   1. [About the SDK](#about-the-sdk)
+   2. [Install `@harmony-js/core`](#install-harmony-jscore)
+   3. [Import { Harmony } from '@harmony-js/core`](#import--harmony--from-harmony-jscore)
+   4. [Import phrases to Wallet](#import-phrases-to-wallet)
+   5. [Put it all together](#put-it-all-together)
+4. [Compiling Job](#compiling-job)
+   1. [Compile with `solcjs` or `truffle.js` (Skippable)](#compile-with-solcjs-or-trufflejs-skippable)
+   2. [Import `fs` `path` and `solc` first](#import-fs-path-and-solc-first)
+   3. [Locate FileName and get path(s)](#locate-filename-and-get-paths)
+   4. [Get `solc` to work](#get-solc-to-work)
+   5. [Export the main compiling function](#export-the-main-compiling-function)
+5. [Contract Deployment](#contract-deployment)
+   1. [Create contract instance and set params](#create-contract-instance-and-set-params)
+   2. [Deploy and listening Transaction events](#deploy-and-listening-transaction-events)
+6. [Contract Call](#contract-call)
+   1. [Pick a method](#pick-a-method)
+   2. [Make the call](#make-the-call)
+7. [Address to address transaction](#address-to-address-transaction)
+   1. [Construct a `Transaction`](#construct-a-transaction)
+   2. [Sign with `Account`](#sign-with-account)
+   3. [Send it to blockchain](#send-it-to-blockchain)
+   4. [Confirm the result](#confirm-the-result)
 
 
 # What is it
@@ -67,8 +67,10 @@ Use default `node` command to deploy,
 * `-p` specify the `gasPrice` in Gwei
 
 ```bash
-node deploy.js -f=../contracts/example/MyContract.sol -l=210000 -p=100
+node deploy.js -f ../contracts/example/MyContract.sol -l 840000 -p 100
 ```
+
+**Note: if your contract has some alter state function, you should increase the `gasLimit`, otherwise the contract cannot be deployed**
 
 After a few minutes (about 3-4 mins, depends on Ropsten's speed ), you can see a `.json` file is located in the `tutorial/contracts/example/`, named with `MyContract-0xxxxxx-.json`, open it and you can see a json like:
 
@@ -95,23 +97,40 @@ In this example, the contract is deployed to `0xe996cD26A3b77dD733cBec92dd611693
 
 **Go to `bulid` folder** in your console, no need to type in `-f` options, use space to split the parameters, like this:
 
+Use default `node` command to deploy, 
+* `-f` to sepecify the location of `.json` file(relative path to the `build` folder),
+* `-a` speicify the deployed contract address, 
+* `-j` specify the deployed contract `.json` file
+
 ```
-node call.js  <compiler-output.json>  <contractAddress>
+node call.js  -f <compiler-output.json> -a <contractAddress>
 ```
 
 In this case, that will be:
 
 ```bash
-node call.js ../contracts/example/MyContract.json 0xe996cD26A3b77dD733cBec92dd61169307ca848a
+node call.js -f ../contracts/example/MyContract.json -a 0xe996cD26A3b77dD733cBec92dd61169307ca848a
 ```
 
 You should be able to see output in your console:
 
 ```bash
-{ '0': '23456',
-  '1': 'Hello!%',
-  myNumber: '23456',
-  myString: 'Hello!%' }
+{ callResult:
+   { '0': '23456',
+     '1': 'Hello!%',
+     myNumber: '23456',
+     myString: 'Hello!%' },
+  callResponseHex:
+   '0x0000000000000000000000000000000000000000000000000000000000005ba00000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000748656c6c6f212500000000000000000000000000000000000000000000000000',
+  callPayload:
+   { from: '0x1a3e7a44ee21101d7d64fbf29b0f6f1fc295f723',
+     to: '0x59C5a8Ce880463DB9505CAc3f7966925F036fd2b',
+     gas: '0x33450',
+     gasPrice: '0x2540be400',
+     value: '0x0',
+     data: '0x13bdfacd',
+     nonce: '0x1a' } }
+
 ```
 
 Now you have complete the quick start.If you are interested how it works, and how to use `Harmony`'s sdk, please reference with following content.
@@ -134,7 +153,7 @@ Use default `node` command to deploy,
 ## go to build folder
 cd tutorial/build 
 ## make the transfer
-node transfer.js --to=0xf2a08313fc79a01adbc5e700b063ed83ed07b446 -a=1234567 
+node transfer.js --to 0xf2a08313fc79a01adbc5e700b063ed83ed07b446 -a 1234567 
 ```
 After 1-2 minutes, depending on the finalty.
 
