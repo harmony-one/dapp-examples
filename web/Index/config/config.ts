@@ -1,8 +1,8 @@
 import { IConfig, IPlugin } from 'umi-types';
 
+import slash from 'slash2';
 import defaultSettings from './defaultSettings';
 // https://umijs.org/config/
-import slash from 'slash2';
 import webpackPlugin from './plugin.config';
 
 const { pwa, primaryColor } = defaultSettings;
@@ -158,13 +158,12 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  /*
+
   proxy: {
-    '/server/api/': {
-      target: 'https://preview.pro.ant.design/',
+    '/api/': {
+      target: 'https://localhost:3000/',
       changeOrigin: true,
-      pathRewrite: { '^/server': '' },
+      pathRewrite: { '^/api': '' },
     },
   },
-  */
 } as IConfig;

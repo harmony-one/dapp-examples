@@ -1,4 +1,11 @@
-import { restHello, restUser, restGetUsers } from '../services/restful'
+import {
+  restHello,
+  restUser,
+  restGetUsers,
+  getContracts,
+  compileContract,
+  getSol
+} from '../services/restful'
 import restfulGenerator from '../utils/restfulGenerator'
 
 const routerTable = [
@@ -16,6 +23,21 @@ const routerTable = [
     method: 'get',
     name: '/getUsers',
     exec: restGetUsers
+  },
+  {
+    method: 'get',
+    name: '/getContracts',
+    exec: getContracts
+  },
+  {
+    method: 'get',
+    name: '/compileContract',
+    exec: compileContract
+  },
+  {
+    method: 'get',
+    name: '/getSol',
+    exec: getSol
   }
 ]
 

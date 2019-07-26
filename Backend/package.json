@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build:server": "rm -rf build && ./node_modules/.bin/babel src -d build ",
-    "watch:server": "./node_modules/.bin/babel src --watch -d build"
+    "watch:server": "./node_modules/.bin/babel src --watch -d build",
+    "start": "node build/index.js"
   },
   "author": "neeboo@firestack.one",
   "license": "MIT",
@@ -24,6 +25,7 @@
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "request": "^2.88.0",
+    "solc": "^0.5.10",
     "uuid": "^3.3.2"
   }
 }
