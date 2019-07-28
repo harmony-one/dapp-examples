@@ -1,5 +1,8 @@
 export default {
   'menu.welcome': '欢迎',
+  'menu.contracts': '合约',
+  'menu.contracts.All': '所有合约',
+  'menu.contracts.Detail': '详情',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',
   'menu.login': '登录',

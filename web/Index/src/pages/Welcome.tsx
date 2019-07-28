@@ -1,7 +1,14 @@
 import React from 'react';
+import { connect } from 'dva';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 
-export default (): React.ReactNode => (
+import { ConnectProps, ConnectState, Dispatch } from '@/models/connect';
+
+import { createAction } from '@/utils/createAction';
+
+interface WelcomeProps extends ConnectProps {}
+
+const Welcome: React.FC<WelcomeProps> = () => (
   <PageHeaderWrapper>
     <p style={{ textAlign: 'center' }}>
       Want to add more pages? Please refer to{' '}
@@ -12,3 +19,16 @@ export default (): React.ReactNode => (
     </p>
   </PageHeaderWrapper>
 );
+
+const mapState = ({ contract }: ConnectState) => ({
+  contractSols: contract.contractSols,
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  fetchContracts: () => dispatch(createAction('contract/fetchContracts')()),
+});
+
+export default connect(
+  mapState,
+  mapDispatch,
+)(Welcome);

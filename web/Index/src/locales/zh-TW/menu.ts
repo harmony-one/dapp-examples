@@ -1,5 +1,8 @@
 export default {
   'menu.welcome': '歡迎',
+  'menu.contracts': '合約',
+  'menu.contracts.All': '所有合約',
+  'menu.contracts.Detail': '詳情',
   'menu.more-blocks': '更多區塊',
 
   'menu.home': '首頁',

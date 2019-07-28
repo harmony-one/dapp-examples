@@ -175,9 +175,9 @@ export async function deploy(
     console.log('---- Balance Deduction ----')
     console.log('')
     console.log(
-      `Transfer Amount  : ${new harmony.utils.Unit(amount)
-        .asEther()
-        .toWei()} wei`
+      `Transfer Amount  : ${
+        amount ? new harmony.utils.Unit(amount).asEther().toWei() : 0
+      } wei`
     )
     console.log(`Transaction Fee  : ${deployed.transactionFee} wei`)
     console.log(`Sub Total        : ${deployed.actualCost} wei`)

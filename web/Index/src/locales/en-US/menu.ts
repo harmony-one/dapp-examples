@@ -1,5 +1,8 @@
 export default {
   'menu.welcome': 'Welcome',
+  'menu.contracts': 'Contracts',
+  'menu.contracts.All': 'All Contracts',
+  'menu.contracts.Detail': 'Detail',
   'menu.more-blocks': 'More Blocks',
   'menu.home': 'Home',
   'menu.login': 'Login',
