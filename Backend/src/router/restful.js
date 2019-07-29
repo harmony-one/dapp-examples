@@ -5,7 +5,9 @@ import {
   getContracts,
   compileContract,
   getSol,
-  currentUser
+  currentUser,
+  saveDeployed,
+  getDeployed
 } from '../services/restful'
 import restfulGenerator from '../utils/restfulGenerator'
 
@@ -45,6 +47,16 @@ const routerTable = [
     method: 'get',
     name: '/getSol',
     exec: getSol
+  },
+  {
+    method: 'get',
+    name: '/saveDeployed',
+    exec: saveDeployed
+  },
+  {
+    method: 'get',
+    name: '/getDeployed',
+    exec: getDeployed
   }
 ]
 

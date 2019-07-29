@@ -6,7 +6,7 @@
   "scripts": {
     "build:server": "rm -rf build && ./node_modules/.bin/babel src -d build ",
     "watch:server": "./node_modules/.bin/babel src --watch -d build",
-    "start": "node build/index.js"
+    "start": "yarn build:server && node build/index.js"
   },
   "author": "neeboo@firestack.one",
   "license": "MIT",

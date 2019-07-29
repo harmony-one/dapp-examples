@@ -1,7 +1,14 @@
-import { Effect } from 'dva';
+import { Effect, Subscription } from 'dva';
 import { Reducer } from 'redux';
 
-import { queryContracts, querySol, getAbiBin } from '@/services/contract';
+import { Contract } from '@harmony-js/contract';
+import {
+  queryContracts,
+  querySol,
+  getAbiBin,
+  saveDeployed,
+  getDeployed,
+} from '@/services/contract';
 
 import { Harmony, getNetworkSetting, Emitter } from '@/services/harmony';
 
@@ -14,12 +21,18 @@ export function logOutput(title: string, content: any) {
   console.log();
 }
 
-export interface ContractPath {
-  path: string;
+export interface IContractData {
+  transactionHash: string;
+  owner: string;
+  address: string;
+  network: any;
+  receipt: any;
+  status: string;
+  timeStamp: string;
 }
 
-export interface Contract {
-  [key: string]: ContractPath;
+export interface ContractPath {
+  path: string;
 }
 
 export interface ContractSol {
@@ -35,6 +48,7 @@ export interface ContractModelState {
   contractSols?: ContractSol[];
   selectedContract?: ContractSol;
   accountBalance?: string;
+  deployedContracts?: IContractData[];
   emitter?: Emitter;
 }
 
@@ -48,12 +62,15 @@ export interface ContractModelType {
     fetchAccountBalance: Effect;
     resetNetwork: Effect;
     setupDeploy: Effect;
+    fetchDeployed: Effect;
+    findContract: Effect;
   };
   reducers: {
     saveCurrentContracts: Reducer<ContractModelState>;
     saveCurrentSol: Reducer<ContractModelState>;
     updateState: Reducer<ContractModelState>;
   };
+  subscriptions: { setup: Subscription };
 }
 
 const ContractModel: ContractModelType = {
@@ -61,22 +78,30 @@ const ContractModel: ContractModelType = {
   state: {
     contracts: [],
     contractSols: [],
+    deployedContracts: [],
     selectedContract: undefined,
     accountBalance: '',
   },
 
   effects: {
-    *fetchContracts(_, { call, put }) {
+    *fetchContracts({ payload }, { call, put }) {
       const response = yield call(queryContracts);
       yield put({
         type: 'saveCurrentContracts',
         payload: response,
       });
-      yield put({
-        type: 'fetchSol',
-      });
+      if (payload) {
+        yield put({
+          type: 'fetchSol',
+          payload: { select: payload.select },
+        });
+      } else {
+        yield put({
+          type: 'fetchSol',
+        });
+      }
     },
-    *fetchSol(_, { call, put, select }) {
+    *fetchSol({ payload }, { call, put, select }) {
       const contracts: ContractPath[] = yield select((state: any) => state.contract.contracts);
       const contractSols = [];
       for (const contract of contracts) {
@@ -85,10 +110,23 @@ const ContractModel: ContractModelType = {
         const { path } = contract[name];
         contractSols.push({ name, code, path, key: name });
       }
+
       yield put({
         type: 'saveCurrentSol',
         payload: contractSols,
       });
+
+      if (payload && payload.select) {
+        yield put({
+          type: 'findContract',
+          payload: payload.select,
+        });
+      }
+    },
+    *fetchDeployed({ payload }, { call, put, select }) {
+      yield put({ type: 'updateState', payload: { emitter: undefined } });
+      const deployedContracts = yield getDeployed(payload);
+      yield put({ type: 'updateState', payload: { deployedContracts } });
     },
 
     *setupDeploy({ payload }, { call, put, select }) {
@@ -99,11 +137,11 @@ const ContractModel: ContractModelType = {
       const { url, chainId, chainType } = getNetworkSetting(network);
       const harmony = new Harmony(url, { chainId, chainType, chainUrl: url });
       const prv = from;
-      harmony.wallet.addByPrivateKey(prv);
+      const owner = harmony.wallet.addByPrivateKey(prv);
 
       const txnObj: any = {
         gasLimit: new harmony.utils.Unit(gasLimit).asWei().toWei(),
-        gasPrice: new harmony.utils.Unit(gasPrice).asGwei().toWei(),
+        gasPrice: new harmony.utils.Unit(gasPrice).asWei().toWei(),
       };
       if (amount) {
         txnObj.value = new harmony.utils.Unit(amount).asEther().toWei();
@@ -111,7 +149,7 @@ const ContractModel: ContractModelType = {
 
       const { abi, bin } = yield getAbiBin(selectedContract.name);
       const toDeploy = harmony.contracts.createContract(abi);
-      const emitter = yield toDeploy
+      const emitter: Emitter = toDeploy
         .deploy({
           data: `0x${bin}`,
           arguments: [],
@@ -123,9 +161,34 @@ const ContractModel: ContractModelType = {
           emitter,
         },
       });
-    },
+      const resolved: Contract = yield emitter;
 
+      const saveDeployedPayload: IContractData = {
+        transactionHash: resolved.transaction ? resolved.transaction.txParams.id : '',
+        owner: owner.checksumAddress,
+        address: resolved.address,
+        network: { url, chainId, chainType, network },
+        receipt: resolved.transaction ? resolved.transaction.receipt : {},
+        status: resolved.status,
+        timeStamp: new Date().toJSON(),
+      };
+      const savePayload = JSON.stringify(saveDeployedPayload);
+      const contractName = selectedContract.name;
+      yield saveDeployed(contractName, savePayload);
+      yield put({ type: 'fetchDeployed', payload: contractName });
+    },
+    *findContract({ payload }, { call, put, select }) {
+      const contractSols: ContractSol[] = yield select((state: any) => state.contract.contractSols);
+      const foundSol = contractSols.find(value => value.name === payload);
+      yield put({ type: 'selectContract', payload: foundSol });
+    },
     *selectContract({ payload }, { call, put, select }) {
+      // yield put({
+      //   type: 'updateState',
+      //   payload: {
+      //     selectedContract: undefined,
+      //   },
+      // });
       yield put({
         type: 'updateState',
         payload: {
@@ -136,19 +199,24 @@ const ContractModel: ContractModelType = {
     *fetchAccountBalance({ payload }, { put }) {
       const { network, accountAddress } = payload;
       const { url, chainId, chainType } = getNetworkSetting(network);
-      const harmony = new Harmony(url, { chainId, chainType, chainUrl: url });
-      const balance = yield harmony.blockchain.getBalance({ address: accountAddress });
-      if (balance.result) {
-        const accountBalance = new harmony.utils.Unit(harmony.utils.hexToNumber(balance.result))
-          .asWei()
-          .toEther();
 
-        yield put({
-          type: 'updateState',
-          payload: {
-            accountBalance,
-          },
-        });
+      try {
+        const harmony = new Harmony(url, { chainId, chainType, chainUrl: url });
+        const balance = yield harmony.blockchain.getBalance({ address: accountAddress });
+        if (balance.result) {
+          const accountBalance = new harmony.utils.Unit(harmony.utils.hexToNumber(balance.result))
+            .asWei()
+            .toEther();
+
+          yield put({
+            type: 'updateState',
+            payload: {
+              accountBalance,
+            },
+          });
+        }
+      } catch (error) {
+        console.log(error);
       }
     },
     *resetNetwork(_, { put }) {
@@ -180,6 +248,18 @@ const ContractModel: ContractModelType = {
         ...state,
         ...payload,
       };
+    },
+  },
+  subscriptions: {
+    setup({ history, dispatch }): void {
+      // Subscribe history(url) change, trigger `load` action if pathname is `/`
+      history.listen(({ pathname, search }): void => {
+        if (pathname === '/Contracts/detail' && search.startsWith('?name=')) {
+          const name = search.substring(6);
+
+          dispatch({ type: 'fetchContracts', payload: { select: name } });
+        }
+      });
     },
   },
 };

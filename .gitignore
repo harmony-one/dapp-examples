@@ -8,6 +8,6 @@ tutorial/contracts/**/*.json
 
 # backend
 Backend/build
-
+Backend/contracts/**/*.json
 # webapp statics folder
 web/statics/*/

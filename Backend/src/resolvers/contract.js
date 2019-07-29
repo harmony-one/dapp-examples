@@ -36,3 +36,47 @@ export const getContractCode = async name => {
   }
   return ''
 }
+
+export const saveDeployed = async (name, payload) => {
+  const contracts = await getContracts()
+  const found = contracts.find(c => {
+    return name === Object.keys(c)[0]
+  })
+  if (found) {
+    const toSave = `${found[name].path.replace('.sol', '')}-${
+      payload.address
+    }.json`
+    const filePath = path.join(__dirname, '../../', toSave)
+    return fs.writeFileSync(filePath, JSON.stringify(payload))
+  }
+  return ''
+}
+
+export const getDeployed = async name => {
+  const contracts = await getContracts()
+  const found = contracts.find(c => {
+    return name === Object.keys(c)[0]
+  })
+  if (found) {
+    const toGrab = `${found[name].path.replace(`${name}.sol`, '')}`
+    const fsArray = fs.readdirSync(path.join(__dirname, '../../', toGrab))
+    const exactArray = fsArray.filter(
+      val =>
+        !!val
+          .replace(`${name}`, '')
+          .replace(`.json`, '')
+          .replace(`.sol`, '')
+          .replace('-', '')
+          .replace('0x', '')
+          .match(`^[0-9a-fA-F]{40}$`)
+    )
+    const result = []
+    exactArray.forEach(val => {
+      const filePath = path.join(__dirname, '../../', toGrab, val)
+      const content = fs.readFileSync(filePath, { encoding: 'utf8' })
+      result.push(JSON.parse(content))
+    })
+    return result
+  }
+  return ''
+}

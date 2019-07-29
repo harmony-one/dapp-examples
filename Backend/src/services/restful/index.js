@@ -2,7 +2,9 @@ import { getUsers, hello, getUser } from '../../resolvers'
 import {
   getContracts,
   complileWithPath,
-  getContractCode
+  getContractCode,
+  saveDeployed as saveToLocal,
+  getDeployed as getLocalDeployed
 } from '../../resolvers/contract'
 
 export const restHello = async () => hello()
@@ -93,6 +95,27 @@ export const getSol = async req => {
   const name = query ? query.name : null
   if (name !== null) {
     const result = await getContractCode(name)
+    return result
+  }
+  return null
+}
+
+export const saveDeployed = async (req, res) => {
+  const { query } = req
+  const { name, payload } = query
+  if (name !== null && payload !== null) {
+    console.log(JSON.parse(payload))
+    const result = await saveToLocal(name, JSON.parse(payload))
+    return result
+  }
+  return null
+}
+
+export const getDeployed = async (req, res) => {
+  const { query } = req
+  const { name, payload } = query
+  if (name !== null) {
+    const result = await getLocalDeployed(name)
     return result
   }
   return null

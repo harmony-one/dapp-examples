@@ -5,7 +5,7 @@ import { connect } from 'dva';
 
 import { getAddressFromPrivateKey } from '@harmony-js/crypto';
 import { isValidAddress, Unit, isPrivateKey } from '@harmony-js/utils';
-import { Emitter } from '@harmony-js/network';
+
 import { ConnectProps, ConnectState, Dispatch } from '@/models/connect';
 import styles from './index.less';
 import { createAction } from '@/utils/createAction';
@@ -35,7 +35,8 @@ const BalanceWrapper = connect((state: any) => ({
 
 interface ITransaction extends FormComponentProps {
   // balance: string;
-  emitter: Emitter;
+  // emitter: Emitter;
+  onSubmit: Function;
   location: any;
   getBalance: Function;
   setupDeploy: Function;
@@ -114,6 +115,7 @@ class Transaction extends React.Component<ITransaction, any> {
     this.props.form.validateFields((err: any, values: any) => {
       if (!err) {
         this.props.setupDeploy({ ...values, ...this.state });
+        this.props.onSubmit();
         // this.props.resetAll();
         // this.props.toNext({
         //   ...values,
@@ -126,22 +128,6 @@ class Transaction extends React.Component<ITransaction, any> {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    // const maxBalance = Number.parseInt(new Unit('1000').asWei().toWeiString(), 10);
-    if (this.props.emitter) {
-      this.props.emitter
-        .on('transactionHash', (transactionHash: string) => {
-          console.log('We got Transaction Hash', transactionHash);
-        })
-        .on('receipt', (receipt: any) => {
-          console.log('We got transaction receipt', receipt);
-        })
-        .on('confirmation', (confirmation: any) => {
-          console.log('The transaction is', confirmation);
-        })
-        .on('error', (error: any) => {
-          console.log('Something wrong happens', error);
-        });
-    }
 
     return (
       <div className={styles.container}>
@@ -166,6 +152,7 @@ class Transaction extends React.Component<ITransaction, any> {
               <Select>
                 <Option value="LocalHarmony">Harmony(Local TestNet)</Option>
                 <Option value="EthRopsten">Ropsten(ETH TestNet)</Option>
+                <Option value="EthGanache">Ganache(ETH Local TestNet)</Option>
               </Select>,
             )}
           </Form.Item>
@@ -224,7 +211,7 @@ const WrappedTransaction = Form.create<ITransaction>({
         value: 0,
       }),
       network: Form.createFormField({
-        value: 'LocalHarmony',
+        value: 'EthGanache',
       }),
     };
   },
@@ -238,7 +225,7 @@ function mapState(state: ConnectState) {
   return {
     // loading: state.loading.global,
     // balance: state.contract.accountBalance,
-    emitter: state.contract.emitter,
+    // emitter: state.contract.emitter,
   };
 }
 function mapDispatch(dispatch: Dispatch) {

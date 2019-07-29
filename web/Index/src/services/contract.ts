@@ -11,3 +11,11 @@ export async function querySol(name: string): Promise<any> {
 export async function getAbiBin(name: string): Promise<any> {
   return request(`/api/compileContract?name=${name}`);
 }
+
+export async function saveDeployed(name: string, payload: string): Promise<any> {
+  return request(`/api/saveDeployed?name=${name}&&payload=${payload}`);
+}
+
+export async function getDeployed(name: string): Promise<any> {
+  return request(`/api/getDeployed?name=${name}`);
+}
