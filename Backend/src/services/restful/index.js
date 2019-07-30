@@ -106,7 +106,6 @@ export const saveDeployed = async (req, res) => {
   const { query } = req
   const { name, payload } = query
   if (name !== null && payload !== null) {
-    console.log(JSON.parse(payload))
     const result = await saveToLocal(name, JSON.parse(payload))
     return result
   }
