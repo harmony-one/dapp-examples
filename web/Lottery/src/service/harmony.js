@@ -14,8 +14,10 @@ import { ChainID, ChainType } from '@harmony-js/utils';
 // vary: Origin
 
 // const url = 'http://localhost:9500';
-const url = 'ws://localhost:9800';
-const chainId = ChainID.Default;
-const chainType = ChainType.Harmony;
+// const url = 'ws://localhost:9800';
+// const chainId = ChainID.Default;
+// const chainType = ChainType.Harmony;
 
-export const harmony = new Harmony(url, { chainId, chainType });
+export const harmony = new Harmony();
+// export const harmony = new Harmony(url, { chainId, chainType });
+export { ChainID, ChainType };

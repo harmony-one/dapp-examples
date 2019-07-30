@@ -5,9 +5,9 @@ import { RouterTypes } from 'umi';
 import { GlobalModelState } from './global';
 import { DefaultSettings as SettingModelState } from '../../config/defaultSettings';
 import { UserModelState } from './user';
-import { ContractModelState, IContractData } from './contract';
+import { ContractModelState, IContractData ,IDefaultContract} from './contract';
 
-export { GlobalModelState, SettingModelState, UserModelState, ContractModelState, IContractData };
+export { GlobalModelState, SettingModelState, UserModelState, ContractModelState, IContractData,IDefaultContract };
 
 export interface Loading {
   global: boolean;

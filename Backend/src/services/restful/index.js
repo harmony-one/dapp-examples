@@ -4,7 +4,9 @@ import {
   complileWithPath,
   getContractCode,
   saveDeployed as saveToLocal,
-  getDeployed as getLocalDeployed
+  getDeployed as getLocalDeployed,
+  setDefaultContractLocal,
+  readDefaultContractLocal
 } from '../../resolvers/contract'
 
 export const restHello = async () => hello()
@@ -116,6 +118,26 @@ export const getDeployed = async (req, res) => {
   const { name, payload } = query
   if (name !== null) {
     const result = await getLocalDeployed(name)
+    return result
+  }
+  return null
+}
+
+export const setDefaultContract = async (req, res) => {
+  const { query } = req
+  const { name, address } = query
+  if (name !== null && address !== null) {
+    const result = await setDefaultContractLocal(name, address)
+    return result
+  }
+  return null
+}
+
+export const readDefaultContract = async (req, res) => {
+  const { query } = req
+  const { name } = query
+  if (name !== null) {
+    const result = await readDefaultContractLocal(name)
     return result
   }
   return null

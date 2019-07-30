@@ -20,4 +20,13 @@ export default {
   ],
   history: 'hash',
   publicPath: '/Lottery/',
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:3000/',
+      changeOrigin: true,
+      pathRewrite: {
+        '': '',
+      },
+    },
+  },
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal, Input } from 'antd';
-import { ContractState } from '../components';
+import { ContractState, NetworkState } from '../components';
 import { connect, createAction } from '../utils/index';
 import styles from './index.css';
 
@@ -36,7 +36,6 @@ class Index extends React.Component {
   };
 
   handleCancel = () => {
-    console.log('Clicked cancel button');
     this.setState({
       visible: false,
       inputValue: '',
@@ -53,8 +52,12 @@ class Index extends React.Component {
     return `${start}${dot}${tail}`;
   }
 
+  componentDidMount() {
+    this.props.intializeNetwork();
+  }
+
   render() {
-    const { contractAddress, players, contractBalance, loading } = this.props;
+    const { contractAddress, players, contractBalance, loading, url, netWork } = this.props;
 
     // const contractBalance = this.props.contractBalance;
 
@@ -62,6 +65,7 @@ class Index extends React.Component {
 
     return (
       <div className={styles.normal}>
+        <NetworkState url={url} netWork={netWork} />
         <ContractState
           contractAddress={contractAddress}
           contractBalance={contractBalance}
@@ -101,8 +105,10 @@ class Index extends React.Component {
 
 function mapState(state) {
   return {
+    url: state.global.url,
+    netWork: state.global.netWork,
     loading: state.loading.global,
-    contractAddress: state.contract.contractAddress,
+    contractAddress: state.global.contractAddress,
     contractBalance: state.contract.contractBalance,
     players: state.contract.players,
     account: state.account.account,
@@ -117,6 +123,7 @@ function mapDispatch(dispatch) {
     getAccount: key => dispatch(createAction('account/getAccount')(key)),
     getContractState: () => dispatch(createAction('contract/getContractState')()),
     getPlayers: () => dispatch(createAction('contract/getPlayers')()),
+    intializeNetwork: () => dispatch(createAction('global/intializeNetwork')()),
   };
 }
 

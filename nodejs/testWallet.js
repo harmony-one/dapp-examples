@@ -1,4 +1,5 @@
 const { Harmony } = require('@harmony-js/core')
+const { Wallet } = require('@harmony-js/account')
 
 // first intializing the harmony with rpc endoint
 const jsonRpcUrl = 'http://localhost:9500'
@@ -38,7 +39,7 @@ async function createAccount() {
   logOutPut('Your password is', password)
 
   // 3. generate seed phrase, according to BIP-44, and ask user to write it down
-  const seed = harmony.wallet.generateMnemonic()
+  const seed = Wallet.generateMnemonic()
 
   // see log here:
   logOutPut('seed phrase created', seed)

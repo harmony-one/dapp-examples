@@ -7,7 +7,9 @@ import {
   getSol,
   currentUser,
   saveDeployed,
-  getDeployed
+  getDeployed,
+  setDefaultContract,
+  readDefaultContract
 } from '../services/restful'
 import restfulGenerator from '../utils/restfulGenerator'
 
@@ -57,6 +59,16 @@ const routerTable = [
     method: 'get',
     name: '/getDeployed',
     exec: getDeployed
+  },
+  {
+    method: 'get',
+    name: '/setDefaultContract',
+    exec: setDefaultContract
+  },
+  {
+    method: 'get',
+    name: '/readDefaultContract',
+    exec: readDefaultContract
   }
 ]
 

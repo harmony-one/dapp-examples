@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal, InputNumber } from 'antd';
 import { isHash, Unit } from '@harmony-js/utils';
-import { ContractState, AccountState, TxnState } from '../../components';
+import { ContractState, AccountState, TxnState, NetworkState } from '../../components';
 import { connect, createAction } from '../../utils/index';
 import styles from './index.css';
 
@@ -47,7 +47,6 @@ class Player extends React.Component {
   };
 
   handleCancel = () => {
-    console.log('Clicked cancel button');
     this.setState({
       visible: false,
       inputValue: '',
@@ -90,6 +89,8 @@ class Player extends React.Component {
       accountBalance,
       account,
       loading,
+      url,
+      netWork,
     } = this.props;
 
     const { visible, confirmLoading } = this.state;
@@ -124,6 +125,7 @@ class Player extends React.Component {
 
     return (
       <div className={styles.normal}>
+        <NetworkState url={url} netWork={netWork} />
         <TxnState
           accountType={'txn'}
           visible={this.state.txnVisible}
@@ -186,6 +188,8 @@ class Player extends React.Component {
 
 function mapState(state) {
   return {
+    url: state.global.url,
+    netWork: state.global.netWork,
     loading: state.loading.global,
     contractAddress: state.contract.contractAddress,
     contractBalance: state.contract.contractBalance,

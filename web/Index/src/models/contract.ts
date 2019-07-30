@@ -8,6 +8,8 @@ import {
   getAbiBin,
   saveDeployed,
   getDeployed,
+  setDefaultContract,
+  readDefaultContract,
 } from '@/services/contract';
 
 import { Harmony, getNetworkSetting, Emitter } from '@/services/harmony';
@@ -31,6 +33,11 @@ export interface IContractData {
   timeStamp: string;
 }
 
+export interface IDefaultContract extends IContractData {
+  abi: any;
+  bin: string;
+}
+
 export interface ContractPath {
   path: string;
 }
@@ -49,6 +56,7 @@ export interface ContractModelState {
   selectedContract?: ContractSol;
   accountBalance?: string;
   deployedContracts?: IContractData[];
+  defaultContract?: IDefaultContract;
   emitter?: Emitter;
 }
 
@@ -64,6 +72,8 @@ export interface ContractModelType {
     setupDeploy: Effect;
     fetchDeployed: Effect;
     findContract: Effect;
+    setDefaultContract: Effect;
+    readDefaultContract: Effect;
   };
   reducers: {
     saveCurrentContracts: Reducer<ContractModelState>;
@@ -95,6 +105,10 @@ const ContractModel: ContractModelType = {
           type: 'fetchSol',
           payload: { select: payload.select },
         });
+        yield put({
+          type: 'readDefaultContract',
+          payload: payload.select,
+        });
       } else {
         yield put({
           type: 'fetchSol',
@@ -124,7 +138,6 @@ const ContractModel: ContractModelType = {
       }
     },
     *fetchDeployed({ payload }, { call, put, select }) {
-      yield put({ type: 'updateState', payload: { emitter: undefined } });
       const deployedContracts = yield getDeployed(payload);
       yield put({ type: 'updateState', payload: { deployedContracts } });
     },
@@ -183,16 +196,27 @@ const ContractModel: ContractModelType = {
       yield put({ type: 'selectContract', payload: foundSol });
     },
     *selectContract({ payload }, { call, put, select }) {
-      // yield put({
-      //   type: 'updateState',
-      //   payload: {
-      //     selectedContract: undefined,
-      //   },
-      // });
+      yield put({ type: 'updateState', payload: { emitter: undefined } });
       yield put({
         type: 'updateState',
         payload: {
           selectedContract: payload,
+        },
+      });
+    },
+    *setDefaultContract({ payload }, { call, put, select }) {
+      const { name, address } = payload;
+      if (name !== undefined && address !== undefined) {
+        yield call(setDefaultContract, name, address);
+        yield put({ type: 'readDefaultContract', payload: name });
+      }
+    },
+    *readDefaultContract({ payload }, { call, put, select }) {
+      const defaultContract: IDefaultContract = yield call(readDefaultContract, payload);
+      yield put({
+        type: 'updateState',
+        payload: {
+          defaultContract,
         },
       });
     },
@@ -256,8 +280,8 @@ const ContractModel: ContractModelType = {
       history.listen(({ pathname, search }): void => {
         if (pathname === '/Contracts/detail' && search.startsWith('?name=')) {
           const name = search.substring(6);
-
           dispatch({ type: 'fetchContracts', payload: { select: name } });
+          dispatch({ type: 'updateState', payload: { emitter: undefined } });
         }
       });
     },

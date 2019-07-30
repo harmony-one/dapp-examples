@@ -6,9 +6,7 @@ import { connect } from 'dva';
 import {
   PageHeader,
   Tag,
-  Tabs,
   Button,
-  Statistic,
   Modal,
   Row,
   Col,
@@ -17,13 +15,15 @@ import {
   Card,
   Layout,
   Steps,
+  Spin,
 } from 'antd';
 
 import { SortOrder } from 'antd/lib/table';
 
 import { Emitter } from '@harmony-js/network';
+import { hexToNumber, Unit } from '@harmony-js/utils';
 import { ConnectProps, ConnectState, Dispatch } from '@/models/connect';
-import { ContractSol, IContractData } from '@/models/contract';
+import { ContractSol, IContractData, IDefaultContract } from '@/models/contract';
 import { createAction } from '@/utils/createAction';
 import styles from './index.less';
 
@@ -36,10 +36,12 @@ interface ContractsProps extends ConnectProps {
   deployedContracts: IContractData[];
   contractSols: ContractSol[];
   selectedContract: ContractSol;
+  defaultContract: IDefaultContract;
   emitter: Emitter;
   fetchContracts: Function;
   resetNetwork: Function;
   fetchDeployed: Function;
+  setDefaultContract: Function;
 }
 
 const Description = ({
@@ -58,36 +60,6 @@ const Description = ({
     </div>
   </Col>
 );
-
-const mockContract = [
-  {
-    transactionHash: '0x1231231',
-    owner: '0x123123',
-    address: '0x123123',
-    network: 'ganache',
-    receipt: {},
-    status: 'DEPLOYED',
-    timeStamp: '2019-07-28T15:53:19.122Z',
-  },
-  {
-    transactionHash: '0x1231232',
-    owner: '0x123123',
-    address: '0x123123',
-    network: 'ganache',
-    receipt: {},
-    status: 'DEPLOYED',
-    timeStamp: '2019-07-26T15:53:19.122Z',
-  },
-  {
-    transactionHash: '0x12312324',
-    owner: '0x123123',
-    address: '0x123123',
-    network: 'ganache',
-    receipt: {},
-    status: 'DEPLOYED',
-    timeStamp: '2019-07-27T15:53:19.122Z',
-  },
-];
 
 interface OrderType {
   ascend: SortOrder;
@@ -114,7 +86,7 @@ function compareResult(a: IContractData, b: IContractData, SortOrder: SortOrder 
 //   a.transactionHash.length > b.transactionHash.length,
 
 const getColummProps = (
-  setContract: (address: string, network: any, abi: any, bin: string) => void,
+  setContract: (address: string) => void,
   showReceipt: (receipt: any) => void,
 ) => [
   {
@@ -176,7 +148,7 @@ const getColummProps = (
         <a
           href="javascript:;"
           onClick={e => {
-            setContract(contract.address, contract.network, contract.abi, contract.bin);
+            setContract(contract.address);
           }}
         >
           Set Contract
@@ -194,6 +166,8 @@ const Contract: React.FC<ContractsProps> = ({
   emitter,
   fetchDeployed,
   deployedContracts,
+  setDefaultContract,
+  defaultContract,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   interface IPendingEmitter {
@@ -216,24 +190,43 @@ const Contract: React.FC<ContractsProps> = ({
   if (emitter) {
     emitter
       .on('transactionHash', (transactionHash: string) => {
-        console.log('We got Transaction Hash', transactionHash);
         setPendingEmitter({ ...pendingEmitter, transactionHash });
       })
       .on('receipt', (receipt: any) => {
-        console.log('We got transaction receipt', receipt);
         setPendingEmitter({ ...pendingEmitter, receipt });
       })
       .on('confirmation', (confirmation: any) => {
-        console.log('The transaction is', confirmation);
         setPendingEmitter({ ...pendingEmitter, confirmation });
       })
       .on('error', (error: any) => {
-        console.log('Something wrong happens', error);
         setPendingEmitter({ ...pendingEmitter, error });
       });
   }
 
-  const columns = getColummProps(() => {}, () => {});
+  function showPropsConfirm(content: string, doOk: Function, doCancel?: any) {
+    Modal.confirm({
+      title: 'Do you wanna set this contract to default?',
+      content: `${content}`,
+      okText: 'Yes',
+      okType: 'primary',
+      okButtonProps: {
+        disabled: false,
+      },
+      cancelText: 'No',
+      onOk() {
+        doOk();
+      },
+      onCancel() {
+        doCancel ? doCancel() : null;
+      },
+    });
+  }
+  const columns = getColummProps(
+    (address: string) => {
+      showPropsConfirm(address, () => setDefaultContract({ name: selectedContract.name, address }));
+    },
+    () => {},
+  );
 
   return (
     <div>
@@ -258,36 +251,86 @@ const Contract: React.FC<ContractsProps> = ({
           </Button>,
         ]}
       >
-        <div className="wrap">
-          <div className="content padding">
-            <Row>
-              <Description term="Author">Unkown</Description>
-              <Description term="Save path">
-                <a>{selectedContract ? selectedContract.path : 'Unkown'}</a>
-              </Description>
-              <Description term="Creation Time">Unkown</Description>
-              <Description term="Update Time">Unkown</Description>
-              <Description term="Description" span={24}>
-                Unkown
-              </Description>
-            </Row>
-          </div>
-        </div>
+        <Row>
+          <Card title="Current Default Contract" style={{ marginTop: '2em' }}>
+            <Description term="Owner(Deployer)">
+              {defaultContract ? defaultContract.owner : 'Unkown'}
+            </Description>
+            <Description term="Save path">
+              <a>{selectedContract ? selectedContract.path : 'Unkown'}</a>
+            </Description>
+            <Description term="Deployed Time">
+              {defaultContract ? defaultContract.timeStamp : 'Unkown'}
+            </Description>
+            <Description term="Network">
+              {defaultContract ? defaultContract.network.network : 'Unkown'}
+            </Description>
+            <Description term="Network Url">
+              {defaultContract ? defaultContract.network.url : 'Unkown'}
+            </Description>
+            <Description term="Default Contract" span={24}>
+              {defaultContract ? defaultContract.address : 'Unkown'}
+            </Description>
+          </Card>
+        </Row>
       </PageHeader>
       <Layout>
         <Content style={{ margin: '16px 0px' }}>
           <Card title="Histories">
             {emitter ? (
-              <Card title="Pending Deployement">
-                <Steps direction="vertical" current={1}>
-                  <Step title="Finished" description="This is a description." />
-                  <Step title="In Progress" description="This is a description." />
-                  <Step title="Waiting" description="This is a description." />
+              <Card title="Pending Deployement" style={{ marginBottom: '2em' }}>
+                <Steps
+                  direction="vertical"
+                  status={pendingEmitter.error || undefined}
+                  current={
+                    pendingEmitter.transactionHash === undefined &&
+                    pendingEmitter.confirmation === undefined &&
+                    pendingEmitter.receipt === undefined
+                      ? 0
+                      : pendingEmitter.transactionHash !== undefined &&
+                        pendingEmitter.confirmation === undefined &&
+                        pendingEmitter.receipt === undefined
+                      ? 1
+                      : pendingEmitter.transactionHash !== undefined &&
+                        pendingEmitter.confirmation !== undefined &&
+                        pendingEmitter.receipt === undefined
+                      ? 2
+                      : pendingEmitter.transactionHash !== undefined &&
+                        pendingEmitter.confirmation !== undefined &&
+                        pendingEmitter.receipt !== undefined
+                      ? 3
+                      : 0
+                  }
+                >
+                  <Step title="Transaction Hash" description={pendingEmitter.transactionHash} />
+                  <Step
+                    title="Confirmation"
+                    description={
+                      pendingEmitter.confirmation ? (
+                        pendingEmitter.confirmation
+                      ) : (
+                        <Spin size="large" />
+                      )
+                    }
+                  />
+                  <Step
+                    title="Receipt"
+                    description={
+                      <div>
+                        <Description term="Contract Address">
+                          {pendingEmitter.receipt ? pendingEmitter.receipt.contractAddress : null}
+                        </Description>
+                        <Description term="Gas Used">
+                          {pendingEmitter.receipt
+                            ? `${new Unit(hexToNumber(pendingEmitter.receipt.gasUsed))
+                                .asWei()
+                                .toEther()} Ether`
+                            : null}
+                        </Description>
+                      </div>
+                    }
+                  />
                 </Steps>
-                <div>{pendingEmitter.transactionHash}</div>
-                <div>{pendingEmitter.confirmation}</div>
-                <div>{JSON.stringify(pendingEmitter.receipt)}</div>
-                <div>{JSON.stringify(pendingEmitter.error)}</div>
               </Card>
             ) : null}
 
@@ -306,6 +349,7 @@ const mapState = ({ contract }: ConnectState) => ({
   contractSols: contract.contractSols,
   selectedContract: contract.selectedContract,
   deployedContracts: contract.deployedContracts,
+  defaultContract: contract.defaultContract,
   emitter: contract.emitter,
 });
 
@@ -313,6 +357,8 @@ const mapDispatch = (dispatch: Dispatch) => ({
   fetchContracts: () => dispatch(createAction('contract/fetchContracts')()),
   resetNetwork: () => dispatch(createAction('contract/resetNetwork')()),
   fetchDeployed: (payload: string) => dispatch(createAction('contract/fetchDeployed')(payload)),
+  setDefaultContract: (payload: any) =>
+    dispatch(createAction('contract/setDefaultContract')(payload)),
 });
 
 export default connect(

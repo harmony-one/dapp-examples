@@ -169,6 +169,8 @@ export default {
   manifest: {
     basePath: '/',
   },
+  history: 'hash',
+  publicPath: '/Index/',
   chainWebpack: webpackPlugin,
   proxy: {
     '/api/': {

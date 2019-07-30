@@ -205,28 +205,19 @@ class Transaction extends React.Component<ITransaction, any> {
 const WrappedTransaction = Form.create<ITransaction>({
   name: 'TransactionForm',
   mapPropsToFields(props: ITransaction) {
-    // console.log(props);
     return {
       amount: Form.createFormField({
         value: 0,
       }),
       network: Form.createFormField({
-        value: 'EthGanache',
+        value: 'LocalHarmony',
       }),
     };
-  },
-  onValuesChange(props, changedValues, allValues) {
-    // const {};
-    console.log({ props, changedValues, allValues });
   },
 })(Transaction);
 
 function mapState(state: ConnectState) {
-  return {
-    // loading: state.loading.global,
-    // balance: state.contract.accountBalance,
-    // emitter: state.contract.emitter,
-  };
+  return {};
 }
 function mapDispatch(dispatch: Dispatch) {
   return {

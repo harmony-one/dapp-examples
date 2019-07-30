@@ -11,15 +11,9 @@ const url = `http://localhost:${port}`
 // here 0 is by default, which means we use harmony-node by default.
 const harmony = new Harmony(url)
 
-const mne =
-  'food response winner warfare indicate visual hundred toilet jealous okay relief tornado'
+const key = '27978f895b11d9c737e1ab1623fde722c04b4f9ccb4ab776bf15932cc72d7c66'
 
-const acc = harmony.wallet.addByMnemonic(mne, 0)
-
-console.log('--- hint: please write these down')
-console.log('-------------------------------------')
-console.log(`${mne}`)
-console.log('-------------------------------------')
+const acc = harmony.wallet.addByPrivateKey(key)
 
 console.log('--- hint: we use this private key to as default account to test')
 console.log('-------------------------------------')
@@ -30,9 +24,9 @@ console.log('-------------------------------------')
 
 async function main() {
   const latestBlock = await harmony.blockchain.getBlockByNumber({
-    blockNumber: 'latest'
+    blockNumber: '0x1'
   })
-  console.log('--- testing: hmy_getBlockNumber')
+  console.log('--- testing: hmy_getBlockByNumber')
   console.log('-------------------------------------')
   console.log(latestBlock.result)
   console.log('-------------------------------------')
@@ -131,6 +125,8 @@ async function main() {
   console.log('-------------------------------------')
   console.log(balanceOfAccount)
   console.log('-------------------------------------')
+
+  process.exit()
 }
 
 main()

@@ -80,3 +80,57 @@ export const getDeployed = async name => {
   }
   return ''
 }
+
+export const setDefaultContractLocal = async (name, address) => {
+  const contracts = await getContracts()
+  const found = contracts.find(c => {
+    return name === Object.keys(c)[0]
+  })
+  if (found) {
+    const deployedContracts = await getDeployed(name)
+
+    if (deployedContracts !== '') {
+      const defaultContract = deployedContracts.find(value => {
+        return value.address === address
+      })
+
+      if (defaultContract) {
+        const jsonPath = path.join(
+          __dirname,
+          '../../',
+          found[name].path.replace('.sol', '.json')
+        )
+        const abiAndJson = fs.readFileSync(jsonPath, { encoding: 'utf8' })
+        const newAJ = JSON.parse(abiAndJson)
+        const toSaveJson = {
+          ...newAJ,
+          ...defaultContract
+        }
+        const toSave = `${found[name].path.replace(`.sol`, '.default.json')}`
+        const filePath = path.join(__dirname, '../../', toSave)
+        fs.writeFileSync(filePath, JSON.stringify(toSaveJson))
+      }
+    }
+  }
+  return null
+}
+
+export const readDefaultContractLocal = async name => {
+  const contracts = await getContracts()
+  const found = contracts.find(c => {
+    return name === Object.keys(c)[0]
+  })
+  if (found) {
+    const filePath = path.join(
+      __dirname,
+      '../../',
+      found[name].path.replace('.sol', '.default.json')
+    )
+    try {
+      return fs.readFileSync(filePath, { encoding: 'utf8' })
+    } catch (error) {
+      return null
+    }
+  }
+  return null
+}

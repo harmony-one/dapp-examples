@@ -9,7 +9,7 @@ export default {
   namespace: 'contract',
   state: {
     // contractAddress: '0xC09293c153fd34BE07201e661132e091FbB53E62',
-    contractAddress: '0x8545890931331d3EA59b4e63dE64924BE181C4Aa',
+    contractAddress: '',
     contractBalance: '',
     contract: undefined,
     abi: contractFile.abi,
@@ -19,16 +19,19 @@ export default {
   },
   effects: {
     *getContractState({ _ }, { call, put, select }) {
-      const contractAddress = yield select(state => state.contract.contractAddress);
+      const contractAddress = yield select(state => state.global.contractAddress);
       const wallet = yield select(state => state.account.wallet);
-      const abi = yield select(state => state.contract.abi);
+      const abi = yield select(state => state.global.abi);
       // const contract = harmony.contracts.createContract(abi, contractAddress);
+
       const contract = new Contract(abi, contractAddress, {}, wallet, ContractStatus.INITIALISED);
+
       // contract.connect(wallet);
       const contractBalance = yield harmony.blockchain.getBalance({ address: contractAddress });
 
       yield put(
         createAction('updateState')({
+          contractAddress,
           contractBalance: harmony.utils.hexToNumber(contractBalance.result),
           contract,
         }),
@@ -39,7 +42,7 @@ export default {
     *getContractOwner({ _ }, { call, put, select }) {
       const contract = yield select(state => state.contract.contract);
       const manager = yield contract.methods.manager().call({
-        from: '0x0000000000000000000000000000000000000000',
+        // from: '0x0000000000000000000000000000000000000000',
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
       });

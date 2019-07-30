@@ -1,12 +1,12 @@
 import { isAddress } from '@harmony-js/utils';
 import { getAddress } from '@harmony-js/crypto';
-import { harmony } from '../service/harmony';
+// import { harmony } from '../service/harmony';
 import { createAction, router } from '../utils/index';
 
 export default {
   namespace: 'account',
   state: {
-    wallet: harmony.wallet,
+    wallet: undefined,
     account: undefined,
     error: undefined,
     isOwner: false,
@@ -15,6 +15,8 @@ export default {
   effects: {
     *getAccount({ payload }, { call, put, select }) {
       try {
+        const harmony = yield select(state => state.global.harmony);
+
         const account = harmony.wallet.addByPrivateKey(payload.privateKey);
         yield put(createAction('updateState')({ account, wallet: harmony.wallet }));
       } catch (error) {
@@ -24,6 +26,7 @@ export default {
     *getAccountBalance({ _ }, { call, put, select }) {
       try {
         const account = yield select(state => state.account.account);
+
         const balance = yield account.getBalance();
         yield put(createAction('updateState')({ accountBalance: balance.balance }));
       } catch (error) {
@@ -41,15 +44,16 @@ export default {
           }),
         );
         if (isOwner) {
-          router.push('/owner');
+          router.replace('/owner');
         } else if (!isOwner) {
-          router.push('/player');
+          router.replace('/player');
         }
       } else {
-        router.push('/');
+        router.replace('/');
       }
     },
     *logout({ _ }, { call, put, select }) {
+      const harmony = yield select(state => state.global.harmony);
       harmony.wallet.accounts.forEach(acc => {
         harmony.wallet.removeAccount(acc);
       });

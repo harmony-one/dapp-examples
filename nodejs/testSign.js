@@ -2,24 +2,19 @@ const { Harmony } = require('@harmony-js/core')
 const { RLPSign } = require('@harmony-js/transaction')
 const { ChainType, ChainID, hexToBN } = require('@harmony-js/utils')
 
-// const url = 'https://ropsten.infura.io/v3/4f3be7f5bbe644b7a8d95c151c8f52ec'
-const url = 'http://localhost:18545'
-
-// const harmony = new Harmony(url, ChainType.Ethereum, ChainID.Ropsten)
+const url = 'http://localhost:9500'
 
 const harmony = new Harmony(url, {
-  chainType: ChainType.Ethereum,
-  chainId: ChainID.Ganache
+  chainType: ChainType.Harmony,
+  chainId: ChainID.Default
 })
 
 const testAccs = [
-  // '27978f895b11d9c737e1ab1623fde722c04b4f9ccb4ab776bf15932cc72d7c66'
-  '0xd111e251634b0af6316f863bba605efe8c11ac211a67d5783aabc66c850f04c5'
-  // 'food response winner warfare indicate visual hundred toilet jealous okay relief tornado'
+  '27978f895b11d9c737e1ab1623fde722c04b4f9ccb4ab776bf15932cc72d7c66'
 ]
 
 const sender = harmony.wallet.addByPrivateKey(testAccs[0])
-// const sender = harmony.wallet.addByMnemonic(testAccs[0])
+
 const receiver = '0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E'
 
 const txnObjects = {

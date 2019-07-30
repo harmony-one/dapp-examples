@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Modal, InputNumber } from 'antd';
 import { isHash, Unit } from '@harmony-js/utils';
 import { connect, createAction } from '../../utils/index';
-import { ContractState, AccountState, TxnState } from '../../components';
+import { ContractState, AccountState, TxnState, NetworkState } from '../../components';
 import styles from './index.css';
 
 class Owner extends React.Component {
@@ -34,7 +34,6 @@ class Owner extends React.Component {
   };
 
   handleOk = () => {
-    console.log(this.state.inputValue);
     this.props.deposit(this.state.inputValue);
     // this.props.getAccount({ privateKey: this.state.inputValue });
     this.setState({
@@ -67,7 +66,6 @@ class Owner extends React.Component {
   };
 
   handleCancel = () => {
-    console.log('Clicked cancel button');
     this.setState({
       visible: false,
       inputValue: '',
@@ -75,7 +73,6 @@ class Owner extends React.Component {
   };
 
   handleConfirmCancel = () => {
-    console.log('Clicked cancel button');
     this.setState({
       confirmVisible: false,
     });
@@ -117,6 +114,8 @@ class Owner extends React.Component {
       accountBalance,
       account,
       loading,
+      netWork,
+      url,
     } = this.props;
 
     // const contractBalance = this.props.contractBalance;
@@ -152,6 +151,7 @@ class Owner extends React.Component {
 
     return (
       <div className={styles.normal}>
+        <NetworkState url={url} netWork={netWork} />
         <TxnState
           accountType={'txn'}
           visible={this.state.txnVisible}
@@ -237,6 +237,8 @@ class Owner extends React.Component {
 
 function mapState(state) {
   return {
+    url: state.global.url,
+    netWork: state.global.netWork,
     loading: state.loading.global,
     contractAddress: state.contract.contractAddress,
     contractBalance: state.contract.contractBalance,

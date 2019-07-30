@@ -11,7 +11,8 @@
   "dependencies": {
     "@harmony-js/core": "^0.0.60",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "umi-request": "^1.1.0"
   },
   "devDependencies": {
     "babel-eslint": "^9.0.0",
