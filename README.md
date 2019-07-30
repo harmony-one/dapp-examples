@@ -32,14 +32,24 @@ node testWallet.js
 
 ## Run dApp(WebApp) examples
 
-1. build all and start
+1. go to project root, build all and start using
    
 ```bash
 yarn start
 ```
 
+**NOTE: Building require a few minutes, please hold on**
 
-2. open `http://localhost:3000` to access the simple admin portal
+When building is over you should able to can see:
+
+```bash
+Successfully compiled 13 files with Babel.
+❌  Server-side HMR Not Supported.
+express http is listening on 3000
+```
+
+
+1. open `http://localhost:3000` to access the simple admin portal
 
    - on the left menu, select contracts
    - you can see `lottery` in a row, click `detail`, then `deploy` button
@@ -50,7 +60,7 @@ yarn start
    - In `Histories` section, click the `set contract` link on the right, then confirm with clicking the `ok` button.
    - Now the `lottery contract` can be accessed by `Lottery App`
 
-3. (Optional) open another console, go to project root
+2. (Optional) open another console, go to project root
 
 ```bash
 yarn run:ganache
