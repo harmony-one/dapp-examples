@@ -60,13 +60,15 @@ express http is listening on 3000
    - In `Histories` section, click the `set contract` link on the right, then confirm with clicking the `ok` button.
    - Now the `lottery contract` can be accessed by `Lottery App`
 
-2. (Optional) open another console, go to project root
+2. (Optional) Run `ganache-cli`
+   
+    open another console, go to project root
 
 ```bash
 yarn run:ganache
 ```
 
-4. open `http://localhost:3000/lottery` to access the `Lottery App`
+3. open `http://localhost:3000/lottery` to access the `Lottery App`
    
 - You should be able to see a big `login` button, click it
 - enter `27978f895b11d9c737e1ab1623fde722c04b4f9ccb4ab776bf15932cc72d7c66`, press `ok`
