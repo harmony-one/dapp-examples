@@ -13,22 +13,6 @@ yarn install
 1. Get harmony's node using this branch: [demo branch](https://github.com/mikedoan/harmony/tree/demo)
 2. run `./test/debug.sh`
 
-## Go to `nodejs` folder, use command line to test
-
-There are 4 test scripts for testing
-
-1. testWallet.js
-2. testSign.js
-3. testNode.js
-4. testContract.js
-
-use `node test{xxx}.js` to run the tests.
-
-for example:
-
-```bash
-node testWallet.js
-```
 
 ## Run dApp(WebApp) examples
 
@@ -49,7 +33,7 @@ express http is listening on 3000
 ```
 
 
-1. open `http://localhost:3000` to access the simple admin portal
+2. open `http://localhost:3000` to access the simple admin portal
 
    - on the left menu, select contracts
    - you can see `lottery` in a row, click `detail`, then `deploy` button
@@ -60,7 +44,7 @@ express http is listening on 3000
    - In `Histories` section, click the `set contract` link on the right, then confirm with clicking the `ok` button.
    - Now the `lottery contract` can be accessed by `Lottery App`
 
-2. (Optional) Run `ganache-cli`
+3. (Optional) Run `ganache-cli`
    
     open another console, go to project root
 
@@ -68,7 +52,7 @@ express http is listening on 3000
 yarn run:ganache
 ```
 
-3. open `http://localhost:3000/lottery` to access the `Lottery App`
+4. open `http://localhost:3000/lottery` to access the `Lottery App`
    
 - You should be able to see a big `login` button, click it
 - enter `27978f895b11d9c737e1ab1623fde722c04b4f9ccb4ab776bf15932cc72d7c66`, press `ok`
@@ -99,6 +83,28 @@ yarn run:ganache
    - You are the deployer of the contract, you can pick winner. click `Pick Winner` and press confirm on the pop-up.
    - Now the contract is picking the winner, when the waiting is done, the winner will receive money
 
+5. You can access `http://localhost:3000/wallet` as well,
+   **Note: The webwallet is not finished yet, please wait**
+
+
+## Use command-line to test
+
+Go to `nodejs` folder
+
+There are 4 test scripts for testing
+
+1. testWallet.js
+2. testSign.js
+3. testNode.js
+4. testContract.js
+
+open a console, use `node test{xxx}.js` to run the tests.
+
+for example:
+
+```bash
+node testWallet.js
+```
 
 # Test with other tools
 ## Test with `ganache-cli`
