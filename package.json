@@ -11,7 +11,8 @@
     "build:index": "cd web/Index && yarn install && yarn deployIndex",
     "build:webapps": "yarn build:wallet && yarn build:lottery && yarn build:index",
     "run:server": "cd Backend && yarn install && yarn build:server && node build/index.js",
-    "start": "yarn build:webapps && yarn run:server"
+    "run:ganache": "cd nodejs && node testGanache --debug true",
+    "start": "yarn run:ganache && yarn build:webapps && yarn run:server"
   },
   "dependencies": {
     "@babel/cli": "^7.5.0",
