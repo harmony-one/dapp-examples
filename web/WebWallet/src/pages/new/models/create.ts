@@ -4,6 +4,7 @@ import { createAction } from '../../../utils';
 export interface INewWallet {
   mnes: string;
   password: string;
+  privateKey: string;
   loading: boolean;
 }
 
@@ -12,6 +13,7 @@ export default {
   state: {
     mnes: undefined,
     password: undefined,
+    privateKey: undefined,
     loading: false,
   },
   effects: {
@@ -21,6 +23,9 @@ export default {
     },
     *sendMnemonic({ payload }: any, { put }: any) {
       yield put(createAction('updateState')({ mnes: payload.mnes }));
+    },
+    *sendPrivateKey({ payload }: any, { put }: any) {
+      yield put(createAction('updateState')({ privateKey: payload.privateKey }));
     },
     *sendPassword({ payload }: any, { call, put, select }: any) {
       yield put(
@@ -43,6 +48,13 @@ export default {
       yield put(
         createAction('updateState')({
           mnes: undefined,
+        }),
+      );
+    },
+    *resetPrivateKey({ _ }: any, { put }: any) {
+      yield put(
+        createAction('updateState')({
+          privateKey: undefined,
         }),
       );
     },

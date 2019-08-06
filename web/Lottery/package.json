@@ -9,7 +9,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@harmony-js/core": "^0.0.60",
+    "@harmony-js/core": "^0.1.6",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "umi-request": "^1.1.0"

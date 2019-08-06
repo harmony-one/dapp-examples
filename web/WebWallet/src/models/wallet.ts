@@ -102,6 +102,21 @@ export default {
       );
       yield put(createAction('updateState')({ loading: false }));
     },
+    *addAccountFromPrivateKey({ payload }: any, { call, put, select }: any) {
+      yield put(createAction('updateState')({ loading: true }));
+
+      const phraseFile = yield read(`${defaultWalletPhrase}`);
+      const hdCount = yield read(`${defaultWalletChildIndex}`);
+      const count = Number.parseInt(hdCount, 10) + 1;
+      const mne = yield decryptPhrase(JSON.parse(phraseFile), payload.password);
+      const newAcc = yield wallet.addByMnemonic(mne, count);
+      const file = yield newAcc.toFile(payload.password);
+
+      yield put(
+        createAction('saveWallet')({ address: newAcc.address, file, phrase: phraseFile, count }),
+      );
+      yield put(createAction('updateState')({ loading: false }));
+    },
   },
   reducers: {
     updateState(state: any, { payload }: any) {

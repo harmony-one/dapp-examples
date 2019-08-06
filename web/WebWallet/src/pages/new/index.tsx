@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'dva';
 import Mne from './mne';
 import Password from './password';
+import Key from './key';
 import router from 'umi/router';
 
 import styles from './index.css';

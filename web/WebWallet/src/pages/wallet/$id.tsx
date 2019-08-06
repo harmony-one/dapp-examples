@@ -13,6 +13,7 @@ interface IAccount {
   nonce: number;
   loading: boolean;
   getBalance: Function;
+  symbol: string;
 }
 
 const PopContent = <span>Address Copied</span>;
@@ -100,7 +101,7 @@ class Account extends React.Component<IAccount> {
         </div>
         <div className={styles.balanceText}>
           {this.props.loading ? <Spin /> : this.displayBalance(this.props.balance)}
-          <div className={styles.TokenName}>ETH</div>
+          <div className={styles.TokenName}>{this.props.symbol}</div>
         </div>
         <div className={styles.buttonWrap}>
           <Button
@@ -135,6 +136,7 @@ function mapState(state: any) {
     address: state.router.location.pathname.replace('/wallet/', ''),
     balance: state.account.balance,
     nonce: state.account.nonce,
+    symbol: state.network.symbol,
   };
 }
 function mapDispatch(dispatch: any) {

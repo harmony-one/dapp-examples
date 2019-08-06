@@ -35,12 +35,13 @@ export default {
 
       const { from, to, gasLimit, gasPrice, amount } = payload;
 
+      console.log(amount);
       const tx = new Transaction(
         {
           to: getAddress(to).checksum,
           gasLimit: new Unit(gasLimit).asWei().toWei(),
           gasPrice: new Unit(gasPrice).asWei().toWei(),
-          value: new Unit(`${amount}`).asWei().toWei(),
+          value: new Unit(`${amount}`).asEther().toWei(),
         },
         messenger,
         TxStatus.INTIALIZED,
@@ -59,7 +60,7 @@ export default {
       yield put(createAction('updateState')({ emitter }));
 
       const result = yield emitter;
-      console.log(result);
+
       yield put(createAction('updateState')({ TxStatus: result.TxStatus }));
     },
     *onTransactionHash({ payload }: any, { call, put, select }: any) {

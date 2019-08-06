@@ -20,6 +20,7 @@ interface ITransactionResult {
   value: string;
   gasLimit: string;
   gasPrice: string;
+  symbol: string;
 }
 
 const ListItem = ({ title, value }: { title: string; value: any }): JSX.Element => {
@@ -53,7 +54,7 @@ class TransactionResult extends React.Component<ITransactionResult> {
       .toString();
   }
   displayBalance(balance: string) {
-    return new Unit(balance).asWei().toEther();
+    return new Unit(balance).asEther().toEther();
   }
   displayAddress(address: string) {
     const dot = `...`;
@@ -95,7 +96,10 @@ class TransactionResult extends React.Component<ITransactionResult> {
             this.props.to && isValidAddress(this.props.to) ? getAddress(this.props.to).bech32 : ''
           }
         />
-        <ListItem title="Amount" value={`${this.displayBalance(`${this.props.value}`)} ONE`} />
+        <ListItem
+          title="Amount"
+          value={`${this.displayBalance(`${this.props.value}`)} ${this.props.symbol}`}
+        />
         <ListItem
           title="Hash"
           value={this.props.hash ? this.displayAddress(this.props.hash) : <Spin />}
@@ -104,7 +108,9 @@ class TransactionResult extends React.Component<ITransactionResult> {
           title="Fee"
           value={
             this.props.receipt ? (
-              `${this.countFee(this.props.receipt.gasUsed, this.props.gasPrice)} ONE`
+              `${this.countFee(this.props.receipt.gasUsed, this.props.gasPrice)} ${
+                this.props.symbol
+              }`
             ) : (
               <Spin />
             )
@@ -143,6 +149,7 @@ function mapState(state: any) {
     value: state.send.value,
     gasLimit: state.send.gasLimit,
     gasPrice: state.send.gasPrice,
+    symbol: state.network.symbol,
   };
 }
 function mapDispatch(dispatch: any) {

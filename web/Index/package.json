@@ -48,7 +48,7 @@
   "dependencies": {
     "@ant-design/pro-layout": "^4.5.9",
     "@antv/data-set": "^0.10.2",
-    "@harmony-js/core": "^0.0.60",
+    "@harmony-js/core": "^0.1.6",
     "antd": "^3.20.0",
     "brace": "^0.11.1",
     "classnames": "^2.2.6",
