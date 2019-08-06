@@ -11,3 +11,5 @@ Backend/build
 Backend/contracts/**/*.json
 # webapp statics folder
 web/statics/*/
+# truffle project
+truffle/build/
