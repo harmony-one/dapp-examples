@@ -18,9 +18,17 @@ const defaultProviders: NetWorkItem[] = [
   {
     id: ChainID.Default,
     type: ChainType.Harmony,
-    name: 'Harmony TestNet',
+    name: 'Harmony Local',
     http: 'http://localhost:9500',
     ws: 'ws://localhost:9800',
+    symbol: 'ONE',
+  },
+  {
+    id: ChainID.Default,
+    type: ChainType.Harmony,
+    name: 'Harmony BetaNet',
+    http: 'http://s0.b.hmny.io:9500',
+    ws: 'ws://s0.b.hmny.io:9800',
     symbol: 'ONE',
   },
   {
@@ -33,7 +41,7 @@ const defaultProviders: NetWorkItem[] = [
   },
 ];
 
-const index = 0;
+const index = 1;
 
 export default {
   namespace: 'network',
