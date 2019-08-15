@@ -22,6 +22,8 @@ class newWallet extends React.Component<INewWallet> {
         <div>new wallet</div>
         {step1 === 'mne' ? (
           <Mne generateOnStart={create} nextRoute={`/new/password`} />
+        ) : step1 === 'key' ? (
+          <Key nextRoute={`/new/password`} />
         ) : (
           <Password nextRoute={`/wallet`} />
         )}

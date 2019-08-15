@@ -24,6 +24,14 @@ const defaultProviders: NetWorkItem[] = [
     symbol: 'ONE',
   },
   {
+    id: ChainID.Default,
+    type: ChainType.Harmony,
+    name: 'Harmony BetaNet',
+    http: 'http://s0.b.hmny.io:9500',
+    ws: 'ws:///s0.b.hmny.io:9800',
+    symbol: 'ONE',
+  },
+  {
     id: ChainID.Ropsten,
     type: ChainType.Ethereum,
     name: 'Ropsten',
@@ -42,7 +50,7 @@ export default {
     selected: 'Harmony TestNet',
     symbol: 'ONE',
     messenger: new Messenger(
-      new WSProvider(defaultProviders[index].ws),
+      new HttpProvider(defaultProviders[index].http),
       defaultProviders[index].type,
       defaultProviders[index].id,
     ),
@@ -64,7 +72,7 @@ export default {
         return value.name === selected;
       });
 
-      const provider = new WSProvider(selectedProvider.ws);
+      const provider = new HttpProvider(selectedProvider.http);
 
       const messenger = new Messenger(provider, selectedProvider.type, selectedProvider.id);
 

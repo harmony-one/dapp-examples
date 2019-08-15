@@ -38,10 +38,16 @@ export default {
     *nextAction({ _ }: any, { call, select, put }: any) {
       const password = yield select((state: { create: INewWallet }) => state.create.password);
       const mnes = yield select((state: { create: INewWallet }) => state.create.mnes);
-      if (password && mnes) {
+      const privateKey = yield select((state: { create: INewWallet }) => state.create.privateKey);
+      if (password && mnes && !privateKey) {
         yield put(createAction('wallet/createWallet')({ password, mnes }));
-      } else if (password && !mnes) {
+        yield put(createAction('resetAll')())
+      } else if (password && !mnes && !privateKey) {
         yield put(createAction('wallet/addAccountFromMnes')({ password }));
+        yield put(createAction('resetAll')())
+      } else if (password && !mnes && privateKey) {
+        yield put(createAction('wallet/addAccountFromPrivateKey')({ password, privateKey }));
+        yield put(createAction('resetAll')())
       }
     },
     *resetMnes({ _ }: any, { put }: any) {
@@ -70,6 +76,7 @@ export default {
         createAction('updateState')({
           password: undefined,
           mnes: undefined,
+          privateKey: undefined,
         }),
       );
     },

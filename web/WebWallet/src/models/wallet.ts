@@ -2,12 +2,17 @@ import { Wallet } from '@harmony-js/account';
 import router from 'umi/router';
 import { createAction } from '../utils';
 import { write, read } from '../services/localstorage';
+import { WalletDB } from '../services/db/wallet'
 import { encryptPhrase, decryptPhrase } from '@harmony-js/crypto';
 
 const wallet = new Wallet();
 const defaultWalletKey = '@@HWallet';
 const defaultWalletPhrase = '@@HPhrase';
 const defaultWalletChildIndex = `@@HWalletChildIndex`;
+
+const walletDB = new WalletDB('HWallet')
+
+
 
 interface IWalletState {
   files: any;
@@ -24,6 +29,7 @@ export default {
     wallet: undefined,
     unlockError: false,
     loading: false,
+    importedAccounts: []
   },
   effects: {
     *createWallet({ payload }: any, { call, put, select }: any) {
@@ -32,25 +38,30 @@ export default {
       const newWallet = yield wallet.addByMnemonic(mnes, 0);
       const file = yield newWallet.toFile(password);
 
+      yield put(createAction('updateState')({ wallet }))
       yield put(createAction('saveWallet')({ address: newWallet.address, file, phrase, count: 0 }));
     },
     *saveWallet({ payload }: any, { call, put, select }: any) {
-      yield put(createAction('readWallet')());
+      // yield put(createAction('readWallet')());
       const stateAccounts = yield select(
         (state: { wallet: IWalletState }) => state.wallet.accounts,
       );
 
       const accounts = [...new Set(wallet.accounts.concat(stateAccounts))];
 
-      yield write(`${defaultWalletKey}`, JSON.stringify(accounts));
-      yield write(`${payload.address}`, payload.file);
-      yield write(`${defaultWalletPhrase}`, payload.phrase);
-      yield write(`${defaultWalletChildIndex}`, payload.count);
+      yield call(walletDB.saveKey, { key: JSON.stringify(accounts) })
+      yield call(walletDB.saveFile, { file: payload.file })
+      yield call(walletDB.savePhrase, { phrase: payload.phrase })
+      yield call(walletDB.saveIndex, { index: payload.count })
+
+
+      yield put(createAction('readWallet')());
     },
 
     *readWallet({ _ }: any, { call, put, select }: any) {
-      const accountsString: string = yield read(`${defaultWalletKey}`);
-      const localAccounts: string[] = JSON.parse(accountsString) || [];
+      const accountsString: any = yield walletDB.loadKey();
+
+      const localAccounts: string[] = JSON.parse(accountsString.key) || [];
       const stateAccounts: string[] = yield select(
         (state: { wallet: IWalletState }) => state.wallet.accounts,
       );
@@ -59,10 +70,11 @@ export default {
 
       let files: any = {};
 
-      accounts.forEach((acc: string) => {
-        const file = read(acc);
-        files[acc] = file;
-      });
+      for (const acc of accounts) {
+        const file = yield walletDB.loadFile();
+
+        files[acc] = file.file;
+      }
 
       yield put(createAction('updateState')({ accounts, files }));
     },
@@ -90,33 +102,53 @@ export default {
     *addAccountFromMnes({ payload }: any, { call, put, select }: any) {
       yield put(createAction('updateState')({ loading: true }));
 
-      const phraseFile = yield read(`${defaultWalletPhrase}`);
-      const hdCount = yield read(`${defaultWalletChildIndex}`);
-      const count = Number.parseInt(hdCount, 10) + 1;
-      const mne = yield decryptPhrase(JSON.parse(phraseFile), payload.password);
+      const phraseFile = yield walletDB.loadPhrase();
+      const hdCount = yield walletDB.loadIndex();
+      const count = Number.parseInt(hdCount.index, 10) + 1;
+      const mne = yield decryptPhrase(JSON.parse(phraseFile.phrase), payload.password);
+
       const newAcc = yield wallet.addByMnemonic(mne, count);
       const file = yield newAcc.toFile(payload.password);
 
+      yield put(createAction('updateState')({ wallet }))
+
       yield put(
-        createAction('saveWallet')({ address: newAcc.address, file, phrase: phraseFile, count }),
+        createAction('saveWallet')({ address: newAcc.address, file, phrase: phraseFile.phrase, count }),
       );
+
       yield put(createAction('updateState')({ loading: false }));
+
     },
     *addAccountFromPrivateKey({ payload }: any, { call, put, select }: any) {
       yield put(createAction('updateState')({ loading: true }));
 
-      const phraseFile = yield read(`${defaultWalletPhrase}`);
-      const hdCount = yield read(`${defaultWalletChildIndex}`);
-      const count = Number.parseInt(hdCount, 10) + 1;
-      const mne = yield decryptPhrase(JSON.parse(phraseFile), payload.password);
-      const newAcc = yield wallet.addByMnemonic(mne, count);
-      const file = yield newAcc.toFile(payload.password);
+      const phraseFile = yield walletDB.loadPhrase();
+      const hdCount = yield walletDB.loadIndex();
 
-      yield put(
-        createAction('saveWallet')({ address: newAcc.address, file, phrase: phraseFile, count }),
-      );
-      yield put(createAction('updateState')({ loading: false }));
+
+      const count = Number.parseInt(hdCount.index, 10);
+      const mne = yield decryptPhrase(JSON.parse(phraseFile.phrase), payload.password);
+      if (mne) {
+        const newAcc = yield wallet.addByPrivateKey(payload.privateKey);
+        const file = yield newAcc.toFile(payload.password);
+        yield walletDB.saveImported({ address: newAcc.address })
+        yield put(createAction('updateState')({ wallet }))
+        yield put(
+          createAction('saveWallet')({ address: newAcc.address, file, phrase: phraseFile.phrase, count }),
+        );
+        yield put(createAction('updateState')({ loading: false }));
+      }
     },
+    *loadImported(_: any, { call, put, select }: any) {
+      const importedArray: any[] = yield walletDB.loadImported()
+      const importedAccounts = [];
+      if (importedArray.length > 0) {
+        for (const imported of importedArray) {
+          importedAccounts.push(imported.address)
+        }
+      }
+      yield put(createAction('updateState')({ importedAccounts }));
+    }
   },
   reducers: {
     updateState(state: any, { payload }: any) {
@@ -126,6 +158,7 @@ export default {
   subscriptions: {
     setup({ dispatch }: any) {
       dispatch({ type: 'readWallet' });
+      dispatch({ type: 'loadImported' })
     },
   },
 };

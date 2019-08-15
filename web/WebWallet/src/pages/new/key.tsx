@@ -57,7 +57,7 @@ class KeyConfirm extends React.Component<PassFormProps, any> {
     return (
       <div className={styles.container}>
         <Form wrapperCol={{ span: 24 }}>
-          <Form.Item label={<LabelComp labelText="Please save these words to safe place" />}>
+          <Form.Item label={<LabelComp labelText="Please don't tell anyone your private key" />}>
             {getFieldDecorator('privateKey')(
               <Input.TextArea
                 autosize={{ minRows: 4, maxRows: 6 }}

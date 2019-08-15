@@ -5,6 +5,7 @@ import { getAddress } from '@harmony-js/crypto';
 interface IAccountCard {
   address: string;
   index: number;
+  imported: boolean;
 }
 
 class AccountCard extends React.Component<IAccountCard> {
@@ -41,7 +42,7 @@ class AccountCard extends React.Component<IAccountCard> {
           <div style={{ fontSize: '1.4rem', color: '#333333' }}>{displayAddress}</div>
         </Link>
         <div style={{ fontSize: '1.4rem', color: '#8c8c8c' }}>
-          {this.props.index == 0 ? 'default' : ''}
+          {this.props.imported ? 'imported' : ''}
         </div>
       </div>
     );

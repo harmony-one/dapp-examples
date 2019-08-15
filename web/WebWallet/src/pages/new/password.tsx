@@ -87,7 +87,7 @@ class Password extends React.Component<PassFormProps, any> {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    console.log(this.state.loading);
+
     return (
       <div className={styles.container}>
         {this.state.loading ? <FullscreenLoading /> : null}

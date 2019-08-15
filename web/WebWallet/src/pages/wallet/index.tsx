@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Typography, Button, Radio, Dropdown } from 'antd';
+import { Typography, Button, Radio, Dropdown, Menu } from 'antd';
 import { NetWorkItem } from '../../models/network';
 import { AccountCard } from '../../components';
 import styles from './index.css';
@@ -13,6 +13,8 @@ interface IWallet {
   accounts: any[];
   providerList: NetWorkItem[];
   setProvider: Function;
+  loadImported: Function;
+  importedAccounts: any[];
 }
 
 const radioStyle = {
@@ -43,11 +45,18 @@ class Wallet extends React.Component<IWallet> {
   };
   renderAccountList() {
     return this.props.accounts.map((value, index) => {
-      return <AccountCard key={value} address={value} index={index} />;
+      const imported = this.props.importedAccounts.findIndex(val => value === val);
+      return <AccountCard key={value} address={value} imported={imported !== -1} index={index} />;
     });
   }
   addAccount() {
     return router.push('/new?step1=password');
+  }
+  importPrivateKey() {
+    return router.push('/new?step1=key');
+  }
+  componentDidUpdate() {
+    this.props.loadImported();
   }
 
   render() {
@@ -72,15 +81,33 @@ class Wallet extends React.Component<IWallet> {
               alignItems: 'center',
             }}
           >
-            <Button
-              icon="plus"
-              shape="round"
-              size="large"
-              onClick={this.addAccount}
-              style={{ marginRight: '1rem' }}
+            <Dropdown
+              overlay={
+                <div
+                  style={{
+                    opacity: 1,
+                    background: '#ffffff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                  }}
+                >
+                  <Button onClick={this.addAccount}>One More</Button>
+                  <Button onClick={this.importPrivateKey}>Private Key</Button>
+                </div>
+              }
+              trigger={['click']}
             >
-              Add
-            </Button>
+              <Button
+                icon="plus"
+                shape="round"
+                size="large"
+                // onClick={this.addAccount}
+                style={{ marginRight: '1rem' }}
+              >
+                Add
+              </Button>
+            </Dropdown>
             <Dropdown
               overlay={
                 <div style={{ opacity: 1, background: '#ffffff' }}>
@@ -110,12 +137,14 @@ function mapState(state: any) {
   return {
     accounts: state.wallet.accounts,
     providerList: state.network.providerList,
+    importedAccounts: state.wallet.importedAccounts,
   };
 }
 
 function mapDispatch(dispatch: any) {
   return {
     setProvider: (payload: NetWorkItem) => dispatch(createAction('network/setProvider')(payload)),
+    loadImported: () => dispatch(createAction('wallet/loadImported')()),
   };
 }
 
