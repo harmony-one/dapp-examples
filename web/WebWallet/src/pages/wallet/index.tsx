@@ -68,66 +68,53 @@ class Wallet extends React.Component<IWallet> {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingTop: '2rem',
-            paddingBottom: '2rem',
+            paddingTop: '1rem',
+            paddingBottom: '1rem',
           }}
         >
-          <Title style={{ marginTop: 'inherit', marginBottom: 'inherit' }}>H Wallet</Title>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}
-          >
-            <Dropdown
-              overlay={
-                <div
-                  style={{
-                    opacity: 1,
-                    background: '#ffffff',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-start',
-                  }}
-                >
-                  <Button onClick={this.addAccount}>One More</Button>
-                  <Button onClick={this.importPrivateKey}>Private Key</Button>
-                </div>
-              }
-              trigger={['click']}
-            >
-              <Button
-                icon="plus"
-                shape="round"
-                size="large"
-                // onClick={this.addAccount}
-                style={{ marginRight: '1rem' }}
+          <Dropdown
+            overlay={
+              <div
+                style={{
+                  opacity: 1,
+                  background: '#ffffff',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                }}
               >
-                Add
-              </Button>
-            </Dropdown>
-            <Dropdown
-              overlay={
-                <div style={{ opacity: 1, background: '#ffffff' }}>
-                  <Radio.Group onChange={this.onChange} value={this.state.value}>
-                    {this.props.providerList.map((network: NetWorkItem) => {
-                      return <RadioItem network={network} key={network.name} />;
-                    })}
-                  </Radio.Group>
-                </div>
-              }
-              trigger={['click']}
-            >
-              <Button icon="setting" shape="round" size="large">
-                select
-              </Button>
-            </Dropdown>
-          </div>
+                <Button onClick={this.addAccount}>Add 1 More</Button>
+                <Button onClick={this.importPrivateKey}>Import Private Key</Button>
+                <Button onClick={() => {}}>Select Account</Button>
+              </div>
+            }
+            trigger={['click']}
+          >
+            <Button
+              icon="plus"
+              shape="round"
+              size="default"
+              // onClick={this.addAccount}
+            />
+          </Dropdown>
+          <Title style={{ marginTop: 'inherit', marginBottom: 'inherit' }}>H Wallet</Title>
+          <Dropdown
+            overlay={
+              <div style={{ opacity: 1, background: '#ffffff' }}>
+                <Radio.Group onChange={this.onChange} value={this.state.value}>
+                  {this.props.providerList.map((network: NetWorkItem) => {
+                    return <RadioItem network={network} key={network.name} />;
+                  })}
+                </Radio.Group>
+              </div>
+            }
+            trigger={['click']}
+          >
+            <Button icon="cloud" shape="round" size="default" />
+          </Dropdown>
         </div>
 
-        <div>{this.renderAccountList()}</div>
+        <div style={{ marginTop: '2rem' }}>{this.renderAccountList()}</div>
       </div>
     );
   }

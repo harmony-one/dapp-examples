@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { connect } from 'dva';
 import router from 'umi/router';
@@ -91,6 +91,9 @@ class Password extends React.Component<PassFormProps, any> {
     return (
       <div className={styles.container}>
         {this.state.loading ? <FullscreenLoading /> : null}
+        <div style={{ marginBottom: '4rem', marginTop: '2rem' }}>
+          <Button icon="left" shape="round" size="default" onClick={() => router.goBack()} />
+        </div>
         <Form wrapperCol={{ span: 24 }}>
           <Form.Item label={<LabelComp labelText="Password" />}>
             {getFieldDecorator('password', {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Switch } from 'antd';
+import { Form, Input, Switch, Button } from 'antd';
 import router from 'umi/router';
 import { FormComponentProps } from 'antd/lib/form';
 import { connect } from 'dva';
@@ -56,6 +56,9 @@ class KeyConfirm extends React.Component<PassFormProps, any> {
 
     return (
       <div className={styles.container}>
+        <div style={{ marginBottom: '4rem', marginTop: '2rem' }}>
+          <Button icon="left" shape="round" size="default" onClick={() => router.goBack()} />
+        </div>
         <Form wrapperCol={{ span: 24 }}>
           <Form.Item label={<LabelComp labelText="Please don't tell anyone your private key" />}>
             {getFieldDecorator('privateKey')(

@@ -1,17 +1,13 @@
 import { Wallet } from '@harmony-js/account';
 import router from 'umi/router';
 import { createAction } from '../utils';
-import { write, read } from '../services/localstorage';
 import { WalletDB } from '../services/db/wallet'
 import { encryptPhrase, decryptPhrase } from '@harmony-js/crypto';
 
 const wallet = new Wallet();
-const defaultWalletKey = '@@HWallet';
-const defaultWalletPhrase = '@@HPhrase';
-const defaultWalletChildIndex = `@@HWalletChildIndex`;
+
 
 const walletDB = new WalletDB('HWallet')
-
 
 
 interface IWalletState {
@@ -148,6 +144,13 @@ export default {
         }
       }
       yield put(createAction('updateState')({ importedAccounts }));
+    },
+    *revealPrivate({ payload }: any, { call, put, select }: any) {
+      yield put(createAction('updateState')({ loading: true }));
+
+      const phraseFile = yield walletDB.loadPhrase();
+      const mne = yield decryptPhrase(JSON.parse(phraseFile.phrase), payload.password);
+
     }
   },
   reducers: {

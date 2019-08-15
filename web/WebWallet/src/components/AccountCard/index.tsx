@@ -32,16 +32,17 @@ class AccountCard extends React.Component<IAccountCard> {
           height: '6rem',
           alignItems: 'center',
           background: '#ffffff',
-          border: '1px solid #dddddd',
+          // border: '1px solid #dddddd',
+          boxShadow: '0px 1px 20px 6px #f1f2f3',
           borderRadius: '0.4rem',
           padding: '1rem',
-          marginBottom: '1rem',
+          marginBottom: '2rem',
         }}
       >
         <Link to={`/wallet/${formatedAddress}`}>
           <div style={{ fontSize: '1.4rem', color: '#333333' }}>{displayAddress}</div>
         </Link>
-        <div style={{ fontSize: '1.4rem', color: '#8c8c8c' }}>
+        <div style={{ fontSize: '1.0rem', color: '#8c8c8c' }}>
           {this.props.imported ? 'imported' : ''}
         </div>
       </div>

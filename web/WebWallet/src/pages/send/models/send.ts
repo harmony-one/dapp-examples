@@ -27,7 +27,6 @@ export default {
       const wallet: Wallet = yield select(
         (state: { wallet: { wallet: Wallet } }) => state.wallet.wallet,
       );
-      console.log({ wallet });
       const messenger = yield select(
         (state: { network: { messenger: any } }) => state.network.messenger,
       );

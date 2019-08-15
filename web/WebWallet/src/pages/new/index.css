@@ -9,7 +9,7 @@
   background: #3399ff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 
   padding: 2rem;
   margin: 0;
