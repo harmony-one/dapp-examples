@@ -1,14 +1,12 @@
 import { Wallet } from '@harmony-js/account';
 import router from 'umi/router';
 import { createAction } from '../utils';
-import { WalletDB } from '../services/db/wallet'
+import { WalletDB } from '../services/db/wallet';
 import { encryptPhrase, decryptPhrase } from '@harmony-js/crypto';
 
 const wallet = new Wallet();
 
-
-const walletDB = new WalletDB('HWallet')
-
+const walletDB = new WalletDB('HWallet');
 
 interface IWalletState {
   files: any;
@@ -27,7 +25,7 @@ export default {
     unlockError: false,
     isUnlocked: false,
     loading: false,
-    importedAccounts: []
+    importedAccounts: [],
   },
   effects: {
     *createWallet({ payload }: any, { call, put, select }: any) {
@@ -36,30 +34,29 @@ export default {
       const newWallet = yield wallet.addByMnemonic(mnes, 0);
       const file = yield newWallet.toFile(password);
 
-      yield put(createAction('updateState')({ wallet }))
+      yield put(createAction('updateState')({ wallet }));
       yield put(createAction('saveWallet')({ address: newWallet.address, file, phrase, count: 0 }));
     },
     *saveWallet({ payload }: any, { call, put, select }: any) {
-      // yield put(createAction('readWallet')());
+      yield put(createAction('readWallet')());
       const stateAccounts = yield select(
         (state: { wallet: IWalletState }) => state.wallet.accounts,
       );
 
       const accounts = [...new Set(wallet.accounts.concat(stateAccounts))];
 
-      yield call(walletDB.saveKey, { key: JSON.stringify(accounts) })
-      yield call(walletDB.saveFile, { file: payload.file })
-      yield call(walletDB.savePhrase, { phrase: payload.phrase })
-      yield call(walletDB.saveIndex, { index: payload.count })
-
+      yield call(walletDB.saveKey, { key: JSON.stringify(accounts) });
+      yield call(walletDB.saveFile, { address: payload.address, file: payload.file });
+      yield call(walletDB.savePhrase, { phrase: payload.phrase });
+      yield call(walletDB.saveIndex, { index: payload.count });
 
       yield put(createAction('readWallet')());
     },
 
     *readWallet({ _ }: any, { call, put, select }: any) {
-      const isUnlocked = yield select((state: { wallet: IWalletState }) => state.wallet.isUnlocked)
+      const isUnlocked = yield select((state: { wallet: IWalletState }) => state.wallet.isUnlocked);
       if (!isUnlocked) {
-        router.replace('/')
+        router.replace('/');
       }
 
       const accountsString: any = yield walletDB.loadKey();
@@ -74,7 +71,7 @@ export default {
       let files: any = {};
 
       for (const acc of accounts) {
-        const file = yield walletDB.loadFile();
+        const file = yield walletDB.loadFile(acc);
 
         files[acc] = file.file;
       }
@@ -113,14 +110,18 @@ export default {
       const newAcc = yield wallet.addByMnemonic(mne, count);
       const file = yield newAcc.toFile(payload.password);
 
-      yield put(createAction('updateState')({ wallet }))
+      yield put(createAction('updateState')({ wallet }));
 
       yield put(
-        createAction('saveWallet')({ address: newAcc.address, file, phrase: phraseFile.phrase, count }),
+        createAction('saveWallet')({
+          address: newAcc.address,
+          file,
+          phrase: phraseFile.phrase,
+          count,
+        }),
       );
 
       yield put(createAction('updateState')({ loading: false }));
-
     },
     *addAccountFromPrivateKey({ payload }: any, { call, put, select }: any) {
       yield put(createAction('updateState')({ loading: true }));
@@ -128,26 +129,30 @@ export default {
       const phraseFile = yield walletDB.loadPhrase();
       const hdCount = yield walletDB.loadIndex();
 
-
       const count = Number.parseInt(hdCount.index, 10);
       const mne = yield decryptPhrase(JSON.parse(phraseFile.phrase), payload.password);
       if (mne) {
         const newAcc = yield wallet.addByPrivateKey(payload.privateKey);
         const file = yield newAcc.toFile(payload.password);
-        yield walletDB.saveImported({ address: newAcc.address })
-        yield put(createAction('updateState')({ wallet }))
+        yield walletDB.saveImported({ address: newAcc.address });
+        yield put(createAction('updateState')({ wallet }));
         yield put(
-          createAction('saveWallet')({ address: newAcc.address, file, phrase: phraseFile.phrase, count }),
+          createAction('saveWallet')({
+            address: newAcc.address,
+            file,
+            phrase: phraseFile.phrase,
+            count,
+          }),
         );
         yield put(createAction('updateState')({ loading: false }));
       }
     },
     *loadImported(_: any, { call, put, select }: any) {
-      const importedArray: any[] = yield walletDB.loadImported()
+      const importedArray: any[] = yield walletDB.loadImported();
       const importedAccounts = [];
       if (importedArray.length > 0) {
         for (const imported of importedArray) {
-          importedAccounts.push(imported.address)
+          importedAccounts.push(imported.address);
         }
       }
       yield put(createAction('updateState')({ importedAccounts }));
@@ -157,8 +162,7 @@ export default {
 
       const phraseFile = yield walletDB.loadPhrase();
       const mne = yield decryptPhrase(JSON.parse(phraseFile.phrase), payload.password);
-
-    }
+    },
   },
   reducers: {
     updateState(state: any, { payload }: any) {
@@ -168,7 +172,7 @@ export default {
   subscriptions: {
     setup({ dispatch }: any) {
       dispatch({ type: 'readWallet' });
-      dispatch({ type: 'loadImported' })
+      dispatch({ type: 'loadImported' });
     },
   },
 };

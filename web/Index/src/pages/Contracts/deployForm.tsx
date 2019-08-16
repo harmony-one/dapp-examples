@@ -151,6 +151,7 @@ class Transaction extends React.Component<ITransaction, any> {
             })(
               <Select>
                 <Option value="LocalHarmony">Harmony(Local TestNet)</Option>
+                <Option value="BetaNetHarmony">Harmony(BetaNet)</Option>
                 <Option value="EthRopsten">Ropsten(ETH TestNet)</Option>
                 <Option value="EthGanache">Ganache(ETH Local TestNet)</Option>
               </Select>,

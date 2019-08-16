@@ -8,8 +8,14 @@ export const getNetworkSetting = (network: string) => {
   let chainType = ChainType.Harmony;
 
   switch (network) {
-    case 'HarmonyLocal': {
+    case 'LocalHarmony': {
       url = 'ws://localhost:9800';
+      chainId = ChainID.Default;
+      chainType = ChainType.Harmony;
+      break;
+    }
+    case 'BetaNetHarmony': {
+      url = 'ws://54.201.38.205:9800';
       chainId = ChainID.Default;
       chainType = ChainType.Harmony;
       break;

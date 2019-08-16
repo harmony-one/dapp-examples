@@ -30,9 +30,11 @@ export default {
       const messenger = yield select(
         (state: { network: { messenger: any } }) => state.network.messenger,
       );
+
       const blockchain = new Blockchain(messenger);
 
-      yield wallet.setMessenger(messenger);
+      wallet.setMessenger(messenger);
+      console.log(wallet);
 
       const { from, to, gasLimit, gasPrice, amount } = payload;
 
@@ -48,6 +50,7 @@ export default {
       );
 
       const signWith = wallet.getAccount(from);
+
       if (signWith) {
         signWith.setMessenger(messenger);
       }
