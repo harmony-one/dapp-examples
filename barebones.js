@@ -68,18 +68,31 @@ const send_rpc = (ws, method, params) => {
     send(RPCMethod.GetTransactionByHash, [
       '0xa427b2fa61d643bef9aefdb8fbc50aa25a8a72b6e0f7040576ee64aa32e01118',
     ]);
+    send(RPCMethod.GetTransactionReceipt, [
+      '0x5c876ae425a8eba8658596854dbb70a23278c41d6db73c7e6e6b7dad458bfbe6',
+    ]);
 
     // These need some arguments I dont know about yet
     // send(RPCMethod.GetPastLogs, []);
     // send(RPCMethod.GetCode, []);
     // send(RPCMethod.GetTransactionCount, []);
+    // send(RPCMethod.GetTransactionCount, ['0x0b585f8daefbc68a311fbd4cb20d9174ad174016']);
   };
 
   read_queries();
   write_queries();
 
-  send(RPCMethod.GetTransactionReceipt, [
-    '0x5c876ae425a8eba8658596854dbb70a23278c41d6db73c7e6e6b7dad458bfbe6',
-  ]);
-  // send(RPCMethod.NetVersion, []);
+  const failing_rpc = () => {
+    send(RPCMethod.GetWork, []);
+    send(RPCMethod.GetProof, []);
+  };
+
+  // send(RPCMethod., []);
+  // send(RPCMethod., []);
+  // send(RPCMethod., []);
+  // send(RPCMethod., []);
+  // send(RPCMethod., []);
+  // send(RPCMethod., []);
+  // send(RPCMethod., []);
+  // send(RPCMethod., []);
 })();
