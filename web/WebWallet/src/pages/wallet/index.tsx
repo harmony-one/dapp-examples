@@ -15,6 +15,7 @@ interface IWallet {
   setProvider: Function;
   loadImported: Function;
   importedAccounts: any[];
+  selected: string;
 }
 
 const radioStyle = {
@@ -33,7 +34,7 @@ const RadioItem = ({ network }: { network: NetWorkItem }) => {
 
 class Wallet extends React.Component<IWallet> {
   state = {
-    value: 1,
+    value: this.props.providerList.find(val => val.name === this.props.selected),
   };
 
   onChange = (e: any) => {
@@ -101,7 +102,11 @@ class Wallet extends React.Component<IWallet> {
           <Dropdown
             overlay={
               <div style={{ opacity: 1, background: '#ffffff' }}>
-                <Radio.Group onChange={this.onChange} value={this.state.value}>
+                <Radio.Group
+                  onChange={this.onChange}
+                  value={this.state.value}
+                  // defaultValue={networkSeq === -1 ? this.state.value : networkSeq}
+                >
                   {this.props.providerList.map((network: NetWorkItem) => {
                     return <RadioItem network={network} key={network.name} />;
                   })}
@@ -125,6 +130,7 @@ function mapState(state: any) {
     accounts: state.wallet.accounts,
     providerList: state.network.providerList,
     importedAccounts: state.wallet.importedAccounts,
+    selected: state.network.selected,
   };
 }
 

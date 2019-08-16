@@ -19,8 +19,7 @@ class TransactionNext extends React.Component<ITransactionNext> {
     loading: false,
   };
   handleSubmit = () => {
-    this.setState({ loading: true });
-    setTimeout(() => {
+    this.setState({ loading: true }, () => {
       this.props.makeTxn({
         from: this.props.from,
         to: this.props.to,
@@ -29,7 +28,7 @@ class TransactionNext extends React.Component<ITransactionNext> {
         gasPrice: this.props.gasPrice,
       });
       router.push('/send/result');
-    }, 200);
+    });
   };
 
   render() {

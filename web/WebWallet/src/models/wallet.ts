@@ -15,6 +15,7 @@ interface IWalletState {
   accounts: any[];
   unlockError: false;
   wallet: Wallet;
+  isUnlocked: boolean;
 }
 
 export default {
@@ -24,6 +25,7 @@ export default {
     accounts: [],
     wallet: undefined,
     unlockError: false,
+    isUnlocked: false,
     loading: false,
     importedAccounts: []
   },
@@ -55,6 +57,11 @@ export default {
     },
 
     *readWallet({ _ }: any, { call, put, select }: any) {
+      const isUnlocked = yield select((state: { wallet: IWalletState }) => state.wallet.isUnlocked)
+      if (!isUnlocked) {
+        router.replace('/')
+      }
+
       const accountsString: any = yield walletDB.loadKey();
 
       const localAccounts: string[] = JSON.parse(accountsString.key) || [];
@@ -83,9 +90,9 @@ export default {
         const file = fileArray[i];
         try {
           yield wallet.addByKeyStore(file, payload.password);
-          yield put(createAction('updateState')({ unlockError: false }));
+          yield put(createAction('updateState')({ unlockError: false, isUnlocked: true }));
         } catch (error) {
-          yield put(createAction('updateState')({ unlockError: true }));
+          yield put(createAction('updateState')({ unlockError: true, isUnlocked: false }));
         }
       }
 

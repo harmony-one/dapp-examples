@@ -47,7 +47,7 @@ export default {
   namespace: 'network',
   state: {
     providerList: [...defaultProviders],
-    selected: 'Harmony TestNet',
+    selected: 'Harmony BetaNet',
     symbol: 'ONE',
     messenger: new Messenger(
       new HttpProvider(defaultProviders[index].http),
