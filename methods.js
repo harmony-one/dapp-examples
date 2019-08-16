@@ -6,7 +6,7 @@ const s = {
   GetBlockTransactionCountByNumber: 'hmy_getBlockTransactionCountByNumber',
   GetTransactionByBlockHashAndIndex: 'hmy_getTransactionByBlockHashAndIndex',
   GetTransactionByBlockNumberAndIndex: 'hmy_getTransactionByBlockNumberAndIndex',
-  GetTransactionByHash: 'hmy_getTransactionByHash',
+  // GetTransactionByHash: 'hmy_getTransactionByHash',
   GetTransactionReceipt: 'hmy_getTransactionReceipt',
   // Syncing: 'hmy_syncing',
   GetStorageAt: 'hmy_getStorageAt',

@@ -6,7 +6,15 @@ let id = 0;
 
 const convos = {};
 
+const rpc_bank = new Set(Object.values(RPCMethod));
+
 const send_rpc = (ws, method, params) => {
+  if (!rpc_bank.has(method)) {
+    console.error(`Already tested the RPC method: ${method}`);
+    process.exit(-1);
+  }
+
+  rpc_bank.delete(method);
   id++;
   const payload = {
     jsonrpc: '2.0',
@@ -45,7 +53,6 @@ const send_rpc = (ws, method, params) => {
     send(RPCMethod.Syncing, []);
     send(RPCMethod.GasPrice, []);
     send(RPCMethod.BlockNumber, []);
-    send(RPCMethod.NetVersion, []);
   };
 
   const write_queries = () => {
@@ -58,6 +65,9 @@ const send_rpc = (ws, method, params) => {
     send(RPCMethod.GetBlockTransactionCountByHash, [
       '0xe2247c266f64542f4c8fed37790790d2eb016c7a0a5fcf6ba5d02061fa414862',
     ]);
+    send(RPCMethod.GetTransactionByHash, [
+      '0xa427b2fa61d643bef9aefdb8fbc50aa25a8a72b6e0f7040576ee64aa32e01118',
+    ]);
 
     // These need some arguments I dont know about yet
     // send(RPCMethod.GetPastLogs, []);
@@ -68,9 +78,8 @@ const send_rpc = (ws, method, params) => {
   read_queries();
   write_queries();
 
-  send(RPCMethod.GetTransactionByHash, [
-    '0xa427b2fa61d643bef9aefdb8fbc50aa25a8a72b6e0f7040576ee64aa32e01118',
+  send(RPCMethod.GetTransactionReceipt, [
+    '0x5c876ae425a8eba8658596854dbb70a23278c41d6db73c7e6e6b7dad458bfbe6',
   ]);
-  // send(RPCMethod.NetVersion, []);
   // send(RPCMethod.NetVersion, []);
 })();
