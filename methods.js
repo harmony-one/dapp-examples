@@ -1,8 +1,8 @@
 const s = {
   // These work fine
-  GetBlockByHash: 'hmy_getBlockByHash',
-  GetBlockByNumber: 'hmy_getBlockByNumber',
-  GetBlockTransactionCountByHash: 'hmy_getBlockTransactionCountByHash',
+  // GetBlockByHash: 'hmy_getBlockByHash',
+  // GetBlockByNumber: 'hmy_getBlockByNumber',
+  // GetBlockTransactionCountByHash: 'hmy_getBlockTransactionCountByHash',
   GetBlockTransactionCountByNumber: 'hmy_getBlockTransactionCountByNumber',
   GetTransactionByBlockHashAndIndex: 'hmy_getTransactionByBlockHashAndIndex',
   GetTransactionByBlockNumberAndIndex: 'hmy_getTransactionByBlockNumberAndIndex',
