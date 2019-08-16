@@ -36,18 +36,26 @@ const send_rpc = (ws, method, params) => {
   });
   console.log(chalk.yellow('WebSocket connection to Harmony RPC ready for use\n'));
   const send = send_rpc.bind(null, ws);
-  send(RPCMethod.GetBalance, ['0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 'latest']);
-  send(RPCMethod.ProtocolVersion, []);
-  send(RPCMethod.NetVersion, []);
+  const read_queries = () => {
+    send(RPCMethod.ProtocolVersion, []);
+    send(RPCMethod.NetVersion, []);
+    send(RPCMethod.PeerCount, []);
+    send(RPCMethod.Syncing, []);
+    send(RPCMethod.GasPrice, []);
+    send(RPCMethod.BlockNumber, []);
+    send(RPCMethod.NetVersion, []);
+  };
+  read_queries();
 
-  send(RPCMethod.GetPastLogs, []);
-  // send(RPCMethod.NetVersion, []);
-  // send(RPCMethod.NetVersion, []);
-  // send(RPCMethod.NetVersion, []);
-  // send(RPCMethod.NetVersion, []);
-  // send(RPCMethod.NetVersion, []);
-  // send(RPCMethod.NetVersion, []);
-  // send(RPCMethod.NetVersion, []);
+  const write_queries = () => {
+    send(RPCMethod.GetBalance, ['0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 'latest']);
+    // These need some arguments I dont know about yet
+    // send(RPCMethod.GetPastLogs, []);
+    // send(RPCMethod.GetCode, []);
+    // send(RPCMethod.GetTransactionCount, []);
+  };
+  write_queries();
+
   // send(RPCMethod.NetVersion, []);
   // send(RPCMethod.NetVersion, []);
   // send(RPCMethod.NetVersion, []);
