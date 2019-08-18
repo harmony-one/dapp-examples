@@ -34,7 +34,6 @@ export default {
       const blockchain = new Blockchain(messenger);
 
       wallet.setMessenger(messenger);
-      console.log(wallet);
 
       const { from, to, gasLimit, gasPrice, amount } = payload;
 

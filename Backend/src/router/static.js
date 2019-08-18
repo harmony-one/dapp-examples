@@ -5,6 +5,7 @@ export const lottery = '/statics/Lottery'
 
 export const wallet = '/statics/WebWallet'
 export const index = '/statics/Index'
+export const faucet = '/statics/Faucet'
 
 const routerTable = [
   {
@@ -18,6 +19,10 @@ const routerTable = [
   {
     url: '/wallet',
     path: wallet
+  },
+  {
+    url: '/faucet',
+    path: faucet
   }
 ]
 

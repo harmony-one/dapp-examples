@@ -8,8 +8,9 @@
     "watch:tutorial": "./node_modules/.bin/babel ./tutorial/src --watch -d ./tutorial/build",
     "build:wallet": "cd web/WebWallet && yarn install && yarn deploy",
     "build:lottery": "cd web/Lottery && yarn install && yarn deploy",
+    "build:faucet": "cd web/Faucet && yarn install && yarn deploy",
     "build:index": "cd web/Index && yarn install && yarn deployIndex",
-    "build:webapps": "yarn build:wallet && yarn build:lottery && yarn build:index",
+    "build:webapps": "yarn build:wallet && yarn build:lottery && yarn build:faucet && yarn build:index",
     "run:server": "cd Backend && yarn install && yarn build:server && node build/index.js",
     "run:ganache": "cd nodejs && node testGanache --debug true",
     "start": "yarn build:webapps && yarn run:server"
