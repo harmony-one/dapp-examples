@@ -15,10 +15,15 @@ export default {
   effects: {
     *getAccount({ payload }, { call, put, select }) {
       try {
-        const harmony = yield select(state => state.global.harmony);
+        // const harmony = yield select(state => state.global.harmony);
 
-        const account = harmony.wallet.addByPrivateKey(payload.privateKey);
-        yield put(createAction('updateState')({ account, wallet: harmony.wallet }));
+        // const account = harmony.wallet.addByPrivateKey(payload.privateKey);
+
+        const wallet = window.harmony;
+
+        const account = yield wallet.getAccount();
+
+        yield put(createAction('updateState')({ account, wallet }));
       } catch (error) {
         yield put(createAction('updateState')({ error }));
       }
@@ -26,9 +31,11 @@ export default {
     *getAccountBalance({ _ }, { call, put, select }) {
       try {
         const account = yield select(state => state.account.account);
+        const harmony = yield select(state => state.global.harmony);
 
-        const balance = yield account.getBalance();
-        yield put(createAction('updateState')({ accountBalance: balance.balance }));
+        const balanceObj = yield harmony.blockchain.getBalance({ address: account.address });
+
+        yield put(createAction('updateState')({ accountBalance: balanceObj.result }));
       } catch (error) {
         yield put(createAction('updateState')({ error }));
       }
@@ -36,8 +43,9 @@ export default {
     *checkIsOwner({ _ }, { call, put, select }) {
       const account = yield select(state => state.account.account);
       const manager = yield select(state => state.contract.manager);
+
       if (isAddress(manager) && account !== undefined) {
-        const isOwner = getAddress(manager).checksum === account.checksumAddress;
+        const isOwner = getAddress(manager).checksum === getAddress(account.address).checksum;
         yield put(
           createAction('updateState')({
             isOwner,

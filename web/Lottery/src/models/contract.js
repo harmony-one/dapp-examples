@@ -1,9 +1,9 @@
-import { harmony } from '../service/harmony';
 import contractFile from '../service/contractFile';
 import { createAction } from '../utils/index';
 import { Contract } from '@harmony-js/contract';
 import { ContractStatus } from '@harmony-js/contract/dist/utils/status';
-import { Unit } from '@harmony-js/utils';
+import { Unit, hexToNumber } from '@harmony-js/utils';
+import { getAddress } from '@harmony-js/crypto';
 
 export default {
   namespace: 'contract',
@@ -20,12 +20,12 @@ export default {
   effects: {
     *getContractState({ _ }, { call, put, select }) {
       const contractAddress = yield select(state => state.global.contractAddress);
+      const harmony = yield select(state => state.global.harmony);
       const wallet = yield select(state => state.account.wallet);
       const abi = yield select(state => state.global.abi);
       // const contract = harmony.contracts.createContract(abi, contractAddress);
 
       const contract = new Contract(abi, contractAddress, {}, wallet, ContractStatus.INITIALISED);
-
       // contract.connect(wallet);
       const contractBalance = yield harmony.blockchain.getBalance({ address: contractAddress });
 
@@ -36,13 +36,15 @@ export default {
           contract,
         }),
       );
-      yield put(createAction('getContractOwner')());
       yield put(createAction('getPlayers')());
+      yield put(createAction('getContractOwner')());
     },
     *getContractOwner({ _ }, { call, put, select }) {
       const contract = yield select(state => state.contract.contract);
+
+      const appHarmony = yield select(state => state.global.harmony);
+      contract.wallet.messenger = appHarmony.messenger;
       const manager = yield contract.methods.manager().call({
-        // from: '0x0000000000000000000000000000000000000000',
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
       });
@@ -54,10 +56,13 @@ export default {
       yield put(createAction('account/checkIsOwner')());
     },
     *getPlayers({ _ }, { call, put, select }) {
-      // const anonymousFrom = '0'.repeat(40);
-
       const contract = yield select(state => state.contract.contract);
+
+      const appHarmony = yield select(state => state.global.harmony);
+
+      contract.wallet.messenger = appHarmony.messenger;
       const players = yield contract.methods.getPlayers().call({
+        from: '0x0000000000000000000000000000000000000000',
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
       });
@@ -71,20 +76,63 @@ export default {
     *deposit({ payload }, { call, put, select }) {
       yield put(createAction('updateState')({ emitter: undefined }));
       const contract = yield select(state => state.contract.contract);
-      const emitter = contract.methods.enter().send({
+      const contractAddress = yield select(state => state.contract.contractAddress);
+      const harmony = yield select(state => state.global.harmony);
+      const account = yield select(state => state.account.account);
+
+      const methodClass = contract.methods.enter();
+
+      const nonce = yield harmony.blockchain.getTransactionCount({
+        address: getAddress(account.address).checksum,
+      });
+
+      const txnObj = {
+        from: getAddress(account.address).checksum,
+        to: getAddress(contractAddress).checksum,
+        nonce: Number.parseInt(hexToNumber(nonce.result), 10),
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
         value: new Unit(payload).asEther().toWei(),
-      });
+        data: methodClass.transaction.data,
+      };
+
+      const txn = harmony.transactions.newTx(txnObj);
+
+      const signed = yield window.harmony.signTransaction(txn, false);
+
+      const emitter = harmony.blockchain.createObservedTransaction(signed);
+
       yield put(createAction('updateState')({ emitter }));
     },
     *pickWinner({ _ }, { call, put, select }) {
       yield put(createAction('updateState')({ emitter: undefined }));
+
       const contract = yield select(state => state.contract.contract);
-      const emitter = contract.methods.pickWinner().send({
+      const contractAddress = yield select(state => state.contract.contractAddress);
+      const harmony = yield select(state => state.global.harmony);
+      const account = yield select(state => state.account.account);
+
+      const methodClass = contract.methods.pickWinner();
+
+      const nonce = yield harmony.blockchain.getTransactionCount({
+        address: getAddress(account.address).checksum,
+      });
+
+      const txnObj = {
+        from: getAddress(account.address).checksum,
+        to: getAddress(contractAddress).checksum,
+        nonce: Number.parseInt(hexToNumber(nonce.result), 10),
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
-      });
+        data: methodClass.transaction.data,
+      };
+
+      const txn = harmony.transactions.newTx(txnObj);
+
+      const signed = yield window.harmony.signTransaction(txn, false);
+
+      const emitter = harmony.blockchain.createObservedTransaction(signed);
+
       yield put(createAction('updateState')({ emitter }));
     },
   },

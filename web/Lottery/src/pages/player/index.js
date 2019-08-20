@@ -4,6 +4,7 @@ import { isHash, Unit } from '@harmony-js/utils';
 import { ContractState, AccountState, TxnState, NetworkState } from '../../components';
 import { connect, createAction } from '../../utils/index';
 import styles from './index.css';
+import { getAddress } from '@harmony-js/crypto';
 
 class Player extends React.Component {
   state = {
@@ -147,7 +148,7 @@ class Player extends React.Component {
           <AccountState
             accountBalance={accountBalance}
             accountType="player"
-            accountAddress={account.checksumAddress}
+            accountAddress={getAddress(account.address).checksum}
             onPress={() => {
               this.props.getAccountBalance();
             }}

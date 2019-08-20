@@ -19,7 +19,7 @@ class Index extends React.Component {
   };
 
   handleOk = () => {
-    this.props.getAccount({ privateKey: this.state.inputValue });
+    this.props.getAccount();
     this.setState({
       ModalText: 'The modal will be closed after two seconds',
       confirmLoading: true,
@@ -81,7 +81,7 @@ class Index extends React.Component {
             type="primary"
             block
             style={{ height: '2.8em', fontSize: '1.6em' }}
-            onClick={this.showModal}
+            onClick={this.handleOk}
             loading={loading}
           >
             Login

@@ -166,9 +166,9 @@ async function main() {
   // await createAccount()
   // await importAccount()
 
-  const address = harmony.crypto.fromBech32(
-    'one103q7qe5t2505lypvltkqtddaef5tzfxwsse4z7'
-  )
+  const address = harmony.crypto.getAddress(
+    'one1zksj3evekayy90xt4psrz8h6j2v3hla4qwz4ur'
+  ).checksum
   logOutPut('address', address)
 }
 

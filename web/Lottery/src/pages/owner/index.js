@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Modal, InputNumber } from 'antd';
 import { isHash, Unit } from '@harmony-js/utils';
+import { getAddress } from '@harmony-js/crypto';
 import { connect, createAction } from '../../utils/index';
 import { ContractState, AccountState, TxnState, NetworkState } from '../../components';
 import styles from './index.css';
@@ -173,7 +174,7 @@ class Owner extends React.Component {
           <AccountState
             accountBalance={accountBalance}
             accountType="manager"
-            accountAddress={account.checksumAddress}
+            accountAddress={getAddress(account.address).checksum}
             onPress={() => {
               this.props.getAccountBalance();
             }}
