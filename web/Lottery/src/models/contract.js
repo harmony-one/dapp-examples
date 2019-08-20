@@ -26,7 +26,8 @@ export default {
       // const contract = harmony.contracts.createContract(abi, contractAddress);
 
       const contract = new Contract(abi, contractAddress, {}, wallet, ContractStatus.INITIALISED);
-      // contract.connect(wallet);
+      window.harmony ? contract.connect(window.harmony) : contract.connect(harmony.wallet);
+      contract.setMessegner(harmony.messenger);
       const contractBalance = yield harmony.blockchain.getBalance({ address: contractAddress });
 
       yield put(
@@ -41,10 +42,8 @@ export default {
     },
     *getContractOwner({ _ }, { call, put, select }) {
       const contract = yield select(state => state.contract.contract);
-
-      const appHarmony = yield select(state => state.global.harmony);
-      contract.wallet.messenger = appHarmony.messenger;
       const manager = yield contract.methods.manager().call({
+        from: '0x0000000000000000000000000000000000000000',
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
       });
@@ -58,9 +57,6 @@ export default {
     *getPlayers({ _ }, { call, put, select }) {
       const contract = yield select(state => state.contract.contract);
 
-      const appHarmony = yield select(state => state.global.harmony);
-
-      contract.wallet.messenger = appHarmony.messenger;
       const players = yield contract.methods.getPlayers().call({
         from: '0x0000000000000000000000000000000000000000',
         gasLimit: new Unit('210000').asWei().toWei(),
@@ -80,27 +76,18 @@ export default {
       const harmony = yield select(state => state.global.harmony);
       const account = yield select(state => state.account.account);
 
-      const methodClass = contract.methods.enter();
-
       const nonce = yield harmony.blockchain.getTransactionCount({
         address: getAddress(account.address).checksum,
       });
 
-      const txnObj = {
+      const emitter = contract.methods.enter().send({
         from: getAddress(account.address).checksum,
         to: getAddress(contractAddress).checksum,
         nonce: Number.parseInt(hexToNumber(nonce.result), 10),
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
         value: new Unit(payload).asEther().toWei(),
-        data: methodClass.transaction.data,
-      };
-
-      const txn = harmony.transactions.newTx(txnObj);
-
-      const signed = yield window.harmony.signTransaction(txn, false);
-
-      const emitter = harmony.blockchain.createObservedTransaction(signed);
+      });
 
       yield put(createAction('updateState')({ emitter }));
     },
@@ -112,26 +99,17 @@ export default {
       const harmony = yield select(state => state.global.harmony);
       const account = yield select(state => state.account.account);
 
-      const methodClass = contract.methods.pickWinner();
-
       const nonce = yield harmony.blockchain.getTransactionCount({
         address: getAddress(account.address).checksum,
       });
 
-      const txnObj = {
+      const emitter = contract.methods.pickWinner().send({
         from: getAddress(account.address).checksum,
         to: getAddress(contractAddress).checksum,
         nonce: Number.parseInt(hexToNumber(nonce.result), 10),
         gasLimit: new Unit('210000').asWei().toWei(),
         gasPrice: new Unit('100').asGwei().toWei(),
-        data: methodClass.transaction.data,
-      };
-
-      const txn = harmony.transactions.newTx(txnObj);
-
-      const signed = yield window.harmony.signTransaction(txn, false);
-
-      const emitter = harmony.blockchain.createObservedTransaction(signed);
+      });
 
       yield put(createAction('updateState')({ emitter }));
     },
@@ -146,8 +124,8 @@ export default {
   },
   subscriptions: {
     setup({ history, dispatch }) {
-      // dispatch(createAction('getContractState')());
-      //   dispatch(createAction('getPlayers')());
+      dispatch(createAction('getContractState')());
+      // dispatch(createAction('getPlayers')());
       // dispatch(createAction('account/checkIsOwner')());
     },
   },

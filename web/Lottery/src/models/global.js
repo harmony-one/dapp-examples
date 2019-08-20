@@ -33,6 +33,7 @@ export default {
           harmony,
         }),
       );
+      yield put(createAction('contract/getContractState')());
     },
   },
   reducers: {
