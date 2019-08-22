@@ -15,15 +15,13 @@ export default {
   effects: {
     *getAccount({ payload }, { call, put, select }) {
       try {
-        // const harmony = yield select(state => state.global.harmony);
+        const harmony = yield select(state => state.global.harmony);
 
         // const account = harmony.wallet.addByPrivateKey(payload.privateKey);
 
-        const wallet = window.harmony;
+        const account = yield harmony.wallet.getAccount();
 
-        const account = yield wallet.getAccount();
-
-        yield put(createAction('updateState')({ account, wallet }));
+        yield put(createAction('updateState')({ account, wallet: harmony.wallet }));
       } catch (error) {
         yield put(createAction('updateState')({ error }));
       }
@@ -62,9 +60,6 @@ export default {
     },
     *logout({ _ }, { call, put, select }) {
       const harmony = yield select(state => state.global.harmony);
-      harmony.wallet.accounts.forEach(acc => {
-        harmony.wallet.removeAccount(acc);
-      });
 
       yield put(
         createAction('updateState')({

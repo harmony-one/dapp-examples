@@ -1,4 +1,4 @@
-import { Harmony } from '@harmony-js/core';
+import { HarmonyExtension } from '@harmony-js/core';
 import { readDefaultContract } from '../service/api';
 import { createAction } from '../utils/index';
 
@@ -18,8 +18,10 @@ export default {
     *intializeNetwork({ _ }, { call, put }) {
       const { abi, bin, address, network } = yield call(readDefaultContract);
       const { chainId, chainType, url } = network;
+      console.log({ url });
       const netWork = network.network;
-      const harmony = new Harmony(url, { chainId, chainUrl: url, chainType });
+      const harmony = new HarmonyExtension(window.harmony);
+      harmony.setProvider('ws://3.88.229.39:9800');
 
       yield put(
         createAction('updateState')({
@@ -28,7 +30,7 @@ export default {
           contractAddress: address,
           chainId,
           chainType,
-          url,
+          url: 'ws://3.88.229.39:9800',
           netWork,
           harmony,
         }),
