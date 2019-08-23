@@ -1,19 +1,23 @@
 import React from 'react';
-import { Spin, Button, Popover, Modal, Divider, Input } from 'antd';
+import { Spin, Button, Popover, Modal, Divider, Input, Icon } from 'antd';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import FileSaver from 'file-saver';
 import { Unit } from '@harmony-js/utils';
 import { QRCode } from 'react-qrcode-logo';
 
 import { createAction, connect, router } from '@/utils';
 import styles from './index.css';
-import { getAddress } from '@harmony-js/crypto';
+import { getAddress, decrypt } from '@harmony-js/crypto';
+import TextArea from 'antd/lib/input/TextArea';
 
 interface IAccount {
   address: string;
   balance: string;
+  accountFile: string;
   nonce: number;
   loading: boolean;
   getBalance: Function;
+  getAccountFile: Function;
   symbol: string;
 }
 
@@ -26,6 +30,12 @@ class Account extends React.Component<IAccount> {
     modalVisible: false,
     modalPopVisible: false,
     revealVisible: false,
+    passPhrase: '',
+    revealLoading: false,
+    decrypted: false,
+    decryptedError: false,
+    decryptedKey: '',
+    exportModalVisible: false,
   };
   displayAddress(rawAddress: string, showBech: boolean) {
     const address = showBech ? getAddress(rawAddress).bech32 : getAddress(rawAddress).checksum;
@@ -62,9 +72,23 @@ class Account extends React.Component<IAccount> {
     this.setState({
       modalPopVisible: visible,
     });
+    if (!visible) {
+      this.setState({
+        passPhrase: '',
+        revealLoading: false,
+        decrypted: false,
+        decryptedKey: '',
+      });
+    }
+  };
+  handleExportModalVisible = () => {
+    this.setState({
+      exportModalVisible: !this.state.exportModalVisible,
+    });
   };
   componentDidMount() {
     this.props.getBalance({ address: this.props.address });
+    this.props.getAccountFile({ address: this.props.address });
   }
 
   handleAddressSwitch = () => {
@@ -79,10 +103,40 @@ class Account extends React.Component<IAccount> {
       revealVisible: false,
     });
   };
-  handleRevealVisible = () => {
+  handleRevealVisible = (visible: boolean) => {
     this.setState({
-      revealVisible: true,
+      passPhrase: '',
+      revealVisible: visible,
+      decrypted: false,
+      decryptedKey: '',
     });
+  };
+  handleDecrypt = async () => {
+    this.setState({
+      passPhrase: '',
+      revealLoading: true,
+      decrypted: false,
+      decryptedError: false,
+      decryptedKey: '',
+    });
+    try {
+      const decrypted = await decrypt(JSON.parse(this.props.accountFile), this.state.passPhrase);
+      if (decrypted) {
+        this.setState({
+          revealLoading: false,
+          decryptedError: false,
+          decrypted: true,
+          decryptedKey: decrypted,
+        });
+      }
+    } catch (error) {
+      this.setState({
+        revealLoading: false,
+        decryptedError: true,
+        decrypted: false,
+        decryptedKey: '',
+      });
+    }
   };
 
   copyAddress(rawAddress: string, showBech: boolean) {
@@ -92,6 +146,55 @@ class Account extends React.Component<IAccount> {
   render() {
     return (
       <div className={styles.container}>
+        <Modal
+          visible={this.state.exportModalVisible}
+          onCancel={this.handleExportModalVisible}
+          footer={null}
+          centered={true}
+          width={360}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: 400, padding: 24 }}>
+            <TextArea
+              style={{ padding: 12, height: 300 }}
+              defaultValue={this.props.accountFile}
+              disabled={true}
+            />
+            <CopyToClipboard text={this.props.accountFile}>
+              <Button
+                block={true}
+                type="primary"
+                ghost={true}
+                style={{
+                  marginTop: '0.8rem',
+                  marginBottom: '0.8rem',
+                  height: '4.0rem',
+                  fontSize: '1.4rem',
+                }}
+              >
+                Copy To ClipBoard
+              </Button>
+            </CopyToClipboard>
+            <Button
+              block={true}
+              type="primary"
+              ghost={true}
+              style={{
+                marginTop: '0.6rem',
+                marginBottom: '0.6rem',
+                height: '4.0rem',
+                fontSize: '1.4rem',
+              }}
+              // tslint:disable-next-line: jsx-no-lambda
+              onClick={() => {
+                const file = this.props.accountFile;
+                const blob = new Blob([file], { type: 'text/plain;charset=utf-8' });
+                FileSaver.saveAs(blob, `${this.props.address}.json`);
+              }}
+            >
+              Download .json file
+            </Button>
+          </div>
+        </Modal>
         <Modal
           visible={this.state.modalVisible}
           onCancel={this.handleModalVisible}
@@ -112,33 +215,39 @@ class Account extends React.Component<IAccount> {
               value={this.props.address ? getAddress(this.props.address).bech32 : ''}
               size={256}
             />
-            <Popover
-              placement="bottom"
-              content={PopContent}
-              visible={this.state.modalPopVisible}
-              onVisibleChange={this.handleModalVisibleChange}
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: '#dddddd',
+                opacity: 0.6,
+                padding: 12,
+                width: 256,
+                marginTop: '0.6rem',
+              }}
             >
+              <div
+                style={{
+                  fontSize: 18,
+
+                  width: 244,
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                }}
+              >
+                {this.props.address}
+              </div>
               <CopyToClipboard
                 text={this.copyAddress(this.props.address, this.state.showBech)}
                 onCopy={this.onModalCopyClick}
               >
-                <div
-                  style={{
-                    fontSize: 18,
-                    padding: 12,
-                    width: 256,
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    background: '#dddddd',
-                    opacity: 0.6,
-                    marginTop: '0.6rem',
-                  }}
-                >
-                  {this.props.address}
-                </div>
+                <Icon type="copy" style={{ fontSize: '16px', color: '#08c' }} />
               </CopyToClipboard>
-            </Popover>
+            </div>
 
             <Divider />
 
@@ -161,10 +270,29 @@ class Account extends React.Component<IAccount> {
                   block={true}
                   type="primary"
                   ghost={true}
-                  style={{ marginTop: '0.6rem', height: '4.0rem', fontSize: '1.4rem' }}
-                  onClick={this.handleRevealVisible}
+                  style={{
+                    marginTop: '0.6rem',
+                    marginBottom: '0.6rem',
+                    height: '4.0rem',
+                    fontSize: '1.4rem',
+                  }}
+                  // tslint:disable-next-line: jsx-no-lambda
+                  onClick={() => this.handleRevealVisible(true)}
                 >
                   Reveal PrivateKey
+                </Button>
+                <Button
+                  block={true}
+                  type="primary"
+                  ghost={true}
+                  style={{ marginTop: '0.6rem', height: '4.0rem', fontSize: '1.4rem' }}
+                  // tslint:disable-next-line: jsx-no-lambda
+                  onClick={() => {
+                    this.handleModalVisible();
+                    this.handleExportModalVisible();
+                  }}
+                >
+                  Export KeyStore
                 </Button>
               </div>
             ) : (
@@ -173,21 +301,84 @@ class Account extends React.Component<IAccount> {
                   width: '100%',
                 }}
               >
-                <Input.Password
-                  size="large"
-                  placeholder="Input Wallet Password"
-                  style={{ width: '100%', height: '4.0rem', marginBottom: '.6rem' }}
-                />
+                {!this.state.decrypted ? (
+                  <Input.Password
+                    size="large"
+                    placeholder="Input Wallet Password"
+                    style={{
+                      width: '100%',
+                      height: '4.0rem',
+                      marginBottom: '.6rem',
 
-                <Button
-                  block={true}
-                  type="primary"
-                  ghost={true}
-                  style={{ marginTop: '0.6rem', height: '4.0rem', fontSize: '1.4rem' }}
-                  // onClick={this.handleRevealVisible}
-                >
-                  Reveal
-                </Button>
+                      border: this.state.decryptedError ? '1px solid #f25718' : '1px solid #eeeeee',
+                    }}
+                    // tslint:disable-next-line: jsx-no-lambda
+                    onChange={e => this.setState({ passPhrase: e.target.value })}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      fontSize: 14,
+                      padding: 12,
+                      width: 256,
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      background: '#dddddd',
+                      opacity: 0.6,
+                      marginTop: '0.4rem',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    {this.state.decryptedKey}
+                  </div>
+                )}
+                {!this.state.decrypted ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-around',
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                    }}
+                  >
+                    <Button
+                      block={true}
+                      type="primary"
+                      ghost={true}
+                      style={{
+                        marginTop: '0.6rem',
+                        height: '3.2rem',
+                        fontSize: '1.0rem',
+                        marginRight: '0.2rem',
+                      }}
+                      // tslint:disable-next-line: jsx-no-lambda
+                      onClick={() => this.handleRevealVisible(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      block={true}
+                      type="primary"
+                      style={{ marginTop: '0.6rem', height: '3.2rem', fontSize: '1.0rem' }}
+                      onClick={this.handleDecrypt}
+                      loading={this.state.revealLoading}
+                    >
+                      Reveal
+                    </Button>
+                  </div>
+                ) : (
+                  <CopyToClipboard text={this.state.decryptedKey}>
+                    <Button
+                      block={true}
+                      type="primary"
+                      ghost={true}
+                      style={{ marginTop: '0.6rem', height: '4.0rem', fontSize: '1.4rem' }}
+                    >
+                      Copy
+                    </Button>
+                  </CopyToClipboard>
+                )}
               </div>
             )}
           </div>
@@ -212,7 +403,7 @@ class Account extends React.Component<IAccount> {
           }}
         >
           <Popover
-            placement="right"
+            placement="bottom"
             content={PopContent}
             visible={this.state.popVisible}
             onVisibleChange={this.handleVisibleChange}
@@ -243,7 +434,7 @@ class Account extends React.Component<IAccount> {
             ghost={true}
             onClick={this.handleModalVisible}
           >
-            Receive
+            Detail
           </Button>
           <Button
             size="large"
@@ -268,12 +459,14 @@ function mapState(state: any) {
     address: state.router.location.pathname.replace('/wallet/', ''),
     balance: state.account.balance,
     nonce: state.account.nonce,
+    accountFile: state.account.accountFile,
     symbol: state.network.symbol,
   };
 }
 function mapDispatch(dispatch: any) {
   return {
     getBalance: (payload: any) => dispatch(createAction('account/getBalance')(payload)),
+    getAccountFile: (payload: any) => dispatch(createAction('account/getAccountFile')(payload)),
   };
 }
 

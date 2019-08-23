@@ -29,6 +29,9 @@ const config: IConfig = {
       },
     ],
   ],
+  // lessLoaderOptions: {
+  //   javascriptEnabled: true,
+  // },
   history: 'hash',
   publicPath: '/WebWallet/',
 };

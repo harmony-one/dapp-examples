@@ -8,13 +8,12 @@ body {
   top: 0;
   bottom: 0; */
   /* height: '100%'; */
-  min-height: '100%';
-  width: '100%';
+  min-height: 100%;
+  width: 100%;
   background: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-
   padding: 2rem;
   margin: 0;
 }

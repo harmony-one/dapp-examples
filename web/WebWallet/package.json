@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@harmony-js/core": "^0.1.6",
+    "@types/file-saver": "^2.0.1",
     "@types/react-copy-to-clipboard": "^4.2.6",
     "antd": "^3.19.2",
     "dexie": "^2.0.4",
     "dva": "^2.6.0-beta.4",
+    "file-saver": "^2.0.2",
     "react": "^16.8.6",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.6",

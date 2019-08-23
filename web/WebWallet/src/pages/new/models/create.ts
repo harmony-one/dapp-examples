@@ -14,6 +14,8 @@ export default {
     mnes: undefined,
     password: undefined,
     privateKey: undefined,
+    keyStore: undefined,
+    keyPhrase: undefined,
     loading: false,
   },
   effects: {
@@ -26,6 +28,13 @@ export default {
     },
     *sendPrivateKey({ payload }: any, { put }: any) {
       yield put(createAction('updateState')({ privateKey: payload.privateKey }));
+    },
+
+    // todo
+    *sendKeyStore({ payload }: any, { put }: any) {
+      yield put(
+        createAction('updateState')({ keyStore: payload.keyStore, keyPhrase: payload.password }),
+      );
     },
     *sendPassword({ payload }: any, { call, put, select }: any) {
       yield put(
@@ -41,13 +50,13 @@ export default {
       const privateKey = yield select((state: { create: INewWallet }) => state.create.privateKey);
       if (password && mnes && !privateKey) {
         yield put(createAction('wallet/createWallet')({ password, mnes }));
-        yield put(createAction('resetAll')())
+        yield put(createAction('resetAll')());
       } else if (password && !mnes && !privateKey) {
         yield put(createAction('wallet/addAccountFromMnes')({ password }));
-        yield put(createAction('resetAll')())
+        yield put(createAction('resetAll')());
       } else if (password && !mnes && privateKey) {
         yield put(createAction('wallet/addAccountFromPrivateKey')({ password, privateKey }));
-        yield put(createAction('resetAll')())
+        yield put(createAction('resetAll')());
       }
     },
     *resetMnes({ _ }: any, { put }: any) {

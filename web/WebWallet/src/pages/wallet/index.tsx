@@ -38,7 +38,6 @@ class Wallet extends React.Component<IWallet> {
   };
 
   onChange = (e: any) => {
-    console.log('radio checked', e.target.value);
     this.setState({
       value: e.target.value,
     });
@@ -86,7 +85,9 @@ class Wallet extends React.Component<IWallet> {
               >
                 <Button onClick={this.addAccount}>Add 1 More</Button>
                 <Button onClick={this.importPrivateKey}>Import Private Key</Button>
-                <Button onClick={() => {}}>Select Account</Button>
+                <Button onClick={() => {}} disabled={true}>
+                  Import KeyStore
+                </Button>
               </div>
             }
             trigger={['click']}
