@@ -1,12 +1,22 @@
 import React from 'react';
 import Link from 'umi/link';
 import { getAddress } from '@harmony-js/crypto';
+import { Icon, Menu, Dropdown } from 'antd';
 
 interface IAccountCard {
   address: string;
   index: number;
   imported: boolean;
+  remove: Function;
 }
+
+const menu = (onClick: any) => (
+  <Menu>
+    <Menu.Item key="0">
+      <div onClick={onClick}>remove</div>
+    </Menu.Item>
+  </Menu>
+);
 
 class AccountCard extends React.Component<IAccountCard> {
   formatAddress(address: string, display: boolean = false, max: number = 16, start: number = 10) {
@@ -39,9 +49,34 @@ class AccountCard extends React.Component<IAccountCard> {
           marginBottom: '2rem',
         }}
       >
-        <Link to={`/wallet/${formatedAddress}`}>
-          <div style={{ fontSize: '1.4rem', color: '#333333' }}>{displayAddress}</div>
-        </Link>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
+        >
+          <Dropdown
+            // tslint:disable-next-line: jsx-no-lambda
+            overlay={() =>
+              menu(() => {
+                this.props.remove({ address: getAddress(this.props.address).basicHex });
+              })
+            }
+            trigger={['click']}
+          >
+            <Icon
+              type="more"
+              // tslint:disable-next-line: jsx-no-lambda
+            />
+          </Dropdown>
+          <Link to={`/wallet/${formatedAddress}`}>
+            <div style={{ fontSize: '1.4rem', color: '#333333', marginLeft: 12 }}>
+              {displayAddress}
+            </div>
+          </Link>
+        </div>
         <div style={{ fontSize: '1.0rem', color: '#8c8c8c' }}>
           {this.props.imported ? 'imported' : ''}
         </div>

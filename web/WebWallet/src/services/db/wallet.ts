@@ -6,7 +6,7 @@ export class WalletDB extends Dexie {
   defaultWalletKey: Dexie.Table<string, string>;
   defaultWalletPhrase: Dexie.Table<string, string>;
   defaultWalletChildIndex: Dexie.Table<number, string>;
-  defaultWalletFile: Dexie.Table<string, string>;
+  defaultWalletFile: Dexie.Table<any, string[]>;
   importedAccount: Dexie.Table<string, string>;
   constructor(databaseName: string) {
     super(databaseName);
@@ -100,6 +100,23 @@ export class WalletDB extends Dexie {
     if (this.opened) {
       const result = await this.importedAccount.get(data);
       return result;
+    }
+  };
+  removeFile = async (data: any) => {
+    if (this.opened) {
+      const isImported = await this.getImported(data);
+      if (isImported) {
+        await this.importedAccount.delete(data);
+      }
+      const isExist: any = await this.loadFile(data);
+      if (isExist) {
+        await this.defaultWalletFile.delete([isExist.address, isExist.file]);
+        const savedKeys: any = await this.loadKey();
+        const keyArray: string[] = JSON.parse(savedKeys.key);
+        const index = keyArray.findIndex(val => val === isExist.address);
+        keyArray.splice(index, 1);
+        await this.saveKey({ key: JSON.stringify(keyArray) });
+      }
     }
   };
 }

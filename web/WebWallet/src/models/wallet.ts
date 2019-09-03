@@ -163,6 +163,12 @@ export default {
       const phraseFile = yield walletDB.loadPhrase();
       const mne = yield decryptPhrase(JSON.parse(phraseFile.phrase), payload.password);
     },
+    *removeAccount({ payload }: any, { call, put, select }: any) {
+      yield walletDB.removeFile(payload.address);
+      yield put(createAction('updateState')({ isUnlocked: false, files: {}, accounts: [] }));
+      yield put(createAction('readWallet')());
+      yield put(createAction('loadImported')());
+    },
   },
   reducers: {
     updateState(state: any, { payload }: any) {

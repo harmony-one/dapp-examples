@@ -29,6 +29,7 @@ export default {
         harmony.wallet,
         ContractStatus.INITIALISED,
       );
+
       const contractBalance = yield harmony.blockchain.getBalance({ address: contractAddress });
 
       yield put(

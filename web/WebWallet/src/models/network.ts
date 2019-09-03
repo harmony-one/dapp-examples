@@ -27,8 +27,8 @@ const defaultProviders: NetWorkItem[] = [
     id: ChainID.Default,
     type: ChainType.Harmony,
     name: 'Harmony BetaNet',
-    http: 'http://3.88.229.39:9500',
-    ws: 'ws://3.88.229.39:9800',
+    http: 'http://l0.b.hmny.io:9500',
+    ws: 'ws://l0.b.hmny.io:9800',
     symbol: 'ONE',
   },
   {

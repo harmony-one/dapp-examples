@@ -15,6 +15,7 @@ interface IWallet {
   setProvider: Function;
   loadImported: Function;
   importedAccounts: any[];
+  removeAccount: Function;
   selected: string;
 }
 
@@ -46,7 +47,15 @@ class Wallet extends React.Component<IWallet> {
   renderAccountList() {
     return this.props.accounts.map((value, index) => {
       const imported = this.props.importedAccounts.findIndex(val => value === val);
-      return <AccountCard key={value} address={value} imported={imported !== -1} index={index} />;
+      return (
+        <AccountCard
+          key={value}
+          address={value}
+          imported={imported !== -1}
+          index={index}
+          remove={this.props.removeAccount}
+        />
+      );
     });
   }
   addAccount() {
@@ -139,6 +148,7 @@ function mapDispatch(dispatch: any) {
   return {
     setProvider: (payload: NetWorkItem) => dispatch(createAction('network/setProvider')(payload)),
     loadImported: () => dispatch(createAction('wallet/loadImported')()),
+    removeAccount: (payload: any) => dispatch(createAction('wallet/removeAccount')(payload)),
   };
 }
 
