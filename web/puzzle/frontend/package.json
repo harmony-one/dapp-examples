@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@harmony-js/core": "^0.1.14",
     "solc": "^0.5.11"
   }
 }
