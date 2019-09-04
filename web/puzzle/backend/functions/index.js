@@ -67,6 +67,8 @@ exports.payout = functions.https.onRequest(async (req, res) => {
                 }
 
                 // Now call smart contract to payout
+
+                payout(address, level, sequence)
                 res.status(200).json({
                     doc_address,
                     doc_private_key,

@@ -26,3 +26,4 @@ if (isPrivateKey(phrases)) {
 // add the phrase and index to Wallet, we get the account,
 // and we export it for further usage
 export const myAccount = accountImported
+
