@@ -1,0 +1,5 @@
+{
+    "url": "ws://localhost:9800",
+    "chainType": "hmy",
+    "chainId": 0
+}
