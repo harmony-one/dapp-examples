@@ -13,6 +13,8 @@ const testAccs = [
   '27978f895b11d9c737e1ab1623fde722c04b4f9ccb4ab776bf15932cc72d7c66'
 ]
 
+// '0x01f903ce0c960ff3a9e68e80ff5ffc344358d80ce1c221c3f9711af07f83a3bd'
+
 const sender = harmony.wallet.addByPrivateKey(testAccs[0])
 
 const receiver = '0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E'

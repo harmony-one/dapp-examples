@@ -23,6 +23,10 @@ const routerTable = [
   {
     url: '/faucet',
     path: faucet
+  },
+  {
+    url: '/puzzle',
+    path: puzzle
   }
 ]
 
