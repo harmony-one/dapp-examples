@@ -68,7 +68,7 @@ async function main() {
     // logOutPut('Signed Transation', signed.txParams)
     console.log(signed.getRawTransaction())
     process.exit()
-    const [Transaction, hash] = await signed.sendTransaction()
+    // const [Transaction, hash] = await signed.sendTransaction()
     logOutPut('Transaction Hash', hash)
     // from here on, we use hmy_getTransactionRecept and hmy_blockNumber Rpc api
     // if backend side is not done yet, please delete them from here
