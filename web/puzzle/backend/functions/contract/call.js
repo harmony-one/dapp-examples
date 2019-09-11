@@ -3,7 +3,10 @@ const { harmony } = require('./harmony')
 const path = require('path')
 
 // const address = '0x0cc3a6E43e66DC35a45f26e95A8c084c343a7D07'
-const address = '0x8545890931331d3EA59b4e63dE64924BE181C4Aa'
+// const address = '0x8545890931331d3EA59b4e63dE64924BE181C4Aa'
+// const address = '0xD5626B6146100CE4e2BEDa0038afE82e9814D8f9'
+const address = '0xD5626B6146100CE4e2BEDa0038afE82e9814D8f9';
+
 
 const { abi } = JSON.parse(fs.readFileSync(path.resolve(__dirname, './contracts/puzzle/Puzzle.json')))
 

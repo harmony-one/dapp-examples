@@ -21,7 +21,7 @@ const privateToAddress = privateKey => {
 const getRandomWallet = () => {
     const randbytes = randomBytes(32);
     return {
-        address: privateToAddress(randbytes).toString('hex'),
+        address: `0x${privateToAddress(randbytes).toString('hex')}`,
         private_key: randbytes.toString('hex')
     };
 };

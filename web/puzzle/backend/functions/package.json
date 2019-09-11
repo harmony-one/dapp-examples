@@ -17,7 +17,10 @@
     "firebase-functions": "^2.3.0",
     "keccak": "^2.0.0",
     "randombytes": "^2.1.0",
-    "secp256k1": "^3.7.1"
+    "secp256k1": "^3.7.1",
+    "@harmony-js/core": "^0.1.16",
+    "solc": "^0.5.11",
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.1.6"

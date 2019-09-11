@@ -1,1 +1,1 @@
-firebase serve --only hosting,functions
+firebase serve --only functions
