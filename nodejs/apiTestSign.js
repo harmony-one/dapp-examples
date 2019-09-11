@@ -1,38 +1,41 @@
 const { Harmony } = require('@harmony-js/core')
 const { RLPSign } = require('@harmony-js/transaction')
 const { ChainType, ChainID, hexToBN } = require('@harmony-js/utils')
-var arg = process.argv.slice(2)[0];
+
+if (process.argv.length !== 4){
+    console.error("Invalid number of Arguments (requires 2)");
+    process.exit(1)
+}
+
+const network = process.argv[2];
+switch(network){
+  case "betanet":
+    testAccs = [
+      '01F903CE0C960FF3A9E68E80FF5FFC344358D80CE1C221C3F9711AF07F83A3BD'
+    ]
+    break;
+  case "localnet":
+    testAccs = [
+      '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e'
+    ]
+    break;
+  default:
+    console.error("'"+network+"' is NOT a supported network.")
+    process.exit(1)
+}
 
 //const url = 'http://localhost:9500'
 //const url = 'http:/34.219.69.3:9500'
-
-
-url = 'http://l0.b.hmny.io:9500'
-
-testAccs = [
-'01F903CE0C960FF3A9E68E80FF5FFC344358D80CE1C221C3F9711AF07F83A3BD'
-]
-
-if (arg=="localnet") {
-	url = 'http://localhost:9500'
-
-	testAccs = [
-	'45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e'
-	]
-
-}
+const url = process.argv[3];
 
 const receiver = '0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E'
-
 
 const harmony = new Harmony(url, {
   chainType: ChainType.Harmony,
   chainId: ChainID.Default
 })
 
-
 const sender = harmony.wallet.addByPrivateKey(testAccs[0])
-
 
 const txnObjects = {
   nonce: 0,
@@ -68,7 +71,7 @@ async function main() {
     // logOutPut('Signed Transation', signed.txParams)
     console.log(signed.getRawTransaction())
     process.exit()
-    // const [Transaction, hash] = await signed.sendTransaction()
+    const [Transaction, hash] = await signed.sendTransaction()
     logOutPut('Transaction Hash', hash)
     // from here on, we use hmy_getTransactionRecept and hmy_blockNumber Rpc api
     // if backend side is not done yet, please delete them from here
