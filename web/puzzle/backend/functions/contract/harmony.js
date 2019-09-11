@@ -9,7 +9,8 @@ const setting = JSON.parse(fs.readFileSync(path.resolve(__dirname, './setting.js
 // loading setting from local json file
 const harmony = new Harmony(setting.url, {
   chainType: setting.chainType,
-  chainId: setting.chainId
+  chainId: setting.chainId,
+  shardID: setting.shardID
 })
 
 // loading Mne phrases from file

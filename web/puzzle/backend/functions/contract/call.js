@@ -6,7 +6,8 @@ const path = require('path')
 // const address = '0x8545890931331d3EA59b4e63dE64924BE181C4Aa'
 // const address = '0xD5626B6146100CE4e2BEDa0038afE82e9814D8f9'
 const address = '0xD5626B6146100CE4e2BEDa0038afE82e9814D8f9';
-
+// 0x3308726dacd2daf7c74d48118b053a732ba7582d709cbe0f8787501b0805ec57 0x2618dEB50250526249BB3dBcbC614df14214907C
+// 0x8e099a1b406d788b1bb4cfd7afd6fbb77209c139707411276f6a38c22e2fcc27 0x405CfA22555f0d1a728c8dE278899634a0cb35E7
 
 const { abi } = JSON.parse(fs.readFileSync(path.resolve(__dirname, './contracts/puzzle/Puzzle.json')))
 
@@ -51,7 +52,11 @@ module.exports = {
 // payout('0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 10, '1')
 // payout('0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 10, '1')
 // getManager().then(console.log)
-// payout('0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E', 15, 'LRDU').then(
+// payout('0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E', 16, 'LRDU').then(
+//   console.log
+// )
+
+// getSequence('0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E').then(
 //   console.log
 // )
 // process.exit(0)
