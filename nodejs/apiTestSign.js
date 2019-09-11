@@ -25,7 +25,7 @@ const harmony = new Harmony(url, {
   chainId: ChainID.Default
 });
 
-const verbose = parseInt(config["verbose"]);
+const verbose = config["verbose"];
 const transactions = config["transactions"];
 let results = new Array(transactions.length);
 for (let i=0; i<transactions.length; i++){
@@ -105,15 +105,7 @@ async function send(sender, txnObjects, i) {
 async function sendAllTxns() {
   for(let i = 0; i < transactions.length; i++){
     let sender = harmony.wallet.addByPrivateKey(transactions[i]["sender"]);
-    let txnObjects = {
-      nonce: parseInt(transactions[i]["txnObjects"]["nonce"]),
-      gasPrice: transactions[i]["txnObjects"]["gasPrice"],
-      gasLimit: transactions[i]["txnObjects"]["gasLimit"],
-      shardID: parseInt(transactions[i]["txnObjects"]["shardID"]),
-      to: transactions[i]["txnObjects"]["to"],
-      value: transactions[i]["txnObjects"]["value"],
-      data: transactions[i]["txnObjects"]["data"]
-    };
+    let txnObjects = transactions[i]["txnObjects"];
     await send(sender, txnObjects, i);
   }
 }
