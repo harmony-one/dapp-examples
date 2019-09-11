@@ -13,14 +13,6 @@ const { abi } = JSON.parse(fs.readFileSync(path.resolve(__dirname, './contracts/
 
 const puzzle = harmony.contracts.createContract(abi, address)
 
-// getPlayers()": "8b5b9ccc",
-//     "manager()": "481c6a75",
-//     "payout(address,uint256)": "117de2fd",
-//     "play()": "93e84cd9",
-//     "players(uint256)": "f71d96cb",
-//     "reset()": "d826f88f",
-//     "resetPlayer(address)": "c95e0909"
-
 const getManager = async () => {
   const result = await puzzle.methods
     .manager() // static method
@@ -50,13 +42,16 @@ const payout = async (address, level, sequence) => {
   return result
 }
 
+module.exports = {
+  puzzle,
+  getManager,
+  getSequence,
+  payout
+}
+// payout('0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 10, '1')
 // payout('0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 10, '1')
 // getManager().then(console.log)
 // payout('0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E', 15, 'LRDU').then(
 //   console.log
 // )
 // process.exit(0)
-
-module.exports = {
-  payout
-}
