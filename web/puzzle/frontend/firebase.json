@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "public": "./dist",
+      "target": "puzzledev",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "public": "./dist",
+      "target": "harmony-puzzle",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    },
+    {
+      "public": "./dist",
+      "target": "harmony-puzzle1",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    }
+  ]
+}
