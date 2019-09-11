@@ -1,62 +1,73 @@
-const { Harmony } = require('@harmony-js/core')
-const { RLPSign } = require('@harmony-js/transaction')
-const { ChainType, ChainID, hexToBN } = require('@harmony-js/utils')
+const fs = require('fs');
+const { Harmony } = require('@harmony-js/core');
+const { ChainType, ChainID } = require('@harmony-js/utils');
 
-if (process.argv.length !== 4){
-    console.error("Invalid number of Arguments (requires 2)");
-    process.exit(1)
+if (process.argv.length !== 3){
+  console.error("Invalid number of Arguments (requires 1)");
+  process.exit(1)
 }
 
-const network = process.argv[2];
-switch(network){
-  case "betanet":
-    testAccs = [
-      '01F903CE0C960FF3A9E68E80FF5FFC344358D80CE1C221C3F9711AF07F83A3BD'
-    ]
-    break;
-  case "localnet":
-    testAccs = [
-      '45e497bd45a9049bcb649016594489ac67b9f052a6cdf5cb74ee2427a60bf25e'
-    ]
-    break;
-  default:
-    console.error("'"+network+"' is NOT a supported network.")
-    process.exit(1)
+let config;
+try {
+  config = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+} catch (err) {
+  console.error("Config file read error: " + err);
+  process.exit(1);
 }
 
+//Best to set the url in the config file.
 //const url = 'http://localhost:9500'
-//const url = 'http:/34.219.69.3:9500'
-const url = process.argv[3];
-
-const receiver = '0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E'
+//const url = 'http:/s0.b.hmny.io:9500'
+const url = config["url"];
 
 const harmony = new Harmony(url, {
   chainType: ChainType.Harmony,
   chainId: ChainID.Default
-})
+});
 
-const sender = harmony.wallet.addByPrivateKey(testAccs[0])
-
-const txnObjects = {
-  nonce: 0,
-  gasPrice: '0',
-  gasLimit: '21000',
-  shardID: 0,
-  to: receiver,
-  value: '1',
-  data: '0x'
+const verbose = parseInt(config["verbose"]);
+const transactions = config["transactions"];
+let results = new Array(transactions.length);
+for (let i=0; i<transactions.length; i++){
+  results[i] = {
+    "senderBalance" : null,
+    "senderNonce" : null,
+    "Signed Transaction" : null,
+    "Transaction Hash" : null,
+    "Transaction Receipt" : null,
+    "Sender balance" : null,
+    "Receiver balance" : null
+  };
 }
 
-async function main() {
+function logAndSave(title, content, i) {
+  results[i][title] = JSON.stringify(content);
+
+  if (verbose){
+    console.log(
+        '---------------------------------------------------------------------'
+    );
+    console.log("[Log] " + title);
+    console.log(content);
+  }
+
+  // This condition is where the program terminates.
+  if (i === (transactions.length-1) && title === 'Receiver balance'){
+    console.log(results);  // These logs
+    process.exit(0);
+  }
+}
+
+async function send(sender, txnObjects, i) {
   try {
     const bbb = await harmony.blockchain.getBalance({
       address: sender.address
-    })
-    // logOutPut('senderBalance', bbb.result)
+    });
+    logAndSave('senderBalance', bbb.result, i);
     const nonce = await harmony.blockchain.getTransactionCount({
       address: sender.address
-    })
-    // logOutPut('senderNonce', nonce.result)
+    });
+    logAndSave('senderNonce', nonce.result, i);
 
     const tx = harmony.transactions.newTx({
       nonce: txnObjects.nonce,
@@ -66,45 +77,44 @@ async function main() {
       to: harmony.crypto.getAddress(txnObjects.to).checksum,
       value: new harmony.utils.Unit(txnObjects.value).asWei().toWei(),
       data: txnObjects.data
-    })
-    const signed = await sender.signTransaction(tx, true)
-    // logOutPut('Signed Transation', signed.txParams)
-    console.log(signed.getRawTransaction())
-    process.exit()
-    const [Transaction, hash] = await signed.sendTransaction()
-    logOutPut('Transaction Hash', hash)
+    });
+    const signed = await sender.signTransaction(tx, true);
+    logAndSave('Signed Transaction', signed.txParams, i);
+    const [Transaction, hash] = await signed.sendTransaction();
+    logAndSave('Transaction Hash', hash, i);
+
     // from here on, we use hmy_getTransactionRecept and hmy_blockNumber Rpc api
     // if backend side is not done yet, please delete them from here
-    const confirmed = await Transaction.confirm(hash)
-
-    // logOutPut('Transaction Receipt', confirmed.receipt)
+    const confirmed = await Transaction.confirm(hash);
+    logAndSave('Transaction Receipt', confirmed.receipt, i);
     if (confirmed.isConfirmed()) {
       const senderUpdated = await harmony.blockchain.getBalance({
         address: sender.address
-      })
-      // logOutPut('Sender balance', senderUpdated.result)
+      });
+      logAndSave('Sender balance', senderUpdated.result, i);
       const receiverUpdated = await harmony.blockchain.getBalance({
-        address: receiver
-      })
-      // logOutPut('Receiver balance', receiverUpdated.result)
-      process.exit()
+        address: txnObjects.to
+      });
+      logAndSave('Receiver balance', receiverUpdated.result, i);
     }
   } catch (error) {
     throw error
   }
 }
 
-function logOutPut(title, content) {
-  console.log(
-    '---------------------------------------------------------------------'
-  )
-  console.log(`==> Log: ${title}`)
-  console.log(
-    '---------------------------------------------------------------------'
-  )
-  console.log()
-  console.log(content)
-  console.log()
+async function sendAllTxns() {
+  for(let i = 0; i < transactions.length; i++){
+    let sender = harmony.wallet.addByPrivateKey(transactions[i]["sender"]);
+    let txnObjects = {
+      nonce: parseInt(transactions[i]["txnObjects"]["nonce"]),
+      gasPrice: transactions[i]["txnObjects"]["gasPrice"],
+      gasLimit: transactions[i]["txnObjects"]["gasLimit"],
+      shardID: parseInt(transactions[i]["txnObjects"]["shardID"]),
+      to: transactions[i]["txnObjects"]["to"],
+      value: transactions[i]["txnObjects"]["value"],
+      data: transactions[i]["txnObjects"]["data"]
+    };
+    await send(sender, txnObjects, i);
+  }
 }
-
-main()
+_ = sendAllTxns();
