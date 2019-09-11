@@ -25,7 +25,8 @@ const harmony = new Harmony(url, {
   chainId: ChainID.Default
 });
 
-const verbose = config["verbose"];
+const isVerbose = config["verbose"];
+const isSequential = config["sequentialTxn"];
 const transactions = config["transactions"];
 let results = new Array(transactions.length);
 for (let i=0; i<transactions.length; i++){
@@ -43,17 +44,17 @@ for (let i=0; i<transactions.length; i++){
 function logAndSave(title, content, i) {
   results[i][title] = JSON.stringify(content);
 
-  if (verbose){
+  if (isVerbose){
     console.log(
         '---------------------------------------------------------------------'
     );
-    console.log("[Log] " + title);
+    console.log("[Txn: " + i + " Log] " + title);
     console.log(content);
   }
 
   // This condition is where the program terminates.
   if (i === (transactions.length-1) && title === 'Receiver balance'){
-    console.log(results);  // These logs
+    console.log(results);
     process.exit(0);
   }
 }
@@ -98,7 +99,8 @@ async function send(sender, txnObjects, i) {
       logAndSave('Receiver balance', receiverUpdated.result, i);
     }
   } catch (error) {
-    throw error
+    console.error(error);
+    process.exit(1);
   }
 }
 
@@ -106,7 +108,11 @@ async function sendAllTxns() {
   for(let i = 0; i < transactions.length; i++){
     let sender = harmony.wallet.addByPrivateKey(transactions[i]["sender"]);
     let txnObjects = transactions[i]["txnObjects"];
-    await send(sender, txnObjects, i);
+    if (isSequential){
+      await send(sender, txnObjects, i);
+    } else {
+      _ = send(sender, txnObjects, i);
+    }
   }
 }
 _ = sendAllTxns();
