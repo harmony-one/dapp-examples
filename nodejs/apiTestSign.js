@@ -24,22 +24,12 @@ const harmony = new Harmony(url, {
 });
 
 let results = new Array(transactions.length);
-if (!isRawTxnSigOnly) {
-    for (let i = 0; i < transactions.length; i++) {
-        results[i] = {
-            "senderBalance": null,
-            "senderNonce": null,
-            "Signed Transaction": null,
-            "Transaction Hash": null,
-            "Transaction Receipt": null,
-            "Sender balance": null,
-            "Receiver balance": null
-        };
-    }
-}
 
 function logAndSaveResult(title, content, i) {
     if (!isRawTxnSigOnly) {
+        if (results[i]===undefined){
+            results[i] = {};
+        }
         results[i][title] = JSON.stringify(content);
     }
     if (isVerbose) {
