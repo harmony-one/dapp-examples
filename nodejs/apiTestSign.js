@@ -110,6 +110,7 @@ async function send(sender, txnObjects, i) {
         process.exit(1);
     }
 }
+setTimeout(send, 30000); // 30 seconds
 
 async function sendAllTxns() {
     for (let i = 0; i < transactions.length; i++) {
