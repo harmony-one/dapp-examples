@@ -52,7 +52,7 @@ module.exports = {
 // payout('0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 10, '1')
 // payout('0x3aea49553Ce2E478f1c0c5ACC304a84F5F4d1f98', 10, '1')
 // getManager().then(console.log)
-// payout('0x10A02A0a6e95a676AE23e2db04BEa3D1B8b7ca2E', 16, 'LRDU').then(
+// payout('0x327170633eaa7d31a5bf3aa4b60e20c826b2eddf', 16, 'LRDU').then(
 //   console.log
 // )
 

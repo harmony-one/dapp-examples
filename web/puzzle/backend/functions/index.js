@@ -11,14 +11,14 @@ admin.initializeApp({
 const firestore = admin.firestore();
 
 exports.play = functions.https.onRequest(async (req, res) => {
-    switch (req.method) {
-        case 'GET':
-            // Good
-            break;
-        default:
-            res.status(403).send('Forbidden!');
-            return;
-    }
+    // switch (req.method) {
+    //     case 'GET':
+    //         // Good
+    //         break;
+    //     default:
+    //         res.status(403).send('Forbidden!');
+    //         return;
+    // }
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Methods', 'GET, POST');
 
@@ -44,14 +44,14 @@ exports.play = functions.https.onRequest(async (req, res) => {
 const polishAddress = address =>  address.startsWith('0x') ? address : `0x${address}`;
 
 exports.payout = functions.https.onRequest(async (req, res) => {
-    switch (req.method) {
-        case 'POST':
-            // Good
-            break;
-        default:
-            res.status(403).send('Forbidden!');
-            return;
-    }
+    // switch (req.method) {
+    //     case 'POST':
+    //         // Good
+    //         break;
+    //     default:
+    //         res.status(403).send('Forbidden!');
+    //         return;
+    // }
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Access-Control-Allow-Methods', 'GET, POST');
 
