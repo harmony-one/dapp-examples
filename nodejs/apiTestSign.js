@@ -1,3 +1,5 @@
+// Sample execution: node apiTestSign.js apiTestSignConfig/\[sample\]apiTestSign-localnet.config
+
 const fs = require('fs');
 const {Harmony} = require('@harmony-js/core');
 const {ChainType, ChainID} = require('@harmony-js/utils');
@@ -11,7 +13,7 @@ const config = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 
 //Best to set the url in the config file.
 //const url = 'http://localhost:9500'
-//const url = 'http:/s0.b.hmny.io:9500'
+//const url = 'http://s0.b.hmny.io:9500'
 const url = config["url"];
 const isVerbose = config["isVerbose"];
 const isSequentialTxn = config["isSequentialTxn"];
@@ -22,6 +24,11 @@ const harmony = new Harmony(url, {
     chainType: ChainType.Harmony,
     chainId: ChainID.Default
 });
+
+if (harmony.provider.url !== url){
+    console.error("'" + url + "' does not match url of provider, which is: '" + harmony.provider.url + "'");
+    process.exit(1);
+}
 
 let results = new Array(transactions.length);
 
@@ -100,7 +107,7 @@ async function send(sender, txnObjects, i) {
         process.exit(1);
     }
 }
-setTimeout(send, 30000); // 30 seconds
+setTimeout(send, 60000); // 1 min.
 
 async function sendAllTxns() {
     for (let i = 0; i < transactions.length; i++) {
