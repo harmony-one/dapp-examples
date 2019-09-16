@@ -64,6 +64,7 @@ async function send(sender, txnObjects, i) {
             gasPrice: new harmony.utils.Unit(txnObjects.gasPrice).asWei().toWei(),
             gasLimit: new harmony.utils.Unit(txnObjects.gasLimit).asWei().toWei(),
             shardID: txnObjects.shardID,
+            toShardID: txnObjects.toShardID,
             to: harmony.crypto.getAddress(txnObjects.to).checksum,
             value: new harmony.utils.Unit(txnObjects.value).asWei().toWei(),
             data: txnObjects.data
