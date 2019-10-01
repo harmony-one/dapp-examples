@@ -1,6 +1,6 @@
 {
-  "url": "http://18.232.125.103:9500",
+  "url": "http://35.171.21.32:9500",
   "chainType": "hmy",
-  "chainId": 0,
+  "chainId": 2,
   "shardID": 1
 }
