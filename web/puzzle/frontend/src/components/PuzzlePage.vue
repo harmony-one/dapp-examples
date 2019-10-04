@@ -13,7 +13,7 @@
 }
 
 .btn-primary {
-  background: #1B295E;
+  background: #1b295e;
 }
 
 .score-container {
@@ -66,9 +66,9 @@ footer {
 .continue-playing-button {
   margin-top: 9.17892px;
   background: none;
-  border: 1px solid #1B295E;
+  border: 1px solid #1b295e;
   border-radius: 6px;
-  color: #1B295E;
+  color: #1b295e;
 }
 
 .content-level10 {
@@ -109,8 +109,8 @@ footer {
   animation: appearing 1.2s;
   -webkit-animation: appearing 1.2s;
 }
-input{
-    text-align:center;
+input {
+  text-align: center;
 }
 .is-redeemed {
   animation: disappearing 3s;
@@ -263,37 +263,37 @@ input{
   margin: 0 10px;
 }
 
-  .is-level10 {
-    .inputs {
-      background-color: "red" !important;
-    }
-
-    .input-error {
-      font-size: 14px;
-      color: red;
-    }
-
-    .texts {
-      margin-top: 10px;
-    }
+.is-level10 {
+  .inputs {
+    background-color: "red" !important;
   }
 
-  img.loading {
-    width: 50px;
+  .input-error {
+    font-size: 14px;
+    color: red;
   }
 
-  .redeemed-section {
-    font-size: 50px;
-    color: darkgreen;
+  .texts {
+    margin-top: 10px;
+  }
+}
+
+img.loading {
+  width: 50px;
+}
+
+.redeemed-section {
+  font-size: 50px;
+  color: darkgreen;
+}
+
+.lose-hope-image {
+  img {
+    width: 90px;
   }
 
-  .lose-hope-image {
-    img {
-      width: 90px;
-    }
-
-    margin-bottom: 10px;
-  }
+  margin-bottom: 10px;
+}
 
 .congrats-trophy {
   margin-top: -5px;
@@ -326,7 +326,6 @@ input{
     width: 100px;
   }
 }
-
 </style>
 
 <template>
@@ -372,18 +371,22 @@ input{
 
         <div class="board-wrapper" :style="boardWrapperStyle">
           <div v-if="gameEnded">
-<!--            <div v-if="true">-->
+            <!--            <div v-if="true">-->
             <div class="overlay game-over-message appearing">
               <div class="content content-level10">
                 <div>
-                  <div class="blur-text" :style="gameTutorialStyle" v-if="this.levelIndex >= levelToShowTwitter">
+                  <div
+                    class="blur-text"
+                    :style="gameTutorialStyle"
+                    v-if="this.levelIndex >= levelToShowTwitter"
+                  >
                     <div class="congrats-trophy">
-                      <img src="../assets/congrats_trophy.svg" alt="">
+                      <img src="../assets/congrats_trophy.svg" alt />
                     </div>
                     <span :style="gameTutorialSmallStyle">Congrats!</span>
-                    <br>
+                    <br />
                     <span :style="gameTutorialSmallStyle">You finished level {{ this.levelIndex }}</span>
-                    <br>
+                    <br />
                     <div
                       v-if="gameEnded"
                       style="
@@ -397,26 +400,24 @@ input{
                 <div>
                   <div class="blur-text" :style="gameTutorialStyle" v-if="showNoLoseLevel">
                     <div class="lose-hope-image">
-                      <img src="../assets/lose_hope.svg" alt="">
+                      <img src="../assets/lose_hope.svg" alt />
                     </div>
                     <span :style="gameTutorialSmallStyle">Don't lose hope!</span>
-                    <br>
+                    <br />
                     <span :style="gameTutorialSmallStyle">Try Again!</span>
-                    <br>
-                    <br>
-                    <br>
+                    <br />
+                    <br />
+                    <br />
                   </div>
                 </div>
 
                 <div v-if="this.levelIndex === fireworkLevel">
-                  <Fireworks/>
+                  <Fireworks />
                 </div>
 
                 <div class="buttons" v-if="showTwitterLevel">
                   <div>
-                    <social-sharing :title="twitterTitle"
-                                    url=""
-                                    inline-template>
+                    <social-sharing :title="twitterTitle" url inline-template>
                       <network network="twitter">
                         <a class="btn-primary btn-twitter">
                           <i class="fab fa-twitter"></i> Tweet
@@ -425,9 +426,7 @@ input{
                     </social-sharing>
                   </div>
                 </div>
-                <div>
-
-                </div>
+                <div></div>
               </div>
             </div>
           </div>
@@ -479,14 +478,12 @@ input{
         </footer>
         <footer class="flex-vertical" :style="{ width: boardSizePx + 'px' }" v-if="gameEnded">
           <div class="flex-horizontal action-row">
-          <span
+            <span
               class="flex-grow level-text"
               :style="levelTextStyle"
             >Level: {{ levelIndex === levels.length ? levelIndex : levelIndex + 1 }} / {{ levels.length }}</span>
 
-            <button v-if="gameEnded"  class="btn-primary" @click="reloadGame">
-              Play again!
-            </button>
+            <button v-if="gameEnded" class="btn-primary" @click="reloadGame">Play again!</button>
           </div>
         </footer>
         <div class="link-footer"></div>
@@ -558,8 +555,8 @@ export default {
       // constants
       fireworkLevel: 99,
       showCouponLevel: 99,
-      levelToShowTwitter: 10,
-      levelToShowNoLose: 9,
+      levelToShowTwitter: 20,
+      levelToShowNoLose: 20,
 
       // variables
       globalData: store.data,
@@ -579,7 +576,7 @@ export default {
       balanceIncrease: "",
       isMobile: mobilecheck(),
       reward: 0,
-      cancelEmail: false,
+      cancelEmail: false
     };
   },
   mounted() {
@@ -605,9 +602,9 @@ export default {
     );
     // service.register(id);
 
-    this.$root.$on('social_shares_open', function(network, url) {
-      _vm.trackTweet()
-    })
+    this.$root.$on("social_shares_open", function(network, url) {
+      _vm.trackTweet();
+    });
   },
   computed: {
     gameOverStyle() {
@@ -627,8 +624,7 @@ export default {
       return { fontSize: this.boardSizePx / 16 + "px" };
     },
     gameTutorialSmallGoodStyle() {
-      return { fontSize: this.boardSizePx / 16 + "px",
-      color: '#1B295E'};
+      return { fontSize: this.boardSizePx / 16 + "px", color: "#1B295E" };
     },
     gameTutorialTinyStyle() {
       return { fontSize: this.boardSizePx / 32 + "px" };
@@ -639,16 +635,16 @@ export default {
     bijanStyle() {
       return {
         marginTop: 0,
-        marginLeft: 0,
+        marginLeft: 0
       };
     },
     bijanLessStyle() {
       return {
         "margin-top": 30 + "px",
-        "margin-bottom": 10 + "px",
+        "margin-bottom": 10 + "px"
       };
     },
-    bijanInputStyle(){
+    bijanInputStyle() {
       return {
         // height: this.boardSizePx / 10 + "px"
       };
@@ -657,8 +653,7 @@ export default {
       return { fontSize: this.boardSizePx / 8 + "px" };
     },
     gameTutorialGoodStyle() {
-      return { fontSize: this.boardSizePx / 14 + "px",
-              color: '#1B295E'};
+      return { fontSize: this.boardSizePx / 14 + "px", color: "#1B295E" };
     },
     infoItemStyle() {
       return { fontSize: this.boardSizePx / 18 + "px" };
@@ -704,7 +699,7 @@ export default {
      * @return {string}
      */
     twitterTitle() {
-      return `I finished level ${this.levelIndex} of #harmonypuzzle! See my winning moves on @harmonyprotocol #blockchain https://explorer2.harmony.one/#/address/${this.globalData.address} Play it at https://puzzle.harmony.one`
+      return `I finished level ${this.levelIndex} of #harmonypuzzle! See my winning moves on @harmonyprotocol #blockchain https://explorer2.harmony.one/#/address/${this.globalData.address} Play it at https://puzzle.harmony.one`;
     },
 
     showTwitterLevel() {
@@ -720,7 +715,7 @@ export default {
      * @return {boolean}
      */
     showResetButton() {
-      return !(this.isLevel10 && !this.gameEnded)
+      return !(this.isLevel10 && !this.gameEnded);
     }
   },
   destroyed() {
@@ -749,7 +744,7 @@ export default {
     },
 
     userGameLevel() {
-      return `user-game-level-${this.levelIndex + 1}`
+      return `user-game-level-${this.levelIndex + 1}`;
     },
 
     /***
@@ -757,16 +752,16 @@ export default {
      * @param level
      */
     gaTrack(level) {
-      const userLevel = this.userGameLevel()
-      this.$ga.event('puzzle-game', 'game-level', userLevel, 1)
+      const userLevel = this.userGameLevel();
+      this.$ga.event("puzzle-game", "game-level", userLevel, 1);
     },
     /***
      * Track analytics current level
      * @param level
      */
     trackTweet(level) {
-      const userLevel = this.userGameLevel()
-      this.$ga.event('puzzle-game', 'tweet', userLevel)
+      const userLevel = this.userGameLevel();
+      this.$ga.event("puzzle-game", "tweet", userLevel);
     },
     onLevelComplete(moves) {
       this.gaTrack(this.levelIndex);
@@ -810,7 +805,7 @@ export default {
       this.gameStarted = false;
       store.data.stake = 20;
       clearInterval(this.timer);
-      clearInterval(this.timePlayedTimer)
+      clearInterval(this.timePlayedTimer);
       this.timer = null;
     },
     endLastGame() {
@@ -844,7 +839,11 @@ export default {
 
     trackTimePlayed() {
       const currentLevel = this.levelIndex + 1;
-      this.$ga.event('time-played', `game-level-${currentLevel}`, this.timePlayed.toString())
+      this.$ga.event(
+        "time-played",
+        `game-level-${currentLevel}`,
+        this.timePlayed.toString()
+      );
       this.resetTimePlayed();
     },
 
@@ -871,9 +870,9 @@ export default {
      * Reload the game entirely
      */
     reloadGame() {
-      this.$ga.event('puzzle-game', 'reload-game', this.userGameLevel())
+      this.$ga.event("puzzle-game", "reload-game", this.userGameLevel());
       window.location.reload();
-    },
+    }
   }
 };
 </script>

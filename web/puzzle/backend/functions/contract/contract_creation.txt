@@ -1,0 +1,59 @@
+
+Minhs-MacBook-Pro:contract minhdoan$ ./deploy_contract.sh
+---------------------------------------------------------------------
+==> Log: We got Transaction Hash
+---------------------------------------------------------------------
+
+0x7363848877524f8d4519a7abdee86e1107e3714af9e64bb76f9f9c2a3311fff4
+
+---------------------------------------------------------------------
+==> Log: We got transaction detail
+---------------------------------------------------------------------
+
+null
+
+---------------------------------------------------------------------
+==> Log: We got transaction receipt
+---------------------------------------------------------------------
+
+{ blockHash:
+   '0x9b04613511ba6285978afd45a095ef55c23c42fd58fbc9c7495cb0665fb3f2fb',
+  blockNumber: '0xe812e',
+  contractAddress: '0xba9e0f55f5142df4916631e1e5509ead6cea9ad8',
+  cumulativeGasUsed: '0xb809f',
+  from: '0xd763cf49cadfd4652434036fe9f2ae038fdc25dc',
+  gasUsed: '0xb809f',
+  logs: [],
+  logsBloom:
+   '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  shardID: 2,
+  status: '0x1',
+  to: null,
+  transactionHash:
+   '0x7363848877524f8d4519a7abdee86e1107e3714af9e64bb76f9f9c2a3311fff4',
+  transactionIndex: '0x0' }
+
+---------------------------------------------------------------------
+==> Log: The transaction is
+---------------------------------------------------------------------
+
+CONFIRMED
+
+Error: FetchError: invalid json response body at https://api.s2.t.hmny.io/ reason: Unexpected end of JSON input
+    at Messenger.<anonymous> (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/@harmony-js/network/dist/messenger/messenger.js:66:35)
+    at step (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:136:27)
+    at Object.throw (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:117:57)
+    at rejected (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:108:69)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+Error: FetchError: invalid json response body at https://api.s2.t.hmny.io/ reason: Unexpected end of JSON input
+    at Messenger.<anonymous> (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/@harmony-js/network/dist/messenger/messenger.js:66:35)
+    at step (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:136:27)
+    at Object.throw (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:117:57)
+    at rejected (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:108:69)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+
+/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/solc/soljson.js:32
+(Module.asmGlobalArg,Module.asmLibraryArg,buffer);var __GLOBAL__I_000101=Module["__GLOBAL__I_000101"]=asm["__GLOBAL__I_000101"];var __GLOBAL__sub_I_ABIFunctions_cpp=Module["__GLOBAL__sub_I_ABIFunctions_cpp"]=asm["__GLOBAL__sub_I_ABIFunctions_cpp"];var __GLOBAL__sub_I_ABI_cpp=Module["__GLOBAL__sub_I_ABI_cpp"]=asm["__GLOBAL__sub_I_ABI_cpp"];var __GLOBAL__sub_I_ASTJsonConverter_cpp=Module["__GLOBAL__sub_I_ASTJsonConverter_cpp"]=asm["__GLOBAL__sub_I_ASTJsonConverter_cpp"];var __GLOBAL__sub_I_AST_cpp=Module["__GLOBAL__sub_I_AST_cpp"]=asm["__GLOBAL__sub_I_AST_cpp"];var __GLOBAL__sub_I_ArrayUtils_cpp=Module["__GLOBAL__sub_I_ArrayUtils_cpp"]=asm["__GLOBAL__sub_I_ArrayUtils_cpp"];var __GLOBAL__sub_I_AsmAnalysis_cpp=Module["__GLOBAL__sub_I_AsmAnalysis_cpp"]=asm["__GLOBAL__sub_I_AsmAnalysis_cpp"];var __GLOBAL__sub_I_BMC_cpp=Module["__GLOBAL__sub_I_BMC_cpp"]=asm["__GLOBAL__sub_I_BMC_cpp"];var __GLOBA
+abort({}). Build with -s ASSERTIONS=1 for more info.
+
+

@@ -1,0 +1,100 @@
+
+Minhs-MacBook-Pro:contract minhdoan$ ./deploy_contract.sh
+---------------------------------------------------------------------
+==> Log: We got Transaction Hash
+---------------------------------------------------------------------
+
+0xd6f87f58210804e5ec793d32d61853e5c0c3e486d6e879e15b465d310b14716a
+
+---------------------------------------------------------------------
+==> Log: We got transaction detail
+---------------------------------------------------------------------
+
+null
+
+---------------------------------------------------------------------
+==> Log: We got transaction receipt
+---------------------------------------------------------------------
+
+{ blockHash:
+   '0x7aa1ab8a60d3a576dda18649da5cdac44a85503e4b2b41cb90404ded6104ffb5',
+  blockNumber: '0xf286c',
+  contractAddress: '0xd4be063e149e8af6605e1bae1019014472863462',
+  cumulativeGasUsed: '0xb809f',
+  from: '0xd763cf49cadfd4652434036fe9f2ae038fdc25dc',
+  gasUsed: '0xb809f',
+  logs: [],
+  logsBloom:
+   '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  shardID: 0,
+  status: '0x1',
+  to: null,
+  transactionHash:
+   '0xd6f87f58210804e5ec793d32d61853e5c0c3e486d6e879e15b465d310b14716a',
+  transactionIndex: '0x0' }
+
+---------------------------------------------------------------------
+==> Log: The transaction is
+---------------------------------------------------------------------
+
+CONFIRMED
+
+Error: FetchError: invalid json response body at http://18.144.6.147:9500/ reason: Unexpected end of JSON input
+    at Messenger.<anonymous> (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/@harmony-js/network/dist/messenger/messenger.js:66:35)
+    at step (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:136:27)
+    at Object.throw (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:117:57)
+    at rejected (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:108:69)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+Error: FetchError: invalid json response body at http://18.144.6.147:9500/ reason: Unexpected end of JSON input
+    at Messenger.<anonymous> (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/@harmony-js/network/dist/messenger/messenger.js:66:35)
+    at step (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:136:27)
+    at Object.throw (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:117:57)
+    at rejected (/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/tslib/tslib.js:108:69)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+
+/Users/minhdoan/go/src/github.com/harmony-one/dapp-examples/web/puzzle/backend/functions/node_modules/solc/soljson.js:32
+(Module.asmGlobalArg,Module.asmLibraryArg,buffer);var __GLOBAL__I_000101=Module["__GLOBAL__I_000101"]=asm["__GLOBAL__I_000101"];var __GLOBAL__sub_I_ABIFunctions_cpp=Module["__GLOBAL__sub_I_ABIFunctions_cpp"]=asm["__GLOBAL__sub_I_ABIFunctions_cpp"];var __GLOBAL__sub_I_ABI_cpp=Module["__GLOBAL__sub_I_ABI_cpp"]=asm["__GLOBAL__sub_I_ABI_cpp"];var __GLOBAL__sub_I_ASTJsonConverter_cpp=Module["__GLOBAL__sub_I_ASTJsonConverter_cpp"]=asm["__GLOBAL__sub_I_ASTJsonConverter_cpp"];var __GLOBAL__sub_I_AST_cpp=Module["__GLOBAL__sub_I_AST_cpp"]=asm["__GLOBAL__sub_I_AST_cpp"];var __GLOBAL__sub_I_ArrayUtils_cpp=Module["__GLOBAL__sub_I_ArrayUtils_cpp"]=asm["__GLOBAL__sub_I_ArrayUtils_cpp"];var __GLOBAL__sub_I_AsmAnalysis_cpp=Module["__GLOBAL__sub_I_AsmAnalysis_cpp"]=asm["__GLOBAL__sub_I_AsmAnalysis_cpp"];var __GLOBAL__sub_I_BMC_cpp=Module["__GLOBAL__sub_I_BMC_cpp"]=asm["__GLOBAL__sub_I_BMC_cpp"];var __GLOBA
+abort({}). Build with -s ASSERTIONS=1 for more info.
+
+
+
+
+Minhs-MacBook-Pro:contract minhdoan$ ./deploy_contract.sh
+---------------------------------------------------------------------
+==> Log: We got Transaction Hash
+---------------------------------------------------------------------
+
+0xd6f87f58210804e5ec793d32d61853e5c0c3e486d6e879e15b465d310b14716a
+
+---------------------------------------------------------------------
+==> Log: We got transaction detail
+---------------------------------------------------------------------
+
+null
+
+---------------------------------------------------------------------
+==> Log: We got transaction receipt
+---------------------------------------------------------------------
+
+{ blockHash:
+   '0x7aa1ab8a60d3a576dda18649da5cdac44a85503e4b2b41cb90404ded6104ffb5',
+  blockNumber: '0xf286c',
+  contractAddress: '0xd4be063e149e8af6605e1bae1019014472863462',
+  cumulativeGasUsed: '0xb809f',
+  from: '0xd763cf49cadfd4652434036fe9f2ae038fdc25dc',
+  gasUsed: '0xb809f',
+  logs: [],
+  logsBloom:
+   '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  shardID: 0,
+  status: '0x1',
+  to: null,
+  transactionHash:
+   '0xd6f87f58210804e5ec793d32d61853e5c0c3e486d6e879e15b465d310b14716a',
+  transactionIndex: '0x0' }
+
+---------------------------------------------------------------------
+==> Log: The transaction is
+---------------------------------------------------------------------
+
+CONFIRMED

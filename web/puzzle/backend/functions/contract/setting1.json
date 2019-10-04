@@ -1,10 +1,6 @@
 {
-    "url": "http://127.0.0.1:9500",
-    "url": "s0.b.hmny.io:9500",
-    "chainType": "hmy",
-    "chainId": 0
+  "url": "https://api.s1.t.hmny.io",
+  "chainType": "hmy",
+  "chainId": 1,
+  "shardID": 1
 }
-
-
-01F903CE0C960FF3A9E68E80FF5FFC344358D80CE1C221C3F9711AF07F83A3BD
-27978f895b11d9c737e1ab1623fde722c04b4f9ccb4ab776bf15932cc72d7c66

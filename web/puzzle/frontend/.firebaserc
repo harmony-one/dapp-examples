@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "harmony-puzzle": {
+      "hosting": {
+        "harmony-puzzle": [
+          "harmony-puzzle"
+        ]
+      }
+    }
+  }
+}
