@@ -1,5 +1,4 @@
 const {
-  randomBytes,
   generatePrivateKey,
   getAddress,
   getAddressFromPrivateKey,
