@@ -6,6 +6,7 @@ export const lottery = '/statics/Lottery'
 export const wallet = '/statics/WebWallet'
 export const index = '/statics/Index'
 export const faucet = '/statics/Faucet'
+export const puzzle = '/statics/Puzzle'
 
 const routerTable = [
   {
